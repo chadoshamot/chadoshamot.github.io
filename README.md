@@ -21,11 +21,17 @@ npm run server
 - 简介、导航和外观：`_config.stellar.yml`
 - 关于页：`source/about/index.md`
 - 博客文章：`source/_posts/`
-- 本地标识图：`source/assets/shamot.svg`
-- 黑色背景、白色正文、黄色选中状态与侧栏渐变：`source/assets/shamot.css`
-- 构建时生成的首页介绍与手机导航：`scripts/presentation.js`
+- 头像：`_config.stellar.yml` 的 `leftbar.brand.image.src`，使用 GitHub 头像
+- 个人签名：只修改 `_config.stellar.yml` 的 `leftbar.brand.tagline`，侧栏与首页同步更新
+- 最近更新：`source/_data/widgets.yml` 的 `recent.limit`，默认 9，按文章 updated 倒序，不足时显示全部
+- 黑色背景、白色正文、渐变与无边框布局：`source/assets/shamot.css`
+- 各板块配色：`_config.stellar.yml` 的 `leftbar.menu` → `accent`，该值同时控制选中导航和板块正文链接
+- 栏目内部导航、项目与探索页面：`scripts/presentation.js`
+- 友链：`source/friends/index.md`
 
-网站固定使用深色外观。滚动入场采用 300ms、5px 位移，尊重系统的减少动态效果设置。导航选中时显示黄色文字和右侧菱形标记。
+网站固定使用深色外观。侧栏渐变属于页面背景，区域之间依靠留白区分。博客用黄色、项目用青色、探索用紫色、友链用绿色、关于用珊瑚色；选中时文字和右侧菱形使用板块配色。滚动入场采用 300ms、5px 位移，尊重系统的减少动态效果设置。
+
+栏目沿用 xaoxuu.com 的结构：博客有近期发布、分类、标签、专栏、归档；项目有所有项目、应用程序、实用工具、博客搭档、博客主题、iOS；探索有 OKR 与手记、收藏夹、解决方案与在线工具。分类入口说明当前以标签组织文章，未提供的内容显示空状态。关于页的 MBTI、话题、音乐、游戏、其它可在 Markdown 中直接编辑。
 
 创建新文章：`npx hexo new post "article-slug"`，然后修改 Markdown 顶部的标题与标签。
 
@@ -38,7 +44,7 @@ npm run server
 3. 仓库 Settings → Pages → Source 选择 GitHub Actions。
 4. `.github/workflows/pages.yml` 会安装依赖、检查主题并生成、部署网站。
 
-配置文件和部署流程已准备；本目录的生成结果不表示远端已上线。
+推送后可在仓库 Actions 中查看部署进度，线上地址为 https://chadoshamot.github.io/blog_page/ 。
 
 首篇文章根据用户指定的项目 README 编写。文章中的仓库地址来自原项目 Git 配置，已通过远端读取确认仓库存在；修复效果未独立复测。
 

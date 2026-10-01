@@ -4,30 +4,36 @@ leftbar:
     name: shamot
     tagline: 学习 · 实践 · 记录
     image:
-      src: /blog_page/assets/shamot.svg
-      variant: icon
+      src: https://avatars.githubusercontent.com/u/160225157?v=4
+      variant: avatar
     href: /
+  widgets: [recent]
   menu:
     - id: post
-      title: 文章
+      title: 博客
       icon: default:documents
       url: /
-    - id: tags
-      title: 标签
+      accent: '#f4d35e'
+    - id: projects
+      title: 项目
+      icon: default:category
+      url: /wiki/
+      accent: '#73daca'
+    - id: explore
+      title: 探索
       icon: default:hashtag
-      url: /blog/tags/
-    - id: archives
-      title: 归档
-      icon: default:calendar
-      url: /blog/archives/
+      url: /notes/
+      accent: '#bb9af7'
+    - id: friends
+      title: 友链
+      icon: default:link
+      url: /friends/
+      accent: '#9ece6a'
     - id: about
       title: 关于
       icon: default:profile
       url: /about/
-    - id: github
-      title: GitHub
-      icon: default:link
-      url: https://github.com/chadoshamot
+      accent: '#f79b87'
 appearance:
   preset: minimal
   color_scheme: dark
@@ -56,16 +62,16 @@ article:
 profiles:
   home:
     leftbar:
-      widgets: []
+      widgets: [recent]
   blog_index:
     listing_nav:
       enabled: false
   page:
     leftbar:
-      widgets: []
+      widgets: [recent]
   post:
     leftbar:
-      widgets: []
+      widgets: [recent]
     rightbar:
       widgets: [toc]
   wiki_index:
@@ -90,7 +96,7 @@ features:
   partial_navigation:
     enabled: true
 inject:
-  head_end: '<link rel="stylesheet" href="/blog_page/assets/shamot.css?v=2">'
+  head_end: '<link rel="stylesheet" href="/blog_page/assets/shamot.css?v=3">'
 structured_data:
   same_as:
     - https://github.com/chadoshamot
