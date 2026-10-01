@@ -1,10 +1,11 @@
 leftbar:
   brand:
+    style: compact
     name: shamot
-    tagline: 记录学习、实践与解决问题的过程。
+    tagline: 学习 · 实践 · 记录
     image:
       src: /blog_page/assets/shamot.svg
-      variant: avatar
+      variant: icon
     href: /
   menu:
     - id: post
@@ -28,11 +29,16 @@ leftbar:
       icon: default:link
       url: https://github.com/chadoshamot
 appearance:
-  preset: card
-  color_scheme: auto
+  preset: minimal
+  color_scheme: dark
   colors:
-    primary: '#2563eb'
-    accent: '#0ea5e9'
+    primary: '#f4d35e'
+    accent: '#f4d35e'
+    link: '#f4d35e'
+  shape:
+    radius:
+      card: 14px
+      card_large: 18px
   typography:
     font_size:
       root: 16px
@@ -50,8 +56,16 @@ article:
 profiles:
   home:
     leftbar:
-      widgets: [recent]
+      widgets: []
+  blog_index:
+    listing_nav:
+      enabled: false
+  page:
+    leftbar:
+      widgets: []
   post:
+    leftbar:
+      widgets: []
     rightbar:
       widgets: [toc]
   wiki_index:
@@ -61,7 +75,22 @@ profiles:
 footer:
   content: |
     © shamot · 由 [Hexo](https://hexo.io/) 与 [Stellar](https://github.com/xaoxuu/hexo-theme-stellar) 驱动。
-    [GitHub](https://github.com/chadoshamot)
+features:
+  reveal:
+    enabled: true
+    duration: 300
+    interval: 50
+    distance: 5
+    blur: 0
+  card_hover:
+    spotlight: false
+    tilt: false
+  color_scheme_switch:
+    enabled: false
+  partial_navigation:
+    enabled: true
+inject:
+  head_end: '<link rel="stylesheet" href="/blog_page/assets/shamot.css?v=2">'
 structured_data:
   same_as:
     - https://github.com/chadoshamot

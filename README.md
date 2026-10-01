@@ -22,6 +22,10 @@ npm run server
 - 关于页：`source/about/index.md`
 - 博客文章：`source/_posts/`
 - 本地标识图：`source/assets/shamot.svg`
+- 黑色背景、白色正文、黄色选中状态与侧栏渐变：`source/assets/shamot.css`
+- 构建时生成的首页介绍与手机导航：`scripts/presentation.js`
+
+网站固定使用深色外观。滚动入场采用 300ms、5px 位移，尊重系统的减少动态效果设置。导航选中时显示黄色文字和右侧菱形标记。
 
 创建新文章：`npx hexo new post "article-slug"`，然后修改 Markdown 顶部的标题与标签。
 
