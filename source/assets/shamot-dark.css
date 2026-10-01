@@ -1,0 +1,43 @@
+/* Navy color study; only the dark mode changes. */
+:root[data-theme='dark'] {
+ color-scheme: dark;
+ --background: #2a486e;
+ --card: #2a486e;
+ --text: #e4eaf1;
+ --text-p0: #e4eaf1;
+ --text-p1: #d3dde8;
+ --text-p2: #b0bed0;
+ --text-p3: #96a7bd;
+ --text-p4: #899bb3;
+ --block: #172638;
+ --block-border: #2c4058;
+ --text-meta: #546980;
+ --text-code: #e5dac0;
+}
+:root[data-theme='dark'], :root[data-theme='dark'] body { background: var(--background); color: #e4eaf1; }
+:root[data-theme='dark'] body::before {
+ display: none;
+ background: none;
+}
+:root[data-theme='dark'] .brand-title .brand-tagline,
+:root[data-theme='dark'] .shamot-eyebrow,
+:root[data-theme='dark'] .shamot-intro-description,
+:root[data-theme='dark'] .post-list .post-card .excerpt p,
+:root[data-theme='dark'] .post-card .meta,
+:root[data-theme='dark'] .post-card .cap,
+:root[data-theme='dark'] .page-footer .text { color: #a5b5c9; }
+:root[data-theme='dark'] .md-text p, :root[data-theme='dark'] .md-text li { color: #d3dde8; }
+:root[data-theme='dark'] .md-text pre, :root[data-theme='dark'] .md-text .highlight { background: #172638; }
+:root[data-theme='dark'] .search-dialog { background: var(--background); border-color: #2c4058; }
+@media(max-width:768px) {
+ :root[data-theme='dark'] .site-shell[data-drawer='leftbar'] #leftbar-region .site-region__surface.ui-surface { background: var(--background); }
+}
+
+:root[data-palette='green'] {
+ --background: #2a484e;
+ --card: #2a484e;
+ --block: #203c42;
+ --block-border: #49676b;
+}
+:root[data-palette='green'] .md-text pre,
+:root[data-palette='green'] .md-text .highlight { background: var(--block); }

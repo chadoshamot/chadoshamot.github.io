@@ -29,7 +29,9 @@ npm run server
 - 栏目内部导航、项目与探索页面：`scripts/presentation.js`
 - 友链：`source/friends/index.md`
 
-网站默认使用旧书页浅色背景 `#E8DBBA`，可通过侧栏和手机顶部的按钮切换深浅模式，并记住选择。原深色方案继续保留；浅色样式在 `source/assets/shamot-light.css`，使用较深的板块强调色保证清晰度。主题设置页中的跟随系统选项同样支持。
+网站提供米黄（`#E8DBBA`）、藏蓝（`#2A486E`）、澄绿（`#2A484E`）三种配色，可通过侧栏和手机顶部的“网站配色”下拉框直接选择，并记住选择。米黄为首次访问的默认配色；旧的深色偏好会迁移为藏蓝。米黄保留柔和侧栏渐变，藏蓝与澄绿使用纯色背景。
+
+浅色样式在 `source/assets/shamot-light.css`；两种深色样式在 `source/assets/shamot-dark.css`；配色选择与记忆在 `source/assets/shamot-palette.js`。
 
 侧栏渐变属于页面背景，区域之间依靠留白区分。博客用黄色、项目用青色、探索用紫色、友链用绿色、关于用珊瑚色；选中时文字和右侧菱形使用板块配色。滚动入场采用 300ms、5px 位移，尊重系统的减少动态效果设置。
 
