@@ -14,7 +14,9 @@ hexo.extend.filter.register('after_render:html', html => {
  const active = $('#leftbar-region .widget-instance--menu .is-active').first();
  const section = menu.find(item => item.title === active.attr('title') || item.title === active.find('.ui-collection__title').text().trim()) || menu[0];
  $('html').attr('style', `--shamot-accent:${section.accent};--theme:${section.accent};--accent:${section.accent};--link:${section.accent}`);
- $('body').attr('data-section', section.id).prepend(`<header class="shamot-mobile-header"><a href="${root}">shamot<span aria-hidden="true">.</span></a><button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></header>`);
+ const switchButton = `<button class="shamot-theme-switch" type="button" aria-label="切换深浅模式" onclick="setColorScheme((document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches)) ? 'light' : 'dark')"><span class="to-dark">☾ 深色</span><span class="to-light">☀ 浅色</span></button>`;
+ $('.widget-instance--menu').first().before(`<div class="shamot-theme-control">${switchButton}</div>`);
+ $('body').attr('data-section', section.id).prepend(`<header class="shamot-mobile-header"><a href="${root}">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions">${switchButton}<button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header>`);
  const canonical = $('link[rel=canonical]').attr('href') || $('meta[property="og:url"]').attr('content') || '';
  const pathname = canonical ? new URL(canonical).pathname.replace(root,'') : '';
  const tabs = section.id === 'post' ? blogTabs : section.id === 'projects' ? projectTabs : null;

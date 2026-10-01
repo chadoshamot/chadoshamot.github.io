@@ -36,7 +36,7 @@ leftbar:
       accent: '#f79b87'
 appearance:
   preset: minimal
-  color_scheme: dark
+  color_scheme: light
   colors:
     primary: '#f4d35e'
     accent: '#f4d35e'
@@ -92,11 +92,11 @@ features:
     spotlight: false
     tilt: false
   color_scheme_switch:
-    enabled: false
+    enabled: true
   partial_navigation:
     enabled: true
 inject:
-  head_end: '<link rel="stylesheet" href="/blog_page/assets/shamot.css?v=3">'
+  head_end: '<link rel="stylesheet" href="/blog_page/assets/shamot.css?v=4"><link rel="stylesheet" href="/blog_page/assets/shamot-light.css?v=1">'
 structured_data:
   same_as:
     - https://github.com/chadoshamot
