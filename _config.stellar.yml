@@ -3,7 +3,7 @@ leftbar:
     name: shamot
     tagline: 记录学习、实践与解决问题的过程。
     image:
-      src: /assets/shamot.svg
+      src: /blog_page/assets/shamot.svg
       variant: avatar
     href: /
   menu:
