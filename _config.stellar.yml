@@ -1,0 +1,67 @@
+leftbar:
+  brand:
+    name: shamot
+    tagline: 记录学习、实践与解决问题的过程。
+    image:
+      src: /assets/shamot.svg
+      variant: avatar
+    href: /
+  menu:
+    - id: post
+      title: 文章
+      icon: default:documents
+      url: /
+    - id: tags
+      title: 标签
+      icon: default:hashtag
+      url: /blog/tags/
+    - id: archives
+      title: 归档
+      icon: default:calendar
+      url: /blog/archives/
+    - id: about
+      title: 关于
+      icon: default:profile
+      url: /about/
+    - id: github
+      title: GitHub
+      icon: default:link
+      url: https://github.com/chadoshamot
+appearance:
+  preset: card
+  color_scheme: auto
+  colors:
+    primary: '#2563eb'
+    accent: '#0ea5e9'
+  typography:
+    font_size:
+      root: 16px
+      code_block: 0.875rem
+article:
+  style: tech
+  listing:
+    card_layout: classic
+    show_tags: true
+  show_reading_time: true
+  footer:
+    license: false
+    share: []
+    show_tags: true
+profiles:
+  home:
+    leftbar:
+      widgets: [recent]
+  post:
+    rightbar:
+      widgets: [toc]
+  wiki_index:
+    path: null
+  notebooks:
+    path: null
+footer:
+  content: |
+    © shamot · 由 [Hexo](https://hexo.io/) 与 [Stellar](https://github.com/xaoxuu/hexo-theme-stellar) 驱动。
+    [GitHub](https://github.com/chadoshamot)
+structured_data:
+  same_as:
+    - https://github.com/chadoshamot
