@@ -76,7 +76,7 @@ Stellar 的图像处理依赖 sharp 使用 `overrides` 更新到已修复审计�
 
 首次使用：安装 Node.js **22.19 或更新版本**和 Git，在仓库里运行 `npm ci`、`npm run bridge:start`（Windows 也可双击 `Start-Terminal.cmd`）。打开本机 `http://127.0.0.1:4317/pair`，把页面上的 `connect ...` 命令粘贴进网页终端。浏览器如询问“本地网络访问”，需要允许；受浏览器限制时可用同一地址下的 `/console`。
 
-终端输入 `help` 查看完整英文命令，`help import` 等可查找。详细说明见 [English handbook](source/assets/terminal-help.txt)。典型流程：
+终端采用 Linux 风格提示符，在正文中输入命令并按 Enter 执行。`help zh` 查看[中文帮助](source/assets/terminal-help-zh.txt)，`help en` 查看[英文帮助](source/assets/terminal-help.txt)，可追加关键词查找。`connect` 可逐步输入本机地址和配对码，不必手工拼接整行命令。`resources` 列出所有资源的本机绝对位置。典型流程：
 
 ```text
 mount graduate "D:/blog-media"
@@ -91,4 +91,4 @@ publish "Add my post"
 
 本地桥只监听 `127.0.0.1`，作弊码只负责打开界面，资源访问需要一次性配对。文件命令默认访问仓库，额外目录需 `mount`；`shell` 是你主动执行的本机 PowerShell 命令。GitHub Pages 无法运行本机进程，本机桥需保持运行。换一台电脑需在那台电脑启动桥，未安装远程访问服务。
 
-`.shamot/` 保存本机 Harness、账号/密钥、会话、备份和回收站，并被 Git 忽略。API Key 使用官方凭据存储；仅在本机文件中保存（不是云端同步，也不是声称加密）。关闭桥后配对失效，重新启动后重新连接。Harness 默认 workspace-write 权限；需要交互审批时使用官方 `harness web`。AI 修改后可以检查 `changes`，再明确执行 `publish`。额外会话日志贡献和遥测已关闭，正常模型请求仍会发送任务所需上下文。
+`.shamot/` 保存本机 Harness、账号/密钥、会话、备份和回收站，并被 Git 忽略。API Key 使用官方凭据存储；仅在本机文件中保存（不是云端同步，也不是声称加密）。关闭桥后配对失效，重新启动后重新连接。输入 `harness` 进入独立的 AI 屏幕，`/exit` 返回网站命令模式；两者的输出和历史分开。按照资源访问要求，Harness 默认 full 权限（当前系统账号权限范围）；`harness access workspace` 可收回写入范围。需要官方交互界面时使用 `harness web`。AI 修改后可以检查 `changes`，再明确执行 `publish`。额外会话日志贡献和遥测已关闭，正常模型请求仍会发送任务所需上下文。

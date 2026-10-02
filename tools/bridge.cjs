@@ -45,6 +45,7 @@ function createBridge(options = {}) {
   const env = () => ({...process.env, PATH:path.dirname(process.execPath)+path.delimiter+process.env.PATH,
     DSH_HOME:home, DSH_TELEMETRY_MODE:'DISABLED', GIT_TERMINAL_PROMPT:'0', GCM_INTERACTIVE:'never',
     GIT_CONFIG_COUNT:'1', GIT_CONFIG_KEY_0:'safe.directory', GIT_CONFIG_VALUE_0:root.replaceAll('\\','/')});
+  const harnessEnv = () => ({...env(),DSH_PERMISSION_MODE:(settings.harnessAccess||'full')==='full'?'danger-full-access':'workspace-write'});
   async function resolveFile(value = '.', write = false) {
     let file;
     if (value.startsWith('@')) {
@@ -107,7 +108,7 @@ function createBridge(options = {}) {
       {id:'agent-default-model',config:{provider:settings.provider || 'deepseek-official', model:settings.model || 'deepseek-flash'}}];
     await fsp.writeFile(path.join(home,'cordis.patch.yml'),yaml.dump(patch));
   }
-  async function command(line, emit) {
+  async function command(line, emit, payload = {}) {
     const a = words(line); const cmd = a.shift(); const sub = a.shift();
     const output = text => emit({type:'output',text:String(text)+'\n'});
     const requireArg = value => {if(value === undefined || value==='') throw Error('Missing argument. Type help.'); return value;};
@@ -122,7 +123,11 @@ function createBridge(options = {}) {
       }
       case 'cd': {const dir=await resolveFile(requireArg(sub)); if(!(await fsp.stat(dir)).isDirectory())throw Error('Not a directory.');state.cwd=dir;output(dir);break;}
       case 'ls': {const dir=await resolveFile(sub||'.');const entries=await fsp.readdir(dir,{withFileTypes:true});output(entries.filter(e=>!BAD.test(e.name)).map(e=>(e.isDirectory()?'dir  ':'file ')+e.name).join('\n'));break;}
-      case 'read': case 'edit': {const file=await resolveFile(requireArg(sub));if((await fsp.stat(file)).size>EDIT_LIMIT)throw Error('Text editor limit: 4 MiB.');const bytes=await fsp.readFile(file);if(bytes.includes(0))throw Error('This is a binary file. Use download.');const text=bytes.toString('utf8'); if(cmd==='edit')emit({type:'editor',path:file,text,hash:crypto.createHash('sha256').update(bytes).digest('hex')});else output(text);break;}
+      case 'cat': case 'read': case 'edit': {const file=await resolveFile(requireArg(sub));if((await fsp.stat(file)).size>EDIT_LIMIT)throw Error('Text editor limit: 4 MiB.');const bytes=await fsp.readFile(file);if(bytes.includes(0))throw Error('This is a binary file. Use download.');const text=bytes.toString('utf8'); if(cmd==='edit')emit({type:'editor',path:file,text,hash:crypto.createHash('sha256').update(bytes).digest('hex')});else output(text);break;}
+      case 'resources': {
+        const entries=[['Articles','source/_posts'],['About','source/about/index.md'],['Friends','source/friends/index.md'],['Projects','source/_data/projects.yml'],['Categories and colors','source/_data/taxonomy.yml'],['Sidebar widgets','source/_data/widgets.yml'],['Media, CSS, JS','source/assets'],['Uploaded media','source/assets/uploads'],['Hexo config','_config.yml'],['Stellar config and signature','_config.stellar.yml'],['Generators','scripts'],['Generated output (rebuildable)','public'],['Official theme dependency','node_modules/hexo-theme-stellar'],['Deployment workflow','.github/workflows/pages.yml'],['Private local runtime/credentials/backups','.shamot']];
+        output('LOCAL SOURCE ROOT: '+root);for(const [name,file]of entries)output(name+': '+path.join(root,file));output('GitHub source: https://github.com/chadoshamot/blog_page\nPublished static site: https://chadoshamot.github.io/blog_page/\nEdit/import changes local source. publish builds and deploys it.');break;
+      }
       case 'download': emit({type:'download',path:await resolveFile(requireArg(sub))});break;
       case 'remove': {if(a[0]!=='--confirm')throw Error('Use remove PATH --confirm. Removed files move to local trash.');const file=await resolveFile(requireArg(sub));if(file===root||[...state.roots.values()].includes(file))throw Error('Cannot remove a mount root.');const dest=path.join(stateDir,'trash',crypto.randomUUID(),path.basename(file));await fsp.mkdir(path.dirname(dest),{recursive:true});await fsp.rename(file,dest);output(`Moved to trash: ${dest}`);break;}
       case 'new': {const name=slug(sub); const titleIndex=a.indexOf('--title');const categoryIndex=a.indexOf('--category'); const meta={title:titleIndex>=0?requireArg(a[titleIndex+1]):name,date:new Date(),categories:[categoryIndex>=0?requireArg(a[categoryIndex+1]):'学习'],tags:[]};const file=await resolveFile('@site/source/_posts/'+name+'.md',true); await put(file,'---\n'+yaml.dump(meta)+'---\n\n');output(`Created ${file}. Use edit to write the article.`);break;}
@@ -171,6 +176,7 @@ function createBridge(options = {}) {
       }
       case 'bridge': {if(sub!=='port')throw Error('Use bridge port NUMBER, then restart the local launcher.');settings.port=validPort(a[0]);await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));output(`Saved port ${settings.port}. Restart the launcher, then connect to the new port.`);break;}
       case 'harness': {
+        if(sub==='access'){if(!['full','workspace'].includes(a[0]))throw Error('Use harness access full or harness access workspace.');settings.harnessAccess=a[0];settings.sessionId=null;state.session=null;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));output(`Harness access: ${a[0]}. Next CLI task starts a new session; earlier sessions remain on disk. Restart Harness web and create a new session for its permissions to change.`);break;}
         if(sub==='install') {
           const version=process.versions.node.split('.').map(Number);if(version[0]<22||(version[0]===22&&version[1]<19))throw Error('Harness needs Node >=22.19. Restart this bridge with a newer Node runtime.');
           await fsp.mkdir(install,{recursive:true});await fsp.writeFile(path.join(install,'package.json'),JSON.stringify({name:'shamot-private-harness',private:true,dependencies:{'@deepseek-ai/dsh':HARN_VERSION}}));
@@ -178,20 +184,21 @@ function createBridge(options = {}) {
           await run(process.execPath,[npm,'install','--prefix',install,'--no-fund','--no-audit'],emit);await harnessPatch();output('Official DeepSeek Harness installed locally. Type harness configure.');break;
         }
         if(!fs.existsSync(binary))throw Error('Run harness install first.');
-        if(sub==='status'){output(`CLI ${HARN_VERSION}\nHome ${home}\nWeb ${state.harness?.url||'stopped'}\nSession ${state.session||'new'}`);break;}
+        if(sub==='status'){output(`CLI ${HARN_VERSION}\nHome ${home}\nWeb ${state.harness?.url||'stopped'}\nSession ${state.session||'new'}\nResource access: ${settings.harnessAccess||'full'} (OS account permissions still apply)`);break;}
         if(sub==='new'){state.session=null;settings.sessionId=null;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));output('Next ask starts a new conversation.');break;}
         if(sub==='resume'){state.session=requireArg(a[0]);settings.sessionId=state.session;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));output('Selected persisted session '+state.session+'. The CLI will verify it on the next ask.');break;}
         if(sub==='model'){const provider=requireArg(a[0]),model=requireArg(a[1]);if(!['deepseek-official','deepseek-account'].includes(provider))throw Error('Provider must be deepseek-official or deepseek-account.');settings.provider=provider;settings.model=model;state.session=null;settings.sessionId=null;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));await harnessPatch();output(`Selected ${settings.provider}/${settings.model}. Next ask starts a new conversation.`);break;}
         if(sub==='stop'){kill(state.harness?.child);state.harness=null;output('Harness web stopped.');break;}
         if(sub==='configure'||sub==='web') {
-          if(!state.harness){await harnessPatch();const p=validPort(a[0]||4318);await portAvailable(p);const child=spawn(process.execPath,[binary,'web','--host','127.0.0.1','--port',String(p),'--no-open'],{cwd:root,env:env(),windowsHide:true,stdio:['ignore','pipe','pipe']});const url=`http://127.0.0.1:${p}/`;state.harness={child,url};try{state.harness.authUrl=await waitHarness(child,p,emit);}catch(error){kill(child);state.harness=null;throw error;}child.on('exit',()=>{if(state.harness?.child===child)state.harness=null;});}
+          if(!state.harness){await harnessPatch();const p=validPort(a[0]||4318);await portAvailable(p);const child=spawn(process.execPath,[binary,'web','--host','127.0.0.1','--port',String(p),'--no-open'],{cwd:root,env:harnessEnv(),windowsHide:true,stdio:['ignore','pipe','pipe']});const url=`http://127.0.0.1:${p}/`;state.harness={child,url};try{state.harness.authUrl=await waitHarness(child,p,emit);}catch(error){kill(child);state.harness=null;throw error;}child.on('exit',()=>{if(state.harness?.child===child)state.harness=null;});}
           output('Open the official UI: Settings > Models for API Key, or the account sign-in entry. Select this blog folder as workspace.');emit({type:'link',url:state.harness.authUrl});break;
         }
         if(sub==='help'){await run(process.execPath,[binary,'--profile','headless','--help'],emit);break;}
         if(sub==='ask') {
-          const prompt=requireArg(a.join(' '));await harnessPatch();
+          const prompt=requireArg(payload.prompt || a.join(' '));await harnessPatch();
           const args=[binary,'--profile','headless','--json'];if(state.session)args.push('--session-id',state.session);args.push('-');
-          output('Running official Harness in the blog workspace (workspace-write permissions).');try{await run(process.execPath,args,emit,{json:true,input:prompt});}finally{settings.sessionId=state.session;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));}break;
+          const context='\n\nLocal resource locations:\n'+[...state.roots].map(([name,dir])=>name+': '+dir).join('\n');
+          output(`Running official Harness. Resource access: ${settings.harnessAccess||'full'}.`);try{await run(process.execPath,args,emit,{json:true,input:prompt+context,env:harnessEnv()});}finally{settings.sessionId=state.session;await fsp.writeFile(stateFile,JSON.stringify(settings,null,2));}break;
         }
         throw Error('Use harness install/configure/ask/new/resume/model/status/help/stop.');
       }
@@ -244,7 +251,7 @@ function createBridge(options = {}) {
       if(req.method==='GET'&&url.pathname==='/console'){
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' http://127.0.0.1:*; frame-ancestors 'none'"});return res.end('<!doctype html><html data-palette="navy" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>shamot Local Console</title><link rel="stylesheet" href="/assets/shamot-terminal.css"><body><main><p>Press ↑ ↑ ↓ ↓ ← → ← → B A B A or use the keyboard button.</p></main><script src="/assets/shamot-terminal.js" defer></script></body></html>');
       }
-      if(req.method==='GET'&&['/assets/shamot-terminal.css','/assets/shamot-terminal.js','/assets/terminal-help.txt'].includes(url.pathname)){
+      if(req.method==='GET'&&['/assets/shamot-terminal.css','/assets/shamot-terminal.js','/assets/terminal-help.txt','/assets/terminal-help-zh.txt'].includes(url.pathname)){
         res.writeHead(200,{'Content-Type':url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':'text/plain; charset=utf-8'});return res.end(await fsp.readFile(path.join(ROOT,'source',url.pathname)));
       }
       if(req.method==='POST'&&url.pathname==='/api/pair'){
@@ -267,10 +274,10 @@ function createBridge(options = {}) {
         state.busy=true;try{const data=JSON.parse((await body(req,EDIT_LIMIT*2)).toString());const file=await resolveFile(data.path,true);if(fs.existsSync(file)){const hash=crypto.createHash('sha256').update(await fsp.readFile(file)).digest('hex');if(hash!==data.hash)throw Error('File changed since opening. Reopen it before saving.');}if(typeof data.text!=='string'||Buffer.byteLength(data.text)>EDIT_LIMIT)throw Error('Text limit: 4 MiB.');await put(file,data.text,true);return send(200,{hash:crypto.createHash('sha256').update(data.text).digest('hex')});}finally{state.busy=false;}
       }
       if(req.method==='POST'&&url.pathname==='/api/command'){
-        const data=JSON.parse((await body(req,64000)).toString());if(typeof data.command!=='string')throw Error('Missing command.');state.busy=true;
+        const data=JSON.parse((await body(req,64000)).toString());if(typeof data.command!=='string')throw Error('Missing command.');if(data.prompt!==undefined&&typeof data.prompt!=='string')throw Error('Prompt must be text.');state.busy=true;
         res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8'});
         const emit=event=>{if(!res.destroyed)res.write(JSON.stringify(event)+'\n');};
-        try{await command(data.command,emit);emit({type:'done',ok:true});}catch(error){emit({type:'error',text:error.message});emit({type:'done',ok:false});}finally{state.busy=false;res.end();}return;
+        try{await command(data.command,emit,data);emit({type:'done',ok:true,cwd:state.cwd});}catch(error){emit({type:'error',text:error.message});emit({type:'done',ok:false,cwd:state.cwd});}finally{state.busy=false;res.end();}return;
       }
       send(404,{error:'Not found.'});
     }catch(error){if(!res.headersSent)send(400,{error:error.message});else res.end();}

@@ -49,6 +49,10 @@ test('owner bridge: authorization, paths, imports, uploads, optimistic saves and
     saved=await request('/api/save',{path:edited.path,hash:edited.hash,text:'stale overwrite'});assert.equal(saved.status,400);
     assert.match(await fs.readFile(edited.path,'utf8'),/Updated$/);
     success(await command('config set theme leftbar.brand.tagline "A personal signature"'));
+    const resources=await command('resources');success(resources);assert(resources.some(e=>e.text?.includes(path.join(root,'source/_posts'))));
+    success(await command('cat @site/_config.yml'));
+    success(await command('harness access full'));assert.match(await fs.readFile(path.join(root,'.shamot/bridge.json'),'utf8'),/"harnessAccess": "full"/);
+    failure(await command('harness access unknown'));
     assert.match(await fs.readFile(path.join(root,'_config.stellar.yml'),'utf8'),/A personal signature/);
     const upload=await fetch(url+'/api/upload',{method:'POST',headers:{Origin:origin,Authorization:'Bearer '+token,'X-Shamot-Path':encodeURIComponent('source/assets/uploads/photo.png')},body:Buffer.from([137,80,78,71])});assert.equal(upload.status,200);
     const traversal=await fetch(url+'/api/upload',{method:'POST',headers:{Origin:origin,Authorization:'Bearer '+token,'X-Shamot-Path':encodeURIComponent('source/../../escaped.txt')},body:'bad'});assert.equal(traversal.status,400);

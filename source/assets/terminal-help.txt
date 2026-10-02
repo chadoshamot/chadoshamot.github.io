@@ -10,7 +10,11 @@ START
     Allow the browser's Local Network Access request if shown.
     If your browser blocks the connection, use the local /console page instead.
   disconnect                    Revoke this browser's connection.
-  help [keyword]                Show all commands, or find matching help lines.
+  help zh [keyword]             Chinese help (also the default for help).
+  help en [keyword]             English help; commands always use English.
+  connect                       Interactive URL and password-masked code prompts.
+  connect CODE                  Pair using the current code and default local port.
+  resources                     Show every website resource location and local path.
   clear                         Clear the terminal output.
   exit                          Hide the terminal (does not stop the bridge).
   theme beige|navy|green         Change this browser's website palette.
@@ -80,6 +84,12 @@ GIT / PUBLISH
     complete script. Interactive prompts are unsupported; use the official UI.
 
 DEEPSEEK HARNESS / ACTUAL OFFICIAL CLI
+  harness                       Enter the separate AI screen with its own history.
+    Type an English task directly. /exit returns to the independent website shell.
+    /help, /new, /configure, /resume ID and /access full|workspace are AI controls.
+  harness access full|workspace  Select local resource permissions (default: full,
+    as requested). Full means your OS account's access, not extra OS or cloud rights.
+    For an already running official Web UI, restart it and create a new session.
   harness install               Install pinned @deepseek-ai/dsh 0.2.0-rc.2 locally.
   harness configure [4318]      Open the official Harness UI, bound to 127.0.0.1.
     API Key: Settings > Models > DeepSeek > Save.
@@ -103,7 +113,7 @@ DEEPSEEK HARNESS / ACTUAL OFFICIAL CLI
   harness web [4318]            Open the official UI (same as configure).
   harness stop                  Stop the official web service.
     Keys/account grants/sessions stay in .shamot/dsh-home, excluded from Git.
-    Harness uses workspace-write permissions; headless has no approval UI.
+    Harness defaults to full local access; headless has no approval UI.
     For tasks that need permission prompts, use harness web and its native UI.
     Review changes and run publish explicitly after an AI edit. AI may change files.
     Extra session-log contribution and telemetry are disabled by this integration.

@@ -6,6 +6,7 @@ html[data-palette=green] :is(.shamot-terminal,.shamot-codepad){--term-bg:#2a484e
 .shamot-terminal[open]{display:flex;flex-direction:column;animation:shamot-term-in .18s ease-out}
 .shamot-terminal *,.shamot-codepad *{box-sizing:border-box}
 .shamot-terminal button,.shamot-codepad button{appearance:none;background:transparent!important;color:var(--term-ink)!important;font:inherit;border:1px solid var(--term-line);border-radius:6px;padding:5px 11px;cursor:pointer;transition:background .15s,color .15s}
+:root[data-theme] .shamot-terminal button,:root[data-theme] .shamot-codepad button{color:var(--term-ink)!important}
 .shamot-terminal button:hover,.shamot-codepad button:hover{background:var(--term-line)}
 .shamot-terminal button:focus-visible,.shamot-terminal input:focus-visible,.shamot-terminal textarea:focus-visible,.shamot-codepad button:focus-visible{outline:2px solid var(--term-accent);outline-offset:2px}
 .shamot-terminal button:disabled{opacity:.5;cursor:wait}
@@ -14,9 +15,10 @@ html[data-palette=green] :is(.shamot-terminal,.shamot-codepad){--term-bg:#2a484e
 .shamot-term-output{flex:1;min-height:70px;overflow:auto;padding:22px;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
 .shamot-term-output p{margin:0 0 9px;font:inherit;color:inherit}.shamot-term-output .term-command{color:var(--term-accent);margin-top:16px}.shamot-term-output .term-error{color:#a63a3a}html[data-theme=dark] .shamot-term-output .term-error{color:#ffb5a8}
 .shamot-term-output a{color:var(--term-accent);text-decoration:underline;text-underline-offset:3px}
-.shamot-term-form{display:flex;align-items:center;gap:12px;padding:14px 20px;border-top:1px solid var(--term-line);flex-shrink:0}
-.shamot-term-form label{color:var(--term-accent);white-space:nowrap}.shamot-term-form input{flex:1;min-width:0;background:transparent;border:0;color:var(--term-ink);font:inherit;padding:6px;outline:none}
+.shamot-term-form{display:flex;align-items:baseline;gap:8px;padding:0;margin:0;border:0;min-height:24px;white-space:normal}.shamot-term-form[hidden]{display:none}
+.shamot-term-form label{color:var(--term-accent);white-space:nowrap}.shamot-term-form input{flex:1;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--term-ink);font:inherit;padding:0!important;outline:none!important;border-radius:0;caret-color:var(--term-accent)}
 .shamot-term-form input::placeholder{color:var(--term-muted);opacity:1}
+.shamot-term-form input{height:24px!important;line-height:24px!important}.shamot-term-output{padding-bottom:28px}
 .shamot-term-foot{display:flex;gap:16px;align-items:center;padding:0 20px 14px;color:var(--term-muted);font-size:11px}.shamot-term-foot a{color:inherit;margin-left:auto}
 .shamot-term-editor{display:none;border-top:1px solid var(--term-line);padding:14px 20px;height:48%;flex-shrink:0}.shamot-term-editor.is-open{display:flex;flex-direction:column;gap:10px}
 .shamot-term-editor header{display:flex;gap:10px;align-items:center}.shamot-term-editor header span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}

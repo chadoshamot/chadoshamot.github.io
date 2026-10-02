@@ -1,0 +1,93 @@
+SHAMOT 终端 / 中文帮助（命令使用英文）
+
+连接与交互
+  connect                        按提示输入本机 URL、配对码；URL 留空默认为 4317。
+  connect CODE                   只粘贴本机 /pair 页面上的真实配对码。
+  connect http://127.0.0.1:4317 CODE
+                                 也可以粘贴完整命令。CODE 是占位符，不可照抄。
+  配对页：http://127.0.0.1:4317/pair；连接成功后旧码失效，需刷新获取新码。
+  浏览器若询问本地网络权限，需要允许。本机桥必须保持运行。
+  disconnect                     断开并撤销当前浏览器配对。
+  help / help zh [关键词]        中文帮助与查找。
+  help en [keyword]              英文帮助与查找。
+  clear                          清屏；Enter 执行，↑ ↓ 历史，Tab 补全，Ctrl+C 中断。
+  exit                           关闭终端；在 Harness 中则返回网站命令模式。
+  theme beige|navy|green          米黄、藏蓝、澄绿。
+
+资源位置（resources 命令显示本机绝对路径）
+  @site                          博客仓库根目录，所有网站源文件的入口。
+  source/_posts/*.md             博客正文、标题、文章日期、分类和标签。
+  source/about/index.md          关于博主；source/friends/index.md：友链。
+  source/_data/projects.yml      项目记录和介绍。
+  source/_data/taxonomy.yml      分类和标签的名称、颜色。
+  source/_data/widgets.yml       最近更新等侧栏内容。
+  _config.yml                   标题、语言、网站 URL、文章路径等 Hexo 配置。
+  _config.stellar.yml            昵称、签名、头像、导航和 Stellar 配置。
+  source/assets/                 网站自定义样式、脚本、媒体；uploads/ 是上传目录。
+  scripts/                       页面生成与分类、标签等自动化逻辑。
+  public/                        构建结果，可重建；不要在这里修改源内容。
+  node_modules/hexo-theme-stellar 官方主题依赖；自定义优先改 source/assets 或配置。
+  .github/workflows/pages.yml    GitHub 自动构建、部署流程。
+  .shamot/                       本机运行时、Harness 密钥/账号/会话、备份、回收站。
+                                 此目录被 Git 忽略，不会上传到公开仓库。
+  云端源代码：https://github.com/chadoshamot/blog_page
+  正式页面：https://chadoshamot.github.io/blog_page/
+  GitHub Pages 保存构建后的静态文件；网页修改先保存本机源文件，再 publish 部署。
+
+无需 AI 的网站管理命令
+  resources                      列出资源分布和本机绝对位置。
+  pwd / ls [path] / cd "path"     查看、列出、切换本机工作目录；cd @site 回到仓库。
+  mount                          列出当前开放给文件命令的目录。
+  mount graduate "D:/blog-media"   开放额外目录；不会搬走或复制其中的文件。
+  read "path"                    读取 UTF-8 文本；cat "path" 是同义命令。
+  edit "path"                    打开文件编辑器，Save 直接保存本机文件。
+                                 文件后来被修改时拒绝覆盖；保存前自动备份。
+  download "path"                下载已开放目录中的文件。
+  new my-post --title "文章标题" --category "学习"
+                                 创建带标题、日期和分类的 Markdown 文章。
+  import "@graduate/article.md" my-post --category "技术"
+                                 导入本地 Markdown；缺少 front matter 时自动补齐。
+                                 已有 front matter 保留；相对媒体链接需另行导入。
+  asset "@graduate/photo.png" photo.png
+                                 复制到 source/assets/uploads，返回可引用的地址。
+  upload                         用文件选择器上传 Markdown、图片等到 source/。
+  remove "path" --confirm        移入 .shamot/trash，不永久删除。
+  posts / projects / search "词" 查看文章、项目、搜索源文件。
+  config get site title          查看站点标题。
+  config set site title "shamot"  直接修改配置，不需要 Harness。
+  config set theme leftbar.brand.tagline "你的签名"
+  preview start 4000              本机预览；preview stop 停止；status 查看服务状态。
+  build                          检查主题、清理并生成页面。
+  changes / git status / git diff 查看待发布修改。
+  publish "Update blog"           检查、构建、提交并推送；GitHub Actions 自动更新网站。
+  git pull / git push / git log  使用本机 Git 认证；命令不会要求把凭据发到聊天。
+  shell "Get-ChildItem"           执行本机 PowerShell。外观类似 Linux，系统仍是 Windows。
+  bridge port 4317               修改本机桥端口，重启启动器后生效。
+
+独立的 DeepSeek Harness 模式
+  harness                        进入单独 AI 屏幕和历史；直接输入英文任务。
+  /help / /new / /configure       帮助、新会话、官方账号与 API Key 配置入口。
+  /exit                          回到网站命令屏幕；两种模式互相保留输出。
+  /access full                   可读写当前 Windows 账号有权访问的本机资源。
+  /access workspace              将写入范围收回博客仓库；后续任务生效。
+  /resume SESSION_ID             继续此前的持久化会话。
+  网站模式仍支持 harness ask "任务"；不需要 AI 就能执行全部网站管理命令。
+  harness install                本机安装官方 @deepseek-ai/dsh。
+  harness configure              打开官方 UI：Settings → Models 保存 API Key；
+                                 账号用官方登录入口授权，不在终端输入密码。
+  harness model deepseek-official deepseek-flash
+  harness model deepseek-account deepseek-flash
+  harness access full|workspace  选择 CLI 资源权限；当前版本默认 full，遵从你的要求。
+                                 full 无法越过操作系统账户权限，也不自动取得云端凭据。
+  harness status / harness new / harness stop
+  AI 读取的上下文会发给模型接口；额外会话日志贡献和遥测关闭。
+  官方 UI 已运行时更改 access 需要 harness stop 后重新开启，新会话才采用新权限。
+
+两种修改和推送流程（均不用依赖 AI）
+  直接修改：connect → edit @site/source/_posts/文章.md → Save → preview start →
+            changes → publish "Update article"
+  导入文件：connect → mount graduate "D:/blog-media" → import @graduate/article.md
+            my-post --category "学习" → preview start → publish "Add article"
+  传统本机命令：在仓库终端执行 npm run doctor、npm run build、git add --all、
+                git commit -m "Update blog"、git push origin main。
+  本机桥启动：双击 Start-Terminal.cmd，或在 Node >=22.19 环境执行 npm run bridge:start。
