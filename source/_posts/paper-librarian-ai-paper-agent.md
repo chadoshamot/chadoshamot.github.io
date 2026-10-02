@@ -1,7 +1,7 @@
 ---
-title: Paper Librarian：把论文管理交给一位本地 AI 馆长
+title: Paper Librarian：我给自己写了一个本地 AI 论文管家
 date: 2026-10-02 20:10:00
-updated: 2026-10-02 20:10:00
+updated: 2026-10-02 21:35:00
 categories:
   - 设计开发
 tags:
@@ -10,21 +10,21 @@ tags:
   - Agent
   - Python
   - Summary
-description: 一个密钥自带、可复现的本地论文管理 agent：PDF 入库、双语知识库、语义检索、ModelScope 同步、每日检索，外加一位会查库、会读全文、会联网的馆长。
-excerpt: 录入 PDF 后自动抓元数据、AI 读全文写摘要并归档；检索支持语义与 MMR 探索；再配一位能查库、深读、联网搜索、下载入库的馆长 agent。本文按仓库 README 梳理它的能力与上手方式。
+description: 我给自己写的本地论文管理 agent：PDF 入库、双语知识库、语义检索、ModelScope 同步、每日检索，外加一位能对话的馆长。
+excerpt: 整理论文库最麻烦的不是读，而是收拾。所以我把录入、归档、检索、上云和日常维护都收进一套本地 agent，再配一位会查库、会读全文、会联网的馆长。这里说说它能做什么，以及怎么装起来。
 ---
 
-收拾论文库这件事，麻烦的从来不是读，而是整理。下载下来的 PDF 躺在下载文件夹里，元数据要手抄，摘要要自己写，过两周想找「那篇讲 GPU 调度的文章」，只能靠回忆文件名。
+整理论文库最麻烦的从来不是读，而是收拾。下载下来的 PDF 堆在下载文件夹里，元数据要手抄，摘要要自己写，过两周想找「那篇讲 GPU 调度的文章」，只能靠回忆文件名。
 
-**[Paper Librarian（AI 论文管家）· 查看 GitHub 仓库](https://github.com/chadoshamot/paper-librarian)**
+所以我自己写了一个 **Paper Librarian**：一套跑在本地的论文管理 agent，把录入、检索、同步和日常维护都收进一个入口，另外还有一位可以对话的「馆长」。
 
-这是一套跑在本地的论文管理 agent：录入、检索、同步、每日检索，以及一个统一的馆长对话入口。密钥自带，仓库里不含任何真实密钥或用户数据。本文根据仓库 README 整理，完整说明与最新进展以仓库为准。
+**[Paper Librarian（AI 论文管家）· GitHub 仓库](https://github.com/chadoshamot/paper-librarian)**
+
+它密钥自带、可直接复现：所有 API Key 都填在本地 `.env`，仓库里不含任何真实密钥或个人数据。
 
 <!-- more -->
 
-## 它想解决的问题
-
-README 把它定义为「可复现、密钥自带的个人论文管理 agent」。拆开看是六件事：
+## 我把它拆成了六块
 
 | 环节 | 做什么 |
 | --- | --- |
@@ -35,35 +35,35 @@ README 把它定义为「可复现、密钥自带的个人论文管理 agent」�
 | 馆长 agent | 用对话完成查库、深读、联网搜索、下载入库、上云、去重 |
 | 上云 | ModelScope 增量同步，PDF 走 git-lfs，知识库走 Markdown |
 
-录入环节值得单独说一句：分类、归档、重命名不是按文件名猜，而是先让模型读完全文生成摘要，再按摘要结果决定去处。顺序反过来之后，整理出来的库通常更像人自己手动维护的样子。
+录入这块我想多说一句：分类、归档、重命名不是按文件名猜的，而是先让模型读完全文生成摘要，再按摘要结果决定去处。顺序反过来之后，整理出来的库才像自己手动维护过的样子。
 
 ## 馆长 agent：一个统一入口
 
-网页界面右侧有一个常驻聊天栏，背后就是 README 所说的「馆长」。它以 DeepSeek 为主体掌握全局并做决策，只在需要联网时调用 Kimi 的 web-search，搜索结果回传给它拍板。
+网页界面右侧有一个常驻聊天栏，我叫它「馆长」。它以 DeepSeek 为主体掌握全局并做决策，只在需要联网时调用 Kimi 的 web-search，搜索结果回传给它拍板。
 
-按 README，它的工具分几类：
+它手上的工具分几类：
 
 - **查库与深读**：`search_library`、`get_paper`、`deep_read`、`compare_papers`、`library_stats`、`list_by_area`，回答里用反引号给出可点击的 pid 引用
-- **联网搜索**：`web_search`，用于补充库外的最新进展
-- **维护库**：`download_paper`、`ingest_paper`、`reclassify_paper`、`edit_paper`、`fix_metadata`、`fix_all_titles`、`fix_summary`、`find_duplicates`、`mark_read` 等
-- **需要确认的动作**：`delete_paper` 与 `push_to_cloud` 只先生成计划，等你在对话里点「确认执行」后才真正执行
+- **联网搜索**：`web_search`，用来补库外的最新进展
+- **维护库**：`download_paper`、`ingest_paper`、`reclassify_paper`、`edit_paper`、`fix_metadata`、`fix_all_titles`、`fix_summary`、`find_duplicates`、`mark_read` 等，凡是在网页上能做的它都能做
+- **需要确认的动作**：`delete_paper` 与 `push_to_cloud` 只先生成计划，等你在对话里点「确认执行」后才真正动手
 
-它的行为不是写死在代码里的暗规则，而是仓库根目录的 `AGENT.md`：身份、任务、工具、记忆规范、回答规范、禁止事项都在里面，每次问答前自动加载。想调整它的脾气，改这个文件即可。
+它的行为不写死在代码里，而是仓库根目录的 `AGENT.md`：身份、任务、工具、记忆规范、回答规范、禁止事项都在里面，每次问答前自动加载。想调整它的脾气，改这个文件就行。
 
-记忆分两层，都只存本地、不上云：`agent-memory.md` 记录使用者的画像、偏好与纠错，`agent-notes/{pid}.md` 存单篇深读笔记与对话中积累的洞察。
+记忆分两层，都只存本地、不上云：`agent-memory.md` 记录使用者的画像、偏好与纠错，`agent-notes/{pid}.md` 存单篇深读笔记和对话里逐步积累的洞察。
 
-## 桌面版：不必每次开终端
+## 桌面版：不用每次开终端
 
 `paperbook.pyw` 把整套 Web 界面装进一个原生窗口，双击即开，关闭窗口自动停服。
 
 - Windows 走系统自带的 WebView2 渲染；没有 WebView2 时回退为默认浏览器打开
-- 顶部导航新增「设置」控制台，可以在界面里调整 `config.yml` 的模型、检索、每日检索、质量权重、云端仓库，以及 `.env` 里的各家密钥
+- 顶部导航有「设置」控制台，模型、检索、每日检索、质量权重、云端仓库，以及 `.env` 里的各家密钥都能在界面里改
 - 密钥仍然只落在本地 `.env`
-- 想加桌面或开始菜单快捷方式，右键 `install-shortcuts.ps1` 用 PowerShell 运行，脚本与路径无关
+- 想加桌面或开始菜单快捷方式，右键 `install-shortcuts.ps1` 用 PowerShell 运行，脚本与路径无关，项目搬到别处重跑一次即可
 
-## 上手
+## 装起来
 
-环境要求是 Python 3.10+（README 推荐 3.11 / 3.12）和带 git-lfs 的 Git。
+环境要求是 Python 3.10+（推荐 3.11 / 3.12）和带 git-lfs 的 Git。
 
 ```bash
 git clone https://github.com/chadoshamot/paper-librarian.git
@@ -81,7 +81,7 @@ python -m service.web      # 网页界面，默认 http://127.0.0.1:8000
 python -m service.desktop  # PaperBook 桌面壳
 ```
 
-常用命令：
+我平时用得最多的几条命令：
 
 ```bash
 python -m service.ingest papers/xxx.pdf                          # 完整录入一篇
@@ -90,9 +90,9 @@ python -m service.cloud sync                                     # 增量同步�
 python -m service.daily --top 10                                 # 生成当日检索日报
 ```
 
-## 密钥与隐私
+## 密钥怎么配
 
-README 专门有一节讲这件事，结论是 clone 下来可以放心公开使用：真实密钥只写在 `.env`，而 `.env` 已被 `.gitignore` 排除，仓库里只有空值的 `.env.example`。论文库、PDF、检索索引、嵌入模型、日报、馆长记忆同样全部被 gitignore，由 `setup.py` 在使用者机器上生成。
+所有密钥只写在 `.env`，而 `.env` 已被 `.gitignore` 排除，永远不会被提交；仓库里只有空值的 `.env.example`。论文库、PDF、检索索引、嵌入模型、日报、馆长记忆同样全部被 gitignore，由 `setup.py` 在你自己的机器上生成。
 
 密钥按需填写，只有 DeepSeek 是必需的：
 
@@ -104,16 +104,16 @@ README 专门有一节讲这件事，结论是 clone 下来可以放心公开使
 | `ZOTERO_USER_ID` / `ZOTERO_API_KEY` | Zotero 跳转链接 | 否 |
 | `SMTP_*` | 日报邮件推送 | 否 |
 
-可选项不填时，对应功能返回友好错误，其余照常。DeepSeek 不填则录入、分类、每日裁判与馆长 agent 不可用，但检索与浏览仍然能用。
+可选项不填时，对应功能会返回友好错误，其余照常。DeepSeek 不填则录入、分类、每日裁判与馆长 agent 不可用，但检索与浏览仍然能用。
 
-## 数据模式与定时任务
+## 两种数据模式与定时任务
 
 - **示例库**：如果设置了环境变量 `MODELSCOPE_DEMO_NS`，`setup.py` 会 clone 一个公开示例库，克隆完就能检索浏览，零 token
 - **自建库**：填自己的 ModelScope namespace 与 token，用 `python -m service.ingest` 建库，再 `python -m service.cloud sync` 上云
 
-每日检索可以挂到系统定时任务上：Windows 用 `schtasks`，Linux / macOS 用 cron，README 里给了可以直接改路径的现成命令。
+每日检索可以挂到系统定时任务上：Windows 用 `schtasks`，Linux / macOS 用 cron，仓库里给了可以直接改路径的现成命令。
 
-## 几个已知的坑
+## 几个注意点
 
 - 首次检索会下载 jina-v2-base-zh 嵌入模型，几百 MB，之后走缓存
 - PDF 上云依赖 git-lfs；如果 clone 下来的 PDF 是文本指针而不是真文件，需要装好 LFS 再重新同步
@@ -133,8 +133,6 @@ knowledge-base/     # 双语知识库（gitignored，本地生成）
 agent-memory.md     # 馆长全局记忆（本地，不上云）
 ```
 
----
+如果你也在被论文文件夹折磨，可以直接 clone 下来试；用起来有问题欢迎到仓库开 Issue。
 
-需要说明的是：本文内容全部来自仓库 README，我没有在这台机器上克隆、安装或独立复测它的运行效果；涉及的第三方服务（DeepSeek、Kimi、ModelScope、Zotero、SMTP）也需要自行申请密钥并遵守各自条款。
-
-**[前往 GitHub：查看源码与最新说明](https://github.com/chadoshamot/paper-librarian)**
+**[前往 GitHub：源码与最新说明都在这里](https://github.com/chadoshamot/paper-librarian)**
