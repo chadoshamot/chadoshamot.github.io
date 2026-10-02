@@ -1,0 +1,126 @@
+SHAMOT TERMINAL / OWNER HANDBOOK
+
+START
+  On your computer: npm run bridge:start (Node >=22.19 + Git required).
+  Open http://127.0.0.1:4317/pair in a separate tab.
+  Unlock: ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft
+          ArrowRight B A B A. Or click the footer keyboard and its key pad.
+  connect http://127.0.0.1:4317 PAIR_CODE
+    Paste the complete command from the local pairing page. Codes are one-use.
+    Allow the browser's Local Network Access request if shown.
+    If your browser blocks the connection, use the local /console page instead.
+  disconnect                    Revoke this browser's connection.
+  help [keyword]                Show all commands, or find matching help lines.
+  clear                         Clear the terminal output.
+  exit                          Hide the terminal (does not stop the bridge).
+  theme beige|navy|green         Change this browser's website palette.
+  Ctrl+C                        Cancel the active command and its child processes.
+  Up / Down                     Command history. Tab: command completion.
+
+FILES / MEDIA
+  pwd                           Show the current local directory.
+  ls [path]                     List a directory (private runtime files omitted).
+  cd "path"                     Change directory. cd @site returns to the blog.
+  mount                         List mounted folders.
+  mount graduate "D:/blog-media"  Grant file commands access to this local folder.
+                                Mounts last until the bridge stops.
+  read "path"                   Print a UTF-8 text file, up to 4 MiB.
+  edit "path"                   Open the editor. Save writes to your computer.
+                                Save refuses a file changed since it was opened.
+  download "path"               Download a file from a mounted folder (64 MiB).
+  new my-post --title "My title" --category "学习"
+                                Create source/_posts/my-post.md with front matter.
+  import "@graduate/article.md" my-post --category "技术" --title "My title"
+                                Import Markdown. Existing front matter is kept.
+                                Without front matter, generate title/date/category.
+                                Media links remain unchanged; import media separately.
+                                Add --overwrite to explicitly replace an existing post.
+  asset "@graduate/image.png" image.png
+                                Copy media to source/assets/uploads/image.png.
+                                Link: /blog_page/assets/uploads/image.png
+                                Add --overwrite to replace an existing asset.
+  upload                        Choose local Markdown/media through a file picker.
+                                Select its source/ destination; then edit Markdown
+                                to add title/date/categories if absent.
+  remove "path" --confirm       Move to .shamot/trash (no permanent deletion).
+  posts                         List all post source filenames.
+  projects                      Show source/_data/projects.yml.
+  search "keyword"              Find text in source files (first 100 matches).
+
+WEBSITE / CONFIGURATION
+  config get site title
+  config set site title "shamot"
+  config get theme leftbar.brand.tagline
+  config set theme leftbar.brand.tagline "学习 · 实践 · 记录"
+    Scope: site = _config.yml; theme = _config.stellar.yml.
+    Values: plain strings or quoted JSON. For other settings, edit the YAML file.
+    Signature: leftbar.brand.tagline. Other details: edit _config.stellar.yml.
+  edit @site/source/_data/projects.yml
+  edit @site/source/_data/taxonomy.yml
+  edit @site/source/assets/shamot.css
+  preview start [4000]           Start a local Hexo preview; open the returned link.
+  preview status                Show preview address.
+  preview stop                  Stop it before changing the preview port.
+  build                         Run Stellar doctor, clean, and generate the site.
+  bridge port 4317              Save the bridge port; restart the launcher to apply.
+    GitHub Pages itself exposes HTTPS on its fixed host, not an editable port.
+
+GIT / PUBLISH
+  status                        Show local services and Git working tree changes.
+  changes                       Review Git diff and its summary.
+  git status / git diff / git log / git pull / git push
+  publish "Add my new article"  Validate and build, stage tracked/untracked site
+                                changes, commit if needed, push to origin HEAD.
+                                GitHub Actions then publishes Pages automatically.
+    publish is an explicit owner action; inspect changes before running it.
+    Git authentication uses your computer's Git Credential Manager or SSH setup.
+    .shamot, .env and managed credential files never belong in the repository.
+  shell "Get-ChildItem"          Run an owner PowerShell command in the current folder.
+    This is a real local command, with your OS account's permissions. Quote the
+    complete script. Interactive prompts are unsupported; use the official UI.
+
+DEEPSEEK HARNESS / ACTUAL OFFICIAL CLI
+  harness install               Install pinned @deepseek-ai/dsh 0.2.0-rc.2 locally.
+  harness configure [4318]      Open the official Harness UI, bound to 127.0.0.1.
+    API Key: Settings > Models > DeepSeek > Save.
+    Create/manage your key at https://platform.deepseek.com/ .
+    Account: use the official UI's sign-in entry and browser authorization flow;
+    do not enter your password in this terminal. Account and API-key routes differ.
+    Choose this blog repository as the official UI's workspace.
+  harness model deepseek-official deepseek-flash
+                                Select the API-key route for terminal tasks.
+  harness model deepseek-account deepseek-flash
+                                Select the account route after official sign-in.
+  harness ask "Inspect this blog and explain why the layout breaks"
+                                Run dsh --profile headless --json in the blog root.
+                                Stream real tool events and results into this terminal.
+                                Later asks resume the saved session automatically.
+  harness new                   Start a fresh conversation on the next ask.
+  harness resume SESSION_ID    Select an earlier persisted headless session.
+    The current session ID survives bridge restarts; mounts and browser pairing do not.
+  harness status                Show local CLI/home/web/session state.
+  harness help                  Show the official headless CLI's own help.
+  harness web [4318]            Open the official UI (same as configure).
+  harness stop                  Stop the official web service.
+    Keys/account grants/sessions stay in .shamot/dsh-home, excluded from Git.
+    Harness uses workspace-write permissions; headless has no approval UI.
+    For tasks that need permission prompts, use harness web and its native UI.
+    Review changes and run publish explicitly after an AI edit. AI may change files.
+    Extra session-log contribution and telemetry are disabled by this integration.
+    Your task, relevant files and tool results still go to the selected model API.
+    Network proxies inherit HTTP_PROXY / HTTPS_PROXY from the local launcher.
+
+OFFICIAL REFERENCES
+  https://www.deepseek.com/harness/en/
+  https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/cli/reference/README.md
+  https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/bundle/headless/README.md
+  https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/guide/providers.md
+
+LIMITS / RECOVERY
+  GitHub Pages hosts the static terminal UI; it cannot run processes or read disks.
+  The computer containing the files must be running the local bridge. A different
+  computer needs its own checkout/bridge; remote access to your PC is not installed.
+  The cheat code opens the UI only. Local pairing authorizes resource access.
+  Browser tokens expire after 12 hours or when the bridge restarts.
+  Backups: .shamot/backups; removed files: .shamot/trash.
+  Stop local services by closing the launcher or pressing Ctrl+C in its console.

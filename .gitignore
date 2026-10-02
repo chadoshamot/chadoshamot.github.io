@@ -4,3 +4,8 @@ db.json
 .deploy_git/
 .DS_Store
 *.log
+.shamot/
+.env
+.env.*
+.credentials*
+*.shamot-*.tmp
