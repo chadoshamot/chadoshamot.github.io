@@ -41,3 +41,11 @@ tags:
   Windows: {light: '#4d6980', dark: '#a7bdd1'}
   Codex: {light: '#945d79', dark: '#e2acc7'}
   Focus: {light: '#806a4d', dark: '#d7c1a1'}
+  Note: {light: '#4a7a6a', dark: '#a9d6c8'}
+  Tool: {light: '#815092', dark: '#d6b5eb'}
+  Summary: {light: '#6b6f8a', dark: '#c2c6e0'}
+  AI: {light: '#2f6f7a', dark: '#9fd4dc'}
+  Agent: {light: '#8a5a2b', dark: '#e2b98a'}
+  Python: {light: '#4b6b2f', dark: '#bcd79a'}
+  算法: {light: '#6a5a2f', dark: '#d3c48a'}
+  Git: {light: '#5a5f8a', dark: '#b9bfe0'}
