@@ -96,4 +96,3 @@ publish "Add my post"
 ## 本地目录与发布位置
 
 项目完整目录：YOUR_PROJECT_DIR。源码推送到 chadoshamot/chadoshamot.github.io，由 GitHub Actions 发布到 https://chadoshamot.github.io/。原 blog_page 仓库保留。
-
