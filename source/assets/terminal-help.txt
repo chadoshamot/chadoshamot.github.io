@@ -137,3 +137,8 @@ LIMITS / RECOVERY
   Browser tokens expire after 12 hours or when the bridge restarts.
   Backups: .shamot/backups; removed files: .shamot/trash.
   Stop local services by closing the launcher or pressing Ctrl+C in its console.
+
+Harness configuration commands work in both screens:
+  /configure                    Configure credentials from the AI screen.
+  harness configure             Same configuration command in either screen; never sent to the model.
+  MISSING_CREDENTIAL            Open configuration, save the DeepSeek API Key, then retry.

@@ -5,7 +5,7 @@
   const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a','b','a'];
   const available = ['help','connect','disconnect','clear','exit','theme','pet','meow','gif','party','resources','pwd','ls','cd','mount','read','cat','edit','download','remove','new','import','asset','upload','posts','projects','search','config','status','changes','git','preview','build','publish','bridge','shell','harness'];
   let progress=0,lastKey=0,dialog,output,input,status,editor,editing=null;
-  let busy=false,history=[],cursor=0,session=null,mode='site',pairing=null,cwd='~';
+  let busy=false,history=[],cursor=0,session=null,mode='site',pairing=null,cwd='~',credentialHintShown=false;
   const histories={site:[],harness:[]};let logs;
   try { session=JSON.parse(sessionStorage.getItem('shamot.bridge') || 'null'); } catch {}
   const storage = () => {try{if(session)sessionStorage.setItem('shamot.bridge',JSON.stringify(session));else sessionStorage.removeItem('shamot.bridge');}catch{}};
@@ -24,6 +24,7 @@
   async function help(keyword) {const args=keyword.split(/\s+/).filter(Boolean);const lang=['en','zh'].includes(args[0])?args.shift():'zh';const query=args.join(' ');const text=await (await fetch(new URL(lang==='en'?'terminal-help.txt':'terminal-help-zh.txt',assetRoot))).text();print(query?text.split('\n').filter((line,i,all)=>line.toLowerCase().includes(query.toLowerCase())||(i>0&&all[i-1].toLowerCase().includes(query.toLowerCase()))).join('\n')||'No help match. Use help en or help zh.':text);}
   async function handle(event) {
     if(event.type==='done'&&event.cwd){const root=session?.root||'';cwd=root&&event.cwd.startsWith(root)?'~'+event.cwd.slice(root.length).replaceAll('\\','/'):event.cwd;prompt();}
+    if(!credentialHintShown&&JSON.stringify(event).includes('MISSING_CREDENTIAL')){credentialHintShown=true;print('Missing DeepSeek API Key. Run /configure (or harness configure), open the returned link, and save your key in Settings > Models > DeepSeek. Then retry your task. 缺少 API Key：请打开配置链接，在模型设置中保存密钥后重试。','term-error');}
     if(event.type==='output')print(event.text);
     if(event.type==='error')print(event.text,'term-error');
     if(event.type==='link')link(event.url);
@@ -37,7 +38,7 @@
     const cmd=line.split(/\s/)[0],tail=line.slice(cmd.length).trim();
     print((mode==='harness'?'shamot@harness:~$ ':`shamot@blog:${cwd}$ `)+(cmd==='connect'?'connect [pairing code hidden]':line),'term-command');
     if(cmd!=='connect'){history.push(line);history=history.slice(-100);histories[mode]=history;}cursor=history.length;
-    setBusy(true);
+    credentialHintShown=false;setBusy(true);
     try {
       if(cmd==='help'){await help(tail);return;}
       if(cmd==='clear'||line==='/clear'){logs[mode].replaceChildren();return;}
@@ -59,7 +60,8 @@
       }
       if(cmd==='disconnect'){if(session)await api('/api/disconnect',{method:'POST'});session=null;storage();connectionState();print('Disconnected.');return;}
       if(cmd==='upload'){if(!session)throw Error('Connect before uploading.');dialog.querySelector('.shamot-upload-picker').click();return;}
-      const request=mode==='harness'?(line.startsWith('/')?{command:'harness '+line.slice(1)}:{command:'harness ask',prompt:line}):{command:line};
+      if(mode==='harness'&&line==='harness'){print('Already in Harness mode. Use /configure to set credentials, or /exit to return to the website shell.');return;}
+      const request=cmd==='harness'?{command:line}:mode==='harness'?(line.startsWith('/')?{command:'harness '+line.slice(1)}:{command:'harness ask',prompt:line}):{command:line};
       const response=await api('/api/command',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)});
       const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
       while(true){const result=await reader.read();buffer+=decoder.decode(result.value||new Uint8Array(),{stream:!result.done});const lines=buffer.split('\n');buffer=lines.pop();for(const text of lines)if(text.trim())await handle(JSON.parse(text));if(result.done){if(buffer.trim())await handle(JSON.parse(buffer));break;}}

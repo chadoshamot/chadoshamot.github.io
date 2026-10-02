@@ -95,3 +95,8 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
   传统本机命令：在仓库终端执行 npm run doctor、npm run build、git add --all、
                 git commit -m "Update blog"、git push origin main。
   本机桥启动：双击 Start-Terminal.cmd，或在 Node >=22.19 环境执行 npm run bridge:start。
+
+Harness 配置命令说明：
+  /configure                    在 AI 屏幕中打开官方凭据配置页。
+  harness configure             两种屏幕均可使用，不会发送给模型。
+  MISSING_CREDENTIAL            尚未配置当前提供商密钥，请在配置页保存 DeepSeek API Key 后重试。
