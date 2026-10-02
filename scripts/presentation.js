@@ -25,7 +25,7 @@ hexo.extend.filter.register('after_render:html', html => {
   const nav = `<section>${exploreLinks.map(([label,url]) => `<a href="${root+url}" ${pathname===url ? 'aria-current="page"' : ''}>${esc(label)}</a>`).join('')}</section>`;
   $('.recent-widget').first().after(`<nav class="shamot-explore-nav" aria-label="探索目录">${nav}</nav>`);
  }
- const homeSection = {'notes/':'explore','friends/':'friends','about/':'about'}[pathname];
+ const homeSection = {'wiki/':'projects','notes/':'explore','friends/':'friends','about/':'about'}[pathname];
  const banner = hexo.locals.get('data').section_banners?.[homeSection];
  if(banner?.src) {
   const src=banner.src.startsWith('/') ? root+banner.src.replace(/^\//,'') : banner.src;

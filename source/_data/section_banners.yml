@@ -18,3 +18,9 @@ about:
   position: center
   credit: Mary Brennan / Unsplash
   source: https://unsplash.com/photos/uCcCAf6hGQU
+projects:
+  src: /assets/banners/projects.webp
+  alt: 山峦上方的星空与银河
+  position: center
+  credit: Nathan Anderson / Unsplash
+  source: https://unsplash.com/photos/OQKQzw4o8cU
