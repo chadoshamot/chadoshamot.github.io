@@ -200,12 +200,13 @@ body:not([data-section='post']) .site-shell .article.banner .content { min-heigh
 body[data-page-layout='page'][data-section='post'] .article.banner .content > .top { display: none; }
 body[data-page-layout='page'][data-section='post'] .site-shell .article.banner .content { min-height: 0; }
 
-/* Desktop: start at the window edge, keep readable columns and invisible separation. */
+/* Equal outer tracks center the article; sidebars stay at the window edges. */
 @media(min-width:1181px){
- .site-workspace{grid-template-columns:var(--leftbar-width) minmax(0,var(--width-main)) minmax(var(--rightbar-width),1fr);padding-inline:24px;column-gap:32px}
+ .site-shell{--leftbar-width:clamp(240px,18vw,340px);--rightbar-width:clamp(200px,14vw,260px);--width-main-article:clamp(600px,56vw,1080px);--width-main-wiki-list:var(--width-main-article);--width-main:var(--width-main-article)}
+ .site-workspace{grid-template-columns:minmax(var(--leftbar-width),1fr) minmax(0,var(--width-main)) minmax(var(--leftbar-width),1fr);padding-inline:24px;column-gap:32px}
  .site-region--leftbar{justify-self:start}
- .site-main{margin-inline:0}
- .site-region--rightbar{justify-self:start}
+ .site-main{margin-inline:auto}
+ .site-region--rightbar{justify-self:end}
 }
 @media(min-width:769px) and (max-width:1180px){
  .site-shell[data-regions~='leftbar'] .site-main{margin-inline-start:calc(var(--shell-left-reserve) + var(--shell-side-gap))}

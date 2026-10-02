@@ -107,7 +107,7 @@ features:
   partial_navigation:
     enabled: true
 inject:
-  head_end: <link rel="stylesheet" href="/assets/shamot.css?v=7"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=1"></script>
+  head_end: <link rel="stylesheet" href="/assets/shamot.css?v=8"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=1"></script>
   body_end: <link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"><script data-stellar-script="asset" src="/assets/shamot-terminal.js?v=4" defer></script>
 structured_data:
   same_as:
