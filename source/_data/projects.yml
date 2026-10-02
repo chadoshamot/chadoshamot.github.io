@@ -1,0 +1,12 @@
+items:
+  - id: codex-windows-runtime-fix
+    name: Codex Windows Runtime Fix
+    category: tools
+    description: 针对 Windows 上特定运行时暂存故障的检测、重建与验证工具。
+    repository: https://github.com/chadoshamot/codex-windows-runtime-fix
+    article: posts/codex-windows-runtime-fix/
+    language: PowerShell
+    details: |
+      ## 适用范围
+
+      面向更新后窗口未出现、并伴随 cua_node 暂存目录异常的特定情况。这是一个非官方社区工具，使用条件、操作步骤与最新说明以仓库 README 为准。

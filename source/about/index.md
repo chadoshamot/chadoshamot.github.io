@@ -9,15 +9,13 @@ active_menu: about
 ## 关于博主
 
 {% tabs %}
-<!-- tab MBTI -->
-暂未填写。
 <!-- tab 话题 -->
 这里会逐渐积累学习笔记、实验记录、工具使用与问题修复文章。
 <!-- tab 音乐 -->
 暂未填写。
-<!-- tab 游戏 -->
+<!-- tab 运动 -->
 暂未填写。
-<!-- tab 其它 -->
+<!-- tab 其他 -->
 [在 GitHub 找到我](https://github.com/chadoshamot)。
 {% endtabs %}
 
@@ -29,7 +27,7 @@ active_menu: about
 
 ### 文章如何组织
 
-使用标签与时间归档整理文章。标签分别表示文章类型（Note、Exp、Tool、Bug）、相关领域与写作视角（Summary、Focus）。
+文章按思考、技术、经验、设计开发、学习分类，并按发表年份自动归档。每篇文章自动带有同名分类标签；其他标签分别表示文章类型（Note、Exp、Tool、Bug）、相关领域与写作视角（Summary、Focus）。
 
 ### 内容与更新
 

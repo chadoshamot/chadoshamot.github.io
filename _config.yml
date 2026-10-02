@@ -6,7 +6,7 @@ language: zh-CN
 timezone: Asia/Shanghai
 url: https://chadoshamot.github.io/blog_page
 root: /blog_page/
-favicon: /assets/shamot.svg
+favicon: https://avatars.githubusercontent.com/u/160225157?s=64&v=4
 permalink: posts/:title/
 pretty_urls:
   trailing_index: false
@@ -51,3 +51,13 @@ pagination_dir: page
 theme: stellar
 deploy:
   type: ''
+
+category_map:
+  思考: thoughts
+  技术: technology
+  经验: experience
+  设计开发: design-development
+  学习: learning
+category_generator:
+  per_page: 10
+  order_by: -date

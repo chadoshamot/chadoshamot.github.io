@@ -1,0 +1,43 @@
+categories:
+  - name: 思考
+    slug: thoughts
+    light: '#936a20'
+    dark: '#f1d18b'
+  - name: 技术
+    slug: technology
+    light: '#27648c'
+    dark: '#9acdf2'
+  - name: 经验
+    slug: experience
+    light: '#37714f'
+    dark: '#acd9b1'
+  - name: 设计开发
+    slug: design-development
+    light: '#815092'
+    dark: '#d6b5eb'
+  - name: 学习
+    slug: learning
+    light: '#9a4b3e'
+    dark: '#f1b5a1'
+project_categories:
+  - name: 应用程序
+    slug: applications
+    light: '#27648c'
+    dark: '#9acdf2'
+  - name: 实用工具
+    slug: tools
+    light: '#37714f'
+    dark: '#acd9b1'
+  - name: 博客相关
+    slug: blog-related
+    light: '#815092'
+    dark: '#d6b5eb'
+  - name: 博采众长
+    slug: inspirations
+    light: '#936a20'
+    dark: '#f1d18b'
+tags:
+  Bug: {light: '#926915', dark: '#e9c76b'}
+  Windows: {light: '#4d6980', dark: '#a7bdd1'}
+  Codex: {light: '#945d79', dark: '#e2acc7'}
+  Focus: {light: '#806a4d', dark: '#d7c1a1'}

@@ -2,6 +2,8 @@
 title: 修复 Codex 在 Windows 上的运行时暂存故障
 date: 2026-10-01 12:00:00
 updated: 2026-10-01 12:00:00
+categories:
+  - 技术
 tags:
   - Bug
   - Windows

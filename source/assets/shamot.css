@@ -188,3 +188,14 @@ body:not([data-section='post']) .site-shell .article.banner .content { min-heigh
 .shamot-palette-select:focus-visible { outline: 2px solid var(--shamot-accent); outline-offset: 3px; }
 .site-main .post-list .post-card-wrap { box-shadow: none; }
 .shamot-mobile-actions { display: flex; gap: 8px; align-items: center; }
+
+:root .shamot-colored-tag { --tag-color: var(--tag-dark); color: var(--tag-color) !important; background: transparent; border: 0; }
+:root[data-theme='light'] .shamot-colored-tag { --tag-color: var(--tag-light); }
+.shamot-category-list { list-style: none; padding: 0 !important; margin: 16px 0 !important; max-width: 480px; }
+.shamot-category-list li { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 0; }
+.shamot-category-list a { font-size: 18px; font-weight: 550; }
+.shamot-category-count { color: var(--text-p3); font-size: 13px; }
+.shamot-project-labels { display: flex; gap: 16px; align-items: center; margin-top: -20px; font-size: 13px; color: var(--text-p3); }
+.shamot-project-entry { margin-bottom: 36px; }
+body[data-page-layout='page'][data-section='post'] .article.banner .content > .top { display: none; }
+body[data-page-layout='page'][data-section='post'] .site-shell .article.banner .content { min-height: 0; }
