@@ -21,7 +21,7 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
 资源位置（resources 命令显示本机绝对路径）
   @site                          博客仓库根目录，所有网站源文件的入口。
   source/_posts/*.md             博客正文、标题、文章日期、分类和标签。
-  source/about/index.md          关于博主；source/friends/index.md：友链。
+  source/about/index.md          关于页面结构；source/friends/index.md：友链。
   source/_data/projects.yml      项目记录和介绍。
   source/_data/taxonomy.yml      分类和标签的名称、颜色。
   source/_data/widgets.yml       最近更新等侧栏内容。
@@ -100,3 +100,23 @@ Harness 配置命令说明：
   /configure                    在 AI 屏幕中打开官方凭据配置页。
   harness configure             两种屏幕均可使用，不会发送给模型。
   MISSING_CREDENTIAL            尚未配置当前提供商密钥，请在配置页保存 DeepSeek API Key 后重试。
+
+关于博主条目管理（网站命令模式，无需 AI）
+  about tabs                        查看固定标签页：topics 话题 / music 音乐 / sports 运动 / other 其他。
+  about list [TAB]                   查看条目 ID 和标题；省略 TAB 则列出全部。
+  about show TAB ID                  查看条目全文、段落和链接。
+  about add TAB ID --title "标题" --text "段落" [--link "链接名称" "https://..."]
+  about set TAB ID --title "新标题" [--text "新段落"]
+  about update TAB ID 参数           等同于 set；未提供的字段保持原值。
+  about set music synthwave --link "Lost and Found" "https://www.bilibili.com/video/BV1vvtSzSEsB/"
+  about set music synthwave --clear-links
+  about remove TAB ID --confirm      删除条目，原数据文件会自动备份。
+  about edit                        在终端编辑器中编辑 source/_data/about.yml，保存时校验格式。
+  about help                        查看命令说明；离线也可查帮助。
+  about 参数：--text 可重复以添加多个段落；提供后替换整段正文。
+  about 参数：--link "名称" "URL" 可重复；提供后替换全部链接；--clear-links 清除全部链接。
+  about ID：小写字母开头，可包含小写字母、数字和连字符；标题可自由修改。
+  about 内容：纯文本，不解析 HTML/Markdown；链接仅允许完整 HTTP/HTTPS 地址。
+  about 保存：只修改本地数据；备份在 .shamot/backups，不会自动发布。
+  about 工作流：preview start 4000 预览；build 构建；publish "Update about profile" 发布。
+  about 若在 AI 模式：先 /exit 回到网站终端；管理命令不会发给模型。

@@ -99,3 +99,9 @@ publish "Add my post"
 ## 替换栏目首页图片
 
 项目、探索、友链和关于首页的横幅在 `source/_data/section_banners.yml` 配置。图片保存于 `source/assets/banners/`，修改 `src`、`alt` 与 `position` 即可替换；自己的图片可以删除 `credit`、`source`。横幅直接嵌入标题下方，仅出现在四个栏目首页。
+
+## 通过网页终端管理关于博主
+
+配对后在网站命令模式使用 `about list`、`about show TAB ID`、`about add`、`about set`、`about remove TAB ID --confirm` 或 `about edit`。TAB 为 `topics`、`music`、`sports`、`other`。`help zh about` 和 `help en about` 提供完整参数示例。
+
+内容保存于 `source/_data/about.yml`；`source/about/index.md` 的 `{% shamot_about %}` 自动生成四个标签页。每次命令修改和编辑器保存都会校验并备份，之后通过 `preview` 检查、`publish` 发布。正文使用纯文本，`--text` 和 `--link "名称" "URL"` 可重复；`set` 只替换提供的字段。

@@ -8,6 +8,7 @@ const crypto = require('node:crypto');
 const net = require('node:net');
 const {spawn} = require('node:child_process');
 const yaml = require('js-yaml');
+const about = require('./about-content.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const HARN_VERSION = '0.2.0-rc.2';
 const BAD = /(^|[\\/])(\.git|\.shamot|node_modules|\.env(?:\..*)?|\.credentials.*)([\\/]|$)/i;
@@ -34,6 +35,7 @@ function createBridge(options = {}) {
   const root = fs.realpathSync(options.root || ROOT);
   const stateDir = path.join(root, '.shamot'); fs.mkdirSync(stateDir, {recursive:true});
   const stateFile = path.join(stateDir, 'bridge.json');
+  const aboutFile = path.join(root, 'source/_data/about.yml');
   let settings = fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : {};
   const port = validPort(options.port || settings.port || 4317);
   const state = {cwd:root, roots:new Map([['site', root]]), preview:null, harness:null, job:null, busy:false, session:settings.sessionId || null};
@@ -72,6 +74,8 @@ function createBridge(options = {}) {
     }
     const tmp = file+'.shamot-'+crypto.randomUUID()+'.tmp';
     await fsp.writeFile(tmp, data); await fsp.rename(tmp, file);
+    // Hexo caches tag output; touch the host page so an active preview renders new data.
+    if(file===aboutFile&&fs.existsSync(path.join(root,'source/about/index.md'))){const page=await resolveFile('@site/source/about/index.md');const now=new Date();await fsp.utimes(page,now,now);}
   }
   function run(exe, args, emit, opt = {}) {
     return new Promise((resolve, reject) => {
@@ -125,7 +129,7 @@ function createBridge(options = {}) {
       case 'ls': {const dir=await resolveFile(sub||'.');const entries=await fsp.readdir(dir,{withFileTypes:true});output(entries.filter(e=>!BAD.test(e.name)).map(e=>(e.isDirectory()?'dir  ':'file ')+e.name).join('\n'));break;}
       case 'cat': case 'read': case 'edit': {const file=await resolveFile(requireArg(sub));if((await fsp.stat(file)).size>EDIT_LIMIT)throw Error('Text editor limit: 4 MiB.');const bytes=await fsp.readFile(file);if(bytes.includes(0))throw Error('This is a binary file. Use download.');const text=bytes.toString('utf8'); if(cmd==='edit')emit({type:'editor',path:file,text,hash:crypto.createHash('sha256').update(bytes).digest('hex')});else output(text);break;}
       case 'resources': {
-        const entries=[['Articles','source/_posts'],['About','source/about/index.md'],['Friends','source/friends/index.md'],['Projects','source/_data/projects.yml'],['Categories and colors','source/_data/taxonomy.yml'],['Sidebar widgets','source/_data/widgets.yml'],['Media, CSS, JS','source/assets'],['Uploaded media','source/assets/uploads'],['Hexo config','_config.yml'],['Stellar config and signature','_config.stellar.yml'],['Generators','scripts'],['Generated output (rebuildable)','public'],['Official theme dependency','node_modules/hexo-theme-stellar'],['Deployment workflow','.github/workflows/pages.yml'],['Private local runtime/credentials/backups','.shamot']];
+        const entries=[['Articles','source/_posts'],['About page','source/about/index.md'],['About profile entries (about commands)','source/_data/about.yml'],['Friends','source/friends/index.md'],['Projects','source/_data/projects.yml'],['Categories and colors','source/_data/taxonomy.yml'],['Sidebar widgets','source/_data/widgets.yml'],['Media, CSS, JS','source/assets'],['Uploaded media','source/assets/uploads'],['Hexo config','_config.yml'],['Stellar config and signature','_config.stellar.yml'],['Generators','scripts'],['Generated output (rebuildable)','public'],['Official theme dependency','node_modules/hexo-theme-stellar'],['Deployment workflow','.github/workflows/pages.yml'],['Private local runtime/credentials/backups','.shamot']];
         output('LOCAL SOURCE ROOT: '+root);for(const [name,file]of entries)output(name+': '+path.join(root,file));output('GitHub source: https://github.com/chadoshamot/chadoshamot.github.io\nPublished static site: https://chadoshamot.github.io/\nEdit/import changes local source. publish builds and deploys it.');break;
       }
       case 'download': emit({type:'download',path:await resolveFile(requireArg(sub))});break;
@@ -142,6 +146,24 @@ function createBridge(options = {}) {
       }
       case 'asset': {const from=await resolveFile(requireArg(sub)); const dest=await resolveFile('@site/source/assets/uploads/'+requireArg(a[0]),true);if(!within(path.join(root,'source/assets/uploads'),dest))throw Error('Asset destination must stay under source/assets/uploads.');if((await fsp.stat(from)).size>MEDIA_LIMIT)throw Error('Media limit: 64 MiB.');await put(dest,await fsp.readFile(from),a.includes('--overwrite'));output('URL: /assets/uploads/'+path.relative(path.join(root,'source/assets/uploads'),dest).replaceAll('\\','/'));break;}
       case 'posts': output((await fsp.readdir(path.join(root,'source/_posts'))).filter(s=>s.endsWith('.md')).join('\n'));break;
+      case 'about': {
+        if(sub==='help'){output(HELP.split('\n').filter(text=>text.includes('about')).join('\n'));break;}
+        const file=await resolveFile('@site/source/_data/about.yml');
+        const data=about.parse(await fsp.readFile(file,'utf8'));
+        if(sub==='edit'){if(a.length)throw Error('Use about edit to open all profile entries.');const bytes=await fsp.readFile(file);emit({type:'editor',path:file,text:bytes.toString('utf8'),hash:crypto.createHash('sha256').update(bytes).digest('hex')});break;}
+        if(!sub||sub==='list'||sub==='tabs'){
+          if(a.length>1||sub==='tabs'&&a.length)throw Error('Use about list [TAB] or about tabs.');
+          const selected=a[0];if(selected&&!about.tabs.some(([key])=>key===selected))throw Error('Tab must be topics, music, sports or other.');
+          for(const [key,label]of about.tabs){if(selected&&selected!==key)continue;output(key+' / '+label+' ('+data[key].length+')');if(sub!=='tabs')for(const item of data[key])output('  '+item.id+'  '+item.title);}
+          output('Use about show TAB ID, about add/set/remove, or about edit. help zh about / help en about');break;
+        }
+        if(sub==='show'){
+          if(a.length!==2||!about.tabs.some(([key])=>key===a[0]))throw Error('Use about show TAB ID.');const item=data[a[0]].find(item=>item.id===a[1]);if(!item)throw Error('Entry not found. Use about list.');output(yaml.dump(item,{lineWidth:100}));break;
+        }
+        if(!['add','set','update','remove'].includes(sub))throw Error('Use about list/show/add/set/remove/edit. help zh about');
+        const key=a[0],id=a[1];await put(file,about.serialize(about.apply(data,sub,a)),true);
+        output('Saved '+key+'/'+id+' ('+sub+'). Changes are local; refresh the running preview, or use preview start / build to inspect, then publish "Update about profile" to deploy.');break;
+      }
       case 'projects': output(await fsp.readFile(path.join(root,'source/_data/projects.yml'),'utf8'));break;
       case 'search': {const query=requireArg(sub).toLowerCase();let count=0;async function walk(dir){for(const ent of await fsp.readdir(dir,{withFileTypes:true})){const file=path.join(dir,ent.name);if(ent.isDirectory())await walk(file);else if(/\.(md|yml|css|js|txt)$/.test(ent.name)&&(await fsp.stat(file)).size<EDIT_LIMIT){const lines=(await fsp.readFile(file,'utf8')).split('\n');lines.forEach((text,i)=>{if(text.toLowerCase().includes(query)&&count++<100)output(`${path.relative(root,file)}:${i+1}: ${text}`);});}}}await walk(path.join(root,'source'));output(`${count} matches (first 100 shown).`);break;}
       case 'config': {
@@ -271,7 +293,7 @@ function createBridge(options = {}) {
         state.busy=true;try{const relative=decodeURIComponent(req.headers['x-shamot-path']||'');if(!relative.startsWith('source/'))throw Error('Upload to source/ only.');const file=await resolveFile('@site/'+relative,true);if(!within(path.join(root,'source'),file))throw Error('Upload must stay inside source/.');await put(file,await body(req,MEDIA_LIMIT),req.headers['x-shamot-overwrite']==='true');return send(200,{path:file});}finally{state.busy=false;}
       }
       if(req.method==='POST'&&url.pathname==='/api/save'){
-        state.busy=true;try{const data=JSON.parse((await body(req,EDIT_LIMIT*2)).toString());const file=await resolveFile(data.path,true);if(fs.existsSync(file)){const hash=crypto.createHash('sha256').update(await fsp.readFile(file)).digest('hex');if(hash!==data.hash)throw Error('File changed since opening. Reopen it before saving.');}if(typeof data.text!=='string'||Buffer.byteLength(data.text)>EDIT_LIMIT)throw Error('Text limit: 4 MiB.');await put(file,data.text,true);return send(200,{hash:crypto.createHash('sha256').update(data.text).digest('hex')});}finally{state.busy=false;}
+        state.busy=true;try{const data=JSON.parse((await body(req,EDIT_LIMIT*2)).toString());const file=await resolveFile(data.path,true);if(fs.existsSync(file)){const hash=crypto.createHash('sha256').update(await fsp.readFile(file)).digest('hex');if(hash!==data.hash)throw Error('File changed since opening. Reopen it before saving.');}if(typeof data.text!=='string'||Buffer.byteLength(data.text)>EDIT_LIMIT)throw Error('Text limit: 4 MiB.');if(file===aboutFile)about.parse(data.text);await put(file,data.text,true);return send(200,{hash:crypto.createHash('sha256').update(data.text).digest('hex')});}finally{state.busy=false;}
       }
       if(req.method==='POST'&&url.pathname==='/api/command'){
         const data=JSON.parse((await body(req,64000)).toString());if(typeof data.command!=='string')throw Error('Missing command.');if(data.prompt!==undefined&&typeof data.prompt!=='string')throw Error('Prompt must be text.');state.busy=true;

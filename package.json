@@ -8,7 +8,7 @@
     "clean": "hexo clean",
     "doctor": "hexo stellar doctor",
     "bridge:start": "node tools/bridge.cjs",
-    "bridge:test": "node --test tools/bridge.test.cjs"
+    "bridge:test": "node --test tools/bridge.test.cjs tools/about-content.test.cjs"
   },
   "engines": {
     "node": ">=22"

@@ -142,3 +142,23 @@ Harness configuration commands work in both screens:
   /configure                    Configure credentials from the AI screen.
   harness configure             Same configuration command in either screen; never sent to the model.
   MISSING_CREDENTIAL            Open configuration, save the DeepSeek API Key, then retry.
+
+About profile entries (website shell; no AI required)
+  about tabs                        Show topics / music / sports / other.
+  about list [TAB]                   List stable entry IDs and titles.
+  about show TAB ID                  Read an entry, its paragraphs and links.
+  about add TAB ID --title "Title" --text "Paragraph" [--link "Label" "https://..."]
+  about set TAB ID --title "New title" [--text "New paragraph"]
+  about update TAB ID OPTIONS        Alias for about set; omitted fields stay unchanged.
+  about set music synthwave --link "Lost and Found" "https://www.bilibili.com/video/BV1vvtSzSEsB/"
+  about set music synthwave --clear-links
+  about remove TAB ID --confirm      Delete an entry; original data file is backed up.
+  about edit                        Edit source/_data/about.yml in the terminal editor.
+  about help                        Find these commands, including when offline.
+  about: --text can be repeated for paragraphs; supplied paragraphs replace the entire body.
+  about: --link can be repeated for links; supplied links replace the entire link list.
+  about: tabs are fixed; IDs use lowercase letters, numbers and hyphens, starting with a letter.
+  about: all text is literal, not HTML/Markdown; links must be absolute HTTP or HTTPS URLs.
+  about: edits stay local and create backups under .shamot/backups; no auto-publish.
+  about workflow: preview start 4000 -> build -> publish "Update about profile"
+  about in AI mode: /exit returns to the website shell; profile commands never go to the model.
