@@ -1,6 +1,6 @@
 # shamot 博客
 
-中文个人博客，采用 Hexo 与 Stellar 2.0.0，目标地址为 https://chadoshamot.github.io/blog_page/ 。
+中文个人博客，采用 Hexo 与 Stellar 2.0.0，目标地址为 https://chadoshamot.github.io/ 。
 
 ## 本地使用
 
@@ -60,19 +60,19 @@ tags:
 
 ## GitHub Pages
 
-1. 使用 `https://github.com/chadoshamot/blog_page` 仓库；若已有内容，先检查并合并，避免覆盖。
+1. 使用 `https://github.com/chadoshamot/chadoshamot.github.io` 仓库；若已有内容，先检查并合并，避免覆盖。
 2. 将本目录源码推送到 `main`，包含 `package-lock.json`；不上传 `node_modules` 和 `public`。
 3. 仓库 Settings → Pages → Source 选择 GitHub Actions。
 4. `.github/workflows/pages.yml` 会安装依赖、检查主题并生成、部署网站。
 
-推送后可在仓库 Actions 中查看部署进度，线上地址为 https://chadoshamot.github.io/blog_page/ 。
+推送后可在仓库 Actions 中查看部署进度，线上地址为 https://chadoshamot.github.io/ 。
 
 首篇文章根据用户指定的项目 README 编写。文章中的仓库地址来自原项目 Git 配置，已通过远端读取确认仓库存在；修复效果未独立复测。
 
 Stellar 的图像处理依赖 sharp 使用 `overrides` 更新到已修复审计问题的 0.35.4 或更新版本；精确安装版本由锁文件固定。
 ## 网站终端与 DeepSeek Harness
 
-现在可以在网站按 `↑ ↑ ↓ ↓ ← → ← → B A B A` 调出终端。页脚的小键盘也支持点击输入这套序列。
+现在可以在网站按 `↑ ↑ ↓ ↓ ← → ← → B A B A` 调出终端。仅支持电脑物理键盘输入，已移除屏幕键盘入口。
 
 首次使用：安装 Node.js **22.19 或更新版本**和 Git，在仓库里运行 `npm ci`、`npm run bridge:start`（Windows 也可双击 `Start-Terminal.cmd`）。打开本机 `http://127.0.0.1:4317/pair`，把页面上的 `connect ...` 命令粘贴进网页终端。浏览器如询问“本地网络访问”，需要允许；受浏览器限制时可用同一地址下的 `/console`。
 
@@ -92,3 +92,8 @@ publish "Add my post"
 本地桥只监听 `127.0.0.1`，作弊码只负责打开界面，资源访问需要一次性配对。文件命令默认访问仓库，额外目录需 `mount`；`shell` 是你主动执行的本机 PowerShell 命令。GitHub Pages 无法运行本机进程，本机桥需保持运行。换一台电脑需在那台电脑启动桥，未安装远程访问服务。
 
 `.shamot/` 保存本机 Harness、账号/密钥、会话、备份和回收站，并被 Git 忽略。API Key 使用官方凭据存储；仅在本机文件中保存（不是云端同步，也不是声称加密）。关闭桥后配对失效，重新启动后重新连接。输入 `harness` 进入独立的 AI 屏幕，`/exit` 返回网站命令模式；两者的输出和历史分开。按照资源访问要求，Harness 默认 full 权限（当前系统账号权限范围）；`harness access workspace` 可收回写入范围。需要官方交互界面时使用 `harness web`。AI 修改后可以检查 `changes`，再明确执行 `publish`。额外会话日志贡献和遥测已关闭，正常模型请求仍会发送任务所需上下文。
+
+## 本地目录与发布位置
+
+项目完整目录：YOUR_PROJECT_DIR。源码推送到 chadoshamot/chadoshamot.github.io，由 GitHub Actions 发布到 https://chadoshamot.github.io/。原 blog_page 仓库保留。
+

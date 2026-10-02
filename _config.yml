@@ -4,8 +4,8 @@ description: shamot 的个人博客，记录学习笔记、工具使用与问题
 author: shamot
 language: zh-CN
 timezone: Asia/Shanghai
-url: https://chadoshamot.github.io/blog_page
-root: /blog_page/
+url: https://chadoshamot.github.io
+root: /
 favicon: https://avatars.githubusercontent.com/u/160225157?s=64&v=4
 permalink: posts/:title/
 pretty_urls:

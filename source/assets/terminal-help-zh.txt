@@ -13,6 +13,10 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
   clear                          清屏；Enter 执行，↑ ↓ 历史，Tab 补全，Ctrl+C 中断。
   exit                           关闭终端；在 Harness 中则返回网站命令模式。
   theme beige|navy|green          米黄、藏蓝、澄绿。
+  pet cat / meow / gif cat       在终端显示像素猫 GIF；不用配对也能运行。
+  party                         显示彩色像素猫；clear 清除屏幕上的动图。
+  素材为 alizard 的 CC0 跑步猫：https://opengameart.org/content/pixel-cat-0
+  终端仅通过电脑真实键盘 ↑↑↓↓←→←→baba 开启，已移除屏幕键盘按钮。
 
 资源位置（resources 命令显示本机绝对路径）
   @site                          博客仓库根目录，所有网站源文件的入口。
@@ -30,8 +34,8 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
   .github/workflows/pages.yml    GitHub 自动构建、部署流程。
   .shamot/                       本机运行时、Harness 密钥/账号/会话、备份、回收站。
                                  此目录被 Git 忽略，不会上传到公开仓库。
-  云端源代码：https://github.com/chadoshamot/blog_page
-  正式页面：https://chadoshamot.github.io/blog_page/
+  云端源代码：https://github.com/chadoshamot/chadoshamot.github.io
+  正式页面：https://chadoshamot.github.io/
   GitHub Pages 保存构建后的静态文件；网页修改先保存本机源文件，再 publish 部署。
 
 无需 AI 的网站管理命令

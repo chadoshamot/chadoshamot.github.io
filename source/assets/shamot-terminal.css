@@ -1,14 +1,14 @@
-.shamot-terminal,.shamot-codepad{--term-bg:#e8dbba;--term-ink:#36352e;--term-muted:#6d685b;--term-line:#36352e24;--term-accent:#815092;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--term-ink);background:var(--term-bg);border:1px solid var(--term-line);border-radius:14px;padding:0;box-shadow:0 24px 90px #0004;max-width:none}
-html[data-palette=navy] :is(.shamot-terminal,.shamot-codepad){--term-bg:#2a486e;--term-ink:#e4eaf1;--term-muted:#b0c0d2;--term-line:#e4eaf12b;--term-accent:#d6b5eb}
-html[data-palette=green] :is(.shamot-terminal,.shamot-codepad){--term-bg:#2a484e;--term-ink:#e4eaf1;--term-muted:#b0c0ca;--term-line:#e4eaf12b;--term-accent:#acd9b1}
-.shamot-terminal::backdrop,.shamot-codepad::backdrop{background:#0b142466;backdrop-filter:blur(6px)}
+.shamot-terminal{--term-bg:#e8dbba;--term-ink:#36352e;--term-muted:#6d685b;--term-line:#36352e24;--term-accent:#815092;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--term-ink);background:var(--term-bg);border:1px solid var(--term-line);border-radius:14px;padding:0;box-shadow:0 24px 90px #0004;max-width:none}
+html[data-palette=navy] :is(.shamot-terminal){--term-bg:#2a486e;--term-ink:#e4eaf1;--term-muted:#b0c0d2;--term-line:#e4eaf12b;--term-accent:#d6b5eb}
+html[data-palette=green] :is(.shamot-terminal){--term-bg:#2a484e;--term-ink:#e4eaf1;--term-muted:#b0c0ca;--term-line:#e4eaf12b;--term-accent:#acd9b1}
+.shamot-terminal::backdrop::backdrop{background:#0b142466;backdrop-filter:blur(6px)}
 .shamot-terminal{width:min(1060px,calc(100vw - 40px));height:min(780px,calc(100dvh - 64px));overflow:hidden}
 .shamot-terminal[open]{display:flex;flex-direction:column;animation:shamot-term-in .18s ease-out}
-.shamot-terminal *,.shamot-codepad *{box-sizing:border-box}
-.shamot-terminal button,.shamot-codepad button{appearance:none;background:transparent!important;color:var(--term-ink)!important;font:inherit;border:1px solid var(--term-line);border-radius:6px;padding:5px 11px;cursor:pointer;transition:background .15s,color .15s}
-:root[data-theme] .shamot-terminal button,:root[data-theme] .shamot-codepad button{color:var(--term-ink)!important}
-.shamot-terminal button:hover,.shamot-codepad button:hover{background:var(--term-line)}
-.shamot-terminal button:focus-visible,.shamot-terminal input:focus-visible,.shamot-terminal textarea:focus-visible,.shamot-codepad button:focus-visible{outline:2px solid var(--term-accent);outline-offset:2px}
+.shamot-terminal * *{box-sizing:border-box}
+.shamot-terminal button button{appearance:none;background:transparent!important;color:var(--term-ink)!important;font:inherit;border:1px solid var(--term-line);border-radius:6px;padding:5px 11px;cursor:pointer;transition:background .15s,color .15s}
+:root[data-theme] .shamot-terminal button{color:var(--term-ink)!important}
+.shamot-terminal button:hover button:hover{background:var(--term-line)}
+.shamot-terminal button:focus-visible,.shamot-terminal input:focus-visible,.shamot-terminal textarea:focus-visible button:focus-visible{outline:2px solid var(--term-accent);outline-offset:2px}
 .shamot-terminal button:disabled{opacity:.5;cursor:wait}
 .shamot-term-top{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1px solid var(--term-line);flex-shrink:0}
 .shamot-term-title{font-weight:600;letter-spacing:.04em}.shamot-term-status{color:var(--term-muted);font-size:12px;margin-right:auto}.shamot-term-top .shamot-term-close{border:0;font-size:24px;line-height:1}
@@ -23,10 +23,12 @@ html[data-palette=green] :is(.shamot-terminal,.shamot-codepad){--term-bg:#2a484e
 .shamot-term-editor{display:none;border-top:1px solid var(--term-line);padding:14px 20px;height:48%;flex-shrink:0}.shamot-term-editor.is-open{display:flex;flex-direction:column;gap:10px}
 .shamot-term-editor header{display:flex;gap:10px;align-items:center}.shamot-term-editor header span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
 .shamot-term-editor textarea{flex:1;width:100%;resize:none;background:transparent;color:inherit;font:inherit;border:1px solid var(--term-line);border-radius:6px;padding:12px;tab-size:2}
-.shamot-codepad{width:min(360px,calc(100vw - 40px));padding:22px;text-align:center}.shamot-codepad p{font:inherit;color:inherit}.shamot-codekeys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.shamot-codekeys button{font-size:22px;padding:14px}.shamot-code-progress{height:20px;letter-spacing:3px;color:var(--term-accent)}
 .shamot-terminal-launch{color:inherit!important;background:transparent!important;border:0!important;font:16px ui-monospace,monospace!important;padding:5px 10px!important;cursor:pointer;opacity:.55;border-radius:5px}.shamot-terminal-launch:hover{opacity:1}.shamot-terminal-launch:focus-visible{outline:2px solid currentColor}
 .shamot-upload-picker{display:none}
-body:has(.shamot-terminal[open]),body:has(.shamot-codepad[open]){overflow:hidden}
+body:has(.shamot-terminal[open]){overflow:hidden}
 @keyframes shamot-term-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.shamot-pixel-pet{margin:12px 0!important;padding:0!important;background:transparent!important;border:0!important}.shamot-pixel-pet img{display:block;width:132px;height:132px;image-rendering:pixelated;object-fit:contain;border:0!important;border-radius:0!important;box-shadow:none!important}.shamot-pixel-pet.is-party img{animation:shamot-pixel-party 1.4s linear infinite}@keyframes shamot-pixel-party{50%{filter:hue-rotate(180deg)}100%{filter:hue-rotate(360deg)}}
 @media(max-width:600px){.shamot-terminal{width:100vw;height:100dvh;border-radius:0;border:0;max-height:none;margin:0}.shamot-term-top{padding:12px;gap:8px}.shamot-term-title{font-size:12px}.shamot-term-status{font-size:10px}.shamot-term-output{padding:16px}.shamot-term-form{padding:12px;gap:6px}.shamot-term-form label{font-size:12px}.shamot-term-foot{padding:0 12px 12px;font-size:10px;gap:7px}.shamot-term-editor{padding:12px}.shamot-term-form button{padding:5px 7px}}
-@media(prefers-reduced-motion:reduce){.shamot-terminal[open]{animation:none}.shamot-terminal button,.shamot-codepad button{transition:none}}
+@media(prefers-reduced-motion:reduce){.shamot-terminal[open]{animation:none}.shamot-terminal button button{transition:none}}
+
+@media(prefers-reduced-motion:reduce){.shamot-pixel-pet.is-party img{animation:none}}

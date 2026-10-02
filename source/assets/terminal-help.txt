@@ -4,7 +4,7 @@ START
   On your computer: npm run bridge:start (Node >=22.19 + Git required).
   Open http://127.0.0.1:4317/pair in a separate tab.
   Unlock: ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft
-          ArrowRight B A B A. Or click the footer keyboard and its key pad.
+          ArrowRight B A B A. Use the physical keyboard only.
   connect http://127.0.0.1:4317 PAIR_CODE
     Paste the complete command from the local pairing page. Codes are one-use.
     Allow the browser's Local Network Access request if shown.
@@ -18,6 +18,9 @@ START
   clear                         Clear the terminal output.
   exit                          Hide the terminal (does not stop the bridge).
   theme beige|navy|green         Change this browser's website palette.
+  pet cat / meow / gif cat       Display the CC0 pixel-cat GIF in the terminal.
+  party                         Show a colorful pixel cat. clear removes GIFs.
+    Works offline without pairing. Author: alizard; OpenGameArt; CC0.
   Ctrl+C                        Cancel the active command and its child processes.
   Up / Down                     Command history. Tab: command completion.
 
@@ -41,7 +44,7 @@ FILES / MEDIA
                                 Add --overwrite to explicitly replace an existing post.
   asset "@graduate/image.png" image.png
                                 Copy media to source/assets/uploads/image.png.
-                                Link: /blog_page/assets/uploads/image.png
+                                Link: /assets/uploads/image.png
                                 Add --overwrite to replace an existing asset.
   upload                        Choose local Markdown/media through a file picker.
                                 Select its source/ destination; then edit Markdown

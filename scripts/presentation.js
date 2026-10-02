@@ -2,11 +2,7 @@ const cheerio = require('cheerio');
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const blogTabs = [['近期发布',''],['分类','blog/categories/'],['标签','blog/tags/'],['专栏','topic/'],['归档','blog/archives/']];
 const projectTabs = () => [['所有项目','wiki/'], ...hexo.locals.get('data').taxonomy.project_categories.map(item => [item.name,`wiki/${item.slug}/`])];
-const exploreGroups = [
- ['探索',[['OKR & 手记','notes/'],['收藏夹','notes/bookmarks/']]],
- ['解决方案',[['Mac 相关问题','notes/solutions/mac/'],['iOS 相关问题','notes/solutions/ios/'],['Flutter 相关问题','notes/solutions/flutter/'],['Node.js 相关问题','notes/solutions/nodejs/'],['服务器相关问题','notes/solutions/server/']]],
- ['在线工具',[['JSON 在线解析工具','https://www.json.cn/'],['PNG 转 WEBP 工具','https://squoosh.app/']]]
-];
+const exploreLinks = [['OKR & 手记','notes/'],['收藏夹','notes/bookmarks/']];
 hexo.extend.filter.register('after_render:html', html => {
  const $ = cheerio.load(html);
  const root = hexo.config.root;
@@ -26,7 +22,7 @@ hexo.extend.filter.register('after_render:html', html => {
   $('.site-main').prepend(`<nav class="shamot-section-nav" aria-label="${section.title}导航">${nav}</nav>`);
  }
  if(section.id === 'explore') {
-  const nav = exploreGroups.map(([title,links]) => `<section><h3>${title}</h3>${links.map(([label,url]) => `<a href="${url.startsWith('https:') ? url : root+url}" ${pathname===url ? 'aria-current="page"' : ''}>${esc(label)}</a>`).join('')}</section>`).join('');
+  const nav = `<section>${exploreLinks.map(([label,url]) => `<a href="${root+url}" ${pathname===url ? 'aria-current="page"' : ''}>${esc(label)}</a>`).join('')}</section>`;
   $('.recent-widget').first().after(`<nav class="shamot-explore-nav" aria-label="探索目录">${nav}</nav>`);
  }
  $('.recent-widget').css('--theme',menu[0].accent).css('--item-theme',menu[0].accent);
@@ -58,6 +54,5 @@ hexo.extend.generator.register('shamot-sections', locals => {
  add('topic/','专栏','post','这里用于整理围绕同一主题连续写作的文章。\n\n目前还没有专栏，可以先浏览[近期发布]('+hexo.config.root+')。');
  add('notes/','OKR & 手记','explore','记录阶段目标、实践进展和随手想到的事情。\n\n## 手记\n\n目前还没有手记。\n\n## OKR\n\n阶段目标尚未公开。');
  add('notes/bookmarks/','收藏夹','explore','## 网站与文档\n\n- [Stellar 官方文档](https://xaoxuu.com/wiki/stellar/)\n- [Hexo 官方文档](https://hexo.io/zh-cn/docs/)\n- [我的 GitHub](https://github.com/chadoshamot)');
- exploreGroups[1][1].forEach(([title,path])=>add(path,title,'explore','这里用于整理'+title.replace('相关问题','')+'的解决方案。\n\n目前还没有记录。'));
  return pages;
 });

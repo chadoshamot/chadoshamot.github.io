@@ -3,8 +3,8 @@
   if (window.shamotTerminal) return;
   const assetRoot = new URL('.', document.currentScript.src);
   const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a','b','a'];
-  const available = ['help','connect','disconnect','clear','exit','theme','resources','pwd','ls','cd','mount','read','cat','edit','download','remove','new','import','asset','upload','posts','projects','search','config','status','changes','git','preview','build','publish','bridge','shell','harness'];
-  let progress=0,lastKey=0,dialog,output,input,status,editor,editing=null,pad,padProgress;
+  const available = ['help','connect','disconnect','clear','exit','theme','pet','meow','gif','party','resources','pwd','ls','cd','mount','read','cat','edit','download','remove','new','import','asset','upload','posts','projects','search','config','status','changes','git','preview','build','publish','bridge','shell','harness'];
+  let progress=0,lastKey=0,dialog,output,input,status,editor,editing=null;
   let busy=false,history=[],cursor=0,session=null,mode='site',pairing=null,cwd='~';
   const histories={site:[],harness:[]};let logs;
   try { session=JSON.parse(sessionStorage.getItem('shamot.bridge') || 'null'); } catch {}
@@ -41,6 +41,11 @@
     try {
       if(cmd==='help'){await help(tail);return;}
       if(cmd==='clear'||line==='/clear'){logs[mode].replaceChildren();return;}
+      if(mode==='site'&&['pet','meow','party','gif'].includes(cmd)){
+        if(tail&&tail!=='cat')throw Error('Available pixel pet: cat. Try pet cat, meow or party.');
+        print(cmd==='party'?'Pixel party!':cmd==='meow'?'Meow. Your terminal has a tiny running cat.':'A pixel cat joined your terminal.');
+        const figure=document.createElement('figure'),image=document.createElement('img');figure.className='shamot-pixel-pet'+(cmd==='party'?' is-party':'');image.src=new URL('pixel-cat.gif',assetRoot).href;image.alt='Animated pixel cat running';image.width=132;image.height=132;image.onload=()=>{output.scrollTop=output.scrollHeight;};image.onerror=()=>print('Pixel GIF could not load. Refresh the site and try again.','term-error');figure.append(image);logs.site.append(figure);link('https://opengameart.org/content/pixel-cat-0','Pixel cat by alizard · CC0');return;
+      }
       if(cmd==='exit'||line==='/exit'){if(mode==='harness'){switchMode('site');print('Returned to website shell.');}else dialog.close();return;}
       if(mode==='site'&&line==='harness'){switchMode('harness');if(!logs.harness.children.length)print('DeepSeek Harness session\nType an English task directly. /help · /new · /configure · /exit\nWebsite commands remain in the separate website shell.');return;}
       if(mode==='harness'&&(line==='/help'||line.startsWith('/help '))){await help(line.slice(5).trim());return;}
@@ -76,12 +81,8 @@
     dialog.querySelector('[type=file]').onchange=async event=>{for(const file of event.target.files){const suggestion=file.name.toLowerCase().endsWith('.md')?'source/_posts/'+file.name:'source/assets/uploads/'+file.name;const dest=window.prompt('Upload destination (inside source/):',suggestion);if(!dest)continue;try{setBusy(true);const response=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/octet-stream','X-Shamot-Path':encodeURIComponent(dest)},body:file});const result=await response.json();print('Uploaded '+result.path+'. Use edit for Markdown front matter, then preview/build.');}catch(e){print(e.message,'term-error');}finally{setBusy(false);}}event.target.value='';};
     print('shamot GNU-style owner shell\nEnter executes · ↑ ↓ history · Tab completion · Ctrl+C interrupts\nhelp zh / help en · resources · harness (separate AI session)\nType connect to pair interactively. Local resources require the companion bridge.');link('http://127.0.0.1:4317/pair','Get local pairing code');
   }
-  function open(){if(!dialog)createDialog();if(pad?.open)pad.close();if(!dialog.open)dialog.showModal();input.focus();}
-  function feed(key){const now=Date.now();if(now-lastKey>12000)progress=0;lastKey=now;const normalized=key.length===1?key.toLowerCase():key;if(normalized===sequence[progress])progress++;else progress=normalized===sequence[0]?1:0;if(padProgress)padProgress.textContent='●'.repeat(progress)+'○'.repeat(sequence.length-progress);if(progress===sequence.length){progress=0;open();}}
-  function codePad(){if(!pad){pad=document.createElement('dialog');pad.className='shamot-codepad';pad.setAttribute('aria-label','Secret key sequence');pad.innerHTML='<p>Enter your key sequence</p><div class="shamot-code-progress"></div><div class="shamot-codekeys"><button data-key="ArrowUp">↑</button><button data-key="ArrowDown">↓</button><button data-key="ArrowLeft">←</button><button data-key="ArrowRight">→</button><button data-key="b">B</button><button data-key="a">A</button></div><button data-close>Close</button>';document.body.append(pad);padProgress=pad.querySelector('.shamot-code-progress');pad.querySelectorAll('[data-key]').forEach(button=>button.onclick=()=>feed(button.dataset.key));pad.querySelector('[data-close]').onclick=()=>pad.close();}progress=0;padProgress.textContent='○'.repeat(sequence.length);if(!pad.open)pad.showModal();}
-  document.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||e.target.closest('input,textarea,[contenteditable=true]')||dialog?.open)return;if(sequence.includes(e.key)||sequence.includes(e.key.toLowerCase())){e.preventDefault();feed(e.key);}else progress=0;});
-  function launcher(){if(document.querySelector('.shamot-terminal-launch'))return;const button=document.createElement('button');button.type='button';button.className='shamot-terminal-launch';button.setAttribute('aria-label','Open secret keyboard');button.title='Keyboard';button.textContent='⌨';button.onclick=codePad;(document.querySelector('.page-footer')||document.querySelector('main')||document.body).append(button);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',launcher);else launcher();
-  document.addEventListener('stellar:navigation-complete',launcher);
-  window.shamotTerminal={open,execute};
+  function open(){if(!dialog)createDialog();if(!dialog.open)dialog.showModal();input.focus();}
+  function feed(key){const now=Date.now();if(now-lastKey>12000)progress=0;lastKey=now;const normalized=key.length===1?key.toLowerCase():key;if(normalized===sequence[progress])progress++;else progress=normalized===sequence[0]?1:0;if(progress===sequence.length){progress=0;open();}}
+  document.addEventListener('keydown',e=>{if(!e.isTrusted||e.ctrlKey||e.altKey||e.metaKey||e.target.closest('input,textarea,[contenteditable=true]')||dialog?.open)return;if(sequence.includes(e.key)||sequence.includes(e.key.toLowerCase())){e.preventDefault();feed(e.key);}else progress=0;});
+  window.shamotTerminal={};
 })();
