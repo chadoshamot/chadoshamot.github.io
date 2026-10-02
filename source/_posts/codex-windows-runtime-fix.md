@@ -1,7 +1,7 @@
 ---
 title: 修复 Codex 在 Windows 上的运行时暂存故障
 date: 2026-10-01 12:00:00
-updated: 2026-10-02 21:42:00
+updated: 2026-10-02 21:50:00
 categories:
   - 技术
 tags:
@@ -9,23 +9,23 @@ tags:
   - Windows
   - Codex
   - Focus
-description: 更新后后台进程仍在，但窗口没有出现？我写了一个小工具，专门处理 cua_node 运行时暂存未完成这一种故障，负责检测、重建与验证。
-excerpt: 更新后后台进程还在，窗口却迟迟不出现，同时 cua_node 目录里反复生成未完成的 .staging-* 暂存目录——这是我自己机器上遇到的情况。于是我写了这个修复工具，这里说明它适用于什么场景、怎么用，以及它不会做什么。
+description: 更新后后台进程仍在，但窗口没有出现？这个工具专门处理 cua_node 运行时暂存未完成这一类故障，负责检测、重建与验证。
+excerpt: 更新后后台进程还在，窗口却迟迟不出现，同时 cua_node 目录里反复生成未完成的 .staging-* 暂存目录。这个修复工具针对的就是这一类故障，下面说明它适用于什么场景、怎么用，以及它不会做什么。
 ---
 
-更新应用后，后台进程还在，窗口却迟迟不出现。
+更新应用后，后台进程还在，窗口却迟迟不出现。如果同时发现 `cua_node` 目录里反复生成未完成的 `.staging-*` 暂存目录，可以对照下面的特征确认是不是这一类故障。
 
-这是我自己机器上遇到的情况，同时还发现 `cua_node` 目录里反复生成未完成的 `.staging-*` 暂存目录。于是我写了一个专门处理这类故障的小工具：
+**Codex Windows Runtime Fix** 是一个非官方的社区修复工具，专门处理这一种运行时暂存故障：
 
 **[Codex Windows Runtime Fix · GitHub 仓库](https://github.com/chadoshamot/codex-windows-runtime-fix)**
 
-它是一个非官方的社区修复工具，针对 Windows 上我观察到的这一种运行时暂存故障。下面说说它的适用场景和用法。
+下面说说它的适用场景和用法。
 
 <!-- more -->
 
-## 什么情况下值得试
+## 什么情况下适用
 
-我遇到的故障有这么几个特征：
+这类故障通常有以下几个特征：
 
 - Codex / ChatGPT 桌面应用在更新之前可以正常使用。
 - 更新后，任务管理器里仍有 `ChatGPT.exe` 进程，但应用窗口没有出现。
@@ -78,7 +78,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Fix-CodexRuntime.ps1"
 
 ## 检查不通过时会怎样
 
-我给脚本设了一组终止条件，遇到下面这些情况它会直接停下，不会继续猜测：
+遇到下面这些情况，脚本会直接终止，不会继续猜测：
 
 - 找不到应用包，或者匹配到多个应用包。
 - 包内运行时不完整。
@@ -98,9 +98,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\Fix-CodexRuntime.ps1"
 
 ## 反馈问题与查看源码
 
-如果工具没能完成修复，欢迎到 [仓库 Issues](https://github.com/chadoshamot/codex-windows-runtime-fix/issues) 告诉我这些信息：Windows 版本、Codex 版本、脚本显示的运行时 ID、暂存尝试次数、文件数量、字节数与最终错误信息。
+如果工具没能完成修复，可以在 [仓库 Issues](https://github.com/chadoshamot/codex-windows-runtime-fix/issues) 提供这些信息：Windows 版本、Codex 版本、脚本显示的运行时 ID、暂存尝试次数、文件数量、字节数与最终错误信息。
 
-发布日志或截图之前，请先删掉个人信息，不要直接上传未经检查的私有日志、崩溃转储、凭据或 `.codex` 目录。
+发布日志或截图之前，请删除个人信息，不要直接上传未经检查的私有日志、崩溃转储、凭据或 `.codex` 目录。
 
 **[前往 GitHub：查看源码、下载脚本与最新说明](https://github.com/chadoshamot/codex-windows-runtime-fix)**
 
