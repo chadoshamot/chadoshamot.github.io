@@ -217,3 +217,18 @@ body[data-page-layout='page'][data-section='post'] .site-shell .article.banner .
 .shamot-section-banner figcaption a{color:var(--text-p3);text-decoration:none}
 .shamot-section-banner figcaption a:hover{color:var(--shamot-accent)}
 @media(max-width:768px){.shamot-section-banner{margin-inline:16px;margin-bottom:24px}.shamot-section-banner img{aspect-ratio:2/1}}
+
+/* About: Stellar-style topic notes, naturally integrated into the page. */
+body[data-section='about'] .tag-plugin.tabs .tab-content,
+body[data-section='about'] .tag-plugin.tabs .tab-pane{width:100%;text-align:left}
+body[data-section='about'] .tag-plugin.tabs .nav-tabs{align-self:center}
+body[data-section='about'] .md-text .shamot-about-note{width:100%;margin:24px 0;padding:4px 0;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible}
+body[data-section='about'] .md-text .shamot-about-note>.body{margin:0}
+body[data-section='about'] .md-text .shamot-about-note p{font-size:16px;line-height:1.85;margin:12px 0;color:var(--text-p1)}
+body[data-section='about'] .md-text .shamot-about-note .shamot-about-note-title{font-size:18px;line-height:1.65;margin:0 0 14px;color:var(--text)}
+.shamot-about-note-title strong{font-weight:600}
+.shamot-about-note-icon{display:inline-block;margin-right:8px;color:var(--shamot-accent);font-weight:650}
+body[data-section='about'] .md-text .shamot-about-note .shamot-about-media{font-size:14px;margin-top:16px}
+.shamot-about-media a{overflow-wrap:anywhere;text-underline-offset:4px}
+.shamot-about-media a::after{content:' ↗';font-size:.9em}
+@media(max-width:768px){body[data-section='about'] .md-text .shamot-about-note p{font-size:15px}body[data-section='about'] .md-text .shamot-about-note .shamot-about-note-title{font-size:17px}}
