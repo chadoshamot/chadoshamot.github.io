@@ -1,0 +1,20 @@
+# 栏目首页横幅：将图片放在 source/assets/banners/，修改对应 src 即可替换。
+# position 控制裁切位置；使用你自己的图片时，可删除 credit 和 source。
+explore:
+  src: /assets/banners/explore.webp
+  alt: 海岸山脉与海面
+  position: center
+  credit: Josh Austin / Unsplash
+  source: https://unsplash.com/photos/lww-FceayIE
+friends:
+  src: /assets/banners/friends.webp
+  alt: 群山、湖泊与松林
+  position: center
+  credit: Yoshi Takekawa / Unsplash
+  source: https://unsplash.com/photos/4qKVQYOluDk
+about:
+  src: /assets/banners/about.webp
+  alt: 雾气中的森林与山峦
+  position: center
+  credit: Mary Brennan / Unsplash
+  source: https://unsplash.com/photos/uCcCAf6hGQU

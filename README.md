@@ -95,3 +95,7 @@ publish "Add my post"
 ## 本地目录与发布位置
 
 项目完整目录：YOUR_PROJECT_DIR。源码推送到 chadoshamot/chadoshamot.github.io，由 GitHub Actions 发布到 https://chadoshamot.github.io/。原 blog_page 仓库保留。
+
+## 替换栏目首页图片
+
+探索、友链和关于首页的横幅在 `source/_data/section_banners.yml` 配置。图片保存于 `source/assets/banners/`，修改 `src`、`alt` 与 `position` 即可替换；自己的图片可以删除 `credit`、`source`。横幅直接嵌入标题下方，仅出现在三个栏目首页。

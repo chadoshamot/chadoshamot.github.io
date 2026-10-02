@@ -1,0 +1,13 @@
+Temporary section banners. Unsplash License: https://unsplash.com/license
+
+explore.webp: Josh Austin
+https://unsplash.com/photos/lww-FceayIE
+Crop/resize served by Unsplash image CDN.
+
+friends.webp: Yoshi Takekawa
+https://unsplash.com/photos/4qKVQYOluDk
+Crop/resize served by Unsplash image CDN.
+
+about.webp: Mary Brennan
+https://unsplash.com/photos/uCcCAf6hGQU
+Crop/resize served by Unsplash image CDN.
