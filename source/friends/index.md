@@ -6,13 +6,7 @@ active_menu: friends
 
 ## 友链列表
 
-<div class="shamot-friend-list">
-  <a class="shamot-friend-link" href="https://kzzzza.github.io/" target="_blank" rel="noopener noreferrer" aria-label="访问 Blog of Kz（在新标签页打开）">
-    <img class="shamot-friend-avatar" src="https://kzzzza.github.io/img/tx.jpg" alt="" width="48" height="48" loading="lazy" decoding="async">
-    <span class="shamot-friend-name">Blog of Kz</span>
-    <span class="shamot-friend-arrow" aria-hidden="true">↗</span>
-  </a>
-</div>
+{% shamot_friends %}
 
 ## 友链失联了怎么办？
 

@@ -242,3 +242,5 @@ body[data-section='about'] .md-text .shamot-about-note .shamot-about-media{font-
 .shamot-friend-arrow{flex-shrink:0;color:var(--shamot-accent);font-size:20px;opacity:.75;transition:opacity 180ms ease,transform 180ms ease}
 .shamot-friend-link:hover .shamot-friend-arrow,.shamot-friend-link:focus-visible .shamot-friend-arrow{opacity:1;transform:translate(2px,-2px)}
 @media(prefers-reduced-motion:reduce){.shamot-friend-link .shamot-friend-arrow{transition:none;transform:none!important}}
+
+.shamot-friend-monogram{flex:0 0 48px;width:48px;height:48px;fill:var(--shamot-accent);font-size:30px;font-weight:600}

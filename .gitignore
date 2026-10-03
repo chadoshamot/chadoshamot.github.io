@@ -9,3 +9,4 @@ db.json
 .env.*
 .credentials*
 *.shamot-*.tmp
+source/_data/caches/

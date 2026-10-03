@@ -1,0 +1,7 @@
+# 友链：使用 friends 命令管理；页面仅显示头像与站名链接。
+version: 1
+items:
+  - id: kzzzza
+    name: Blog of Kz
+    url: https://kzzzza.github.io/
+    avatar: https://kzzzza.github.io/img/tx.jpg

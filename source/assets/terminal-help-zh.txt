@@ -120,3 +120,23 @@ Harness 配置命令说明：
   about 保存：只修改本地数据；备份在 .shamot/backups，不会自动发布。
   about 工作流：preview start 4000 预览；build 构建；publish "Update about profile" 发布。
   about 若在 AI 模式：先 /exit 回到网站终端；管理命令不会发给模型。
+
+友链管理（网站命令模式，无需 AI）
+  friends add "https://example.com/"                 自动读取站名和已有头像，按本站标准加入友链。
+  friends add "https://example.com/" --name "站名" --avatar "https://example.com/avatar.png" --id example
+  friends add "https://example.com/" --name "站名" --avatar none
+  friends list                                      列出友链 ID、站名和地址。
+  friends show ID                                   查看保存的资料。
+  friends set ID --name "新站名" [--url "https://..."] [--avatar "https://..."]
+  friends update ID 参数                            同 set；未指定的字段保留。
+  friends set ID --avatar none                       改用随主题变色的字母标记。
+  friends remove ID --confirm                       删除友链，原数据会备份。
+  friends edit                                      编辑 source/_data/friends.yml，保存时校验。
+  friends help                                      离线查看帮助；help zh friends / help en friends。
+  friends 识别：读取主页 HTML 中的站名和头像；动态加载的网站可以用 --name 和 --avatar 手动指定。
+  friends 样式：不显示简介，透明背景适配米黄、藏蓝、澄绿；没有头像时用字母标记。
+  friends 校验：禁止重复 ID 和地址；只接受无内嵌凭据的 HTTP/HTTPS URL，远程 HTML 不执行。
+  friends 网络：读取失败可重试或提供 --name；同时指定 --name 和 --avatar 时不读取远程网页。
+  friends 保存：修改本地数据并自动备份到 .shamot/backups，不会自动发布。
+  friends 工作流：friends add URL → preview start 4000 → changes → publish "Update friend links"。
+  friends 若在 AI 模式：先 /exit；桥代码更新后需重启本地桥并重新配对。

@@ -3,7 +3,7 @@
   if (window.shamotTerminal) return;
   const assetRoot = new URL('.', document.currentScript.src);
   const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a','b','a'];
-  const available = ['help','connect','disconnect','clear','exit','theme','pet','meow','gif','party','resources','about','pwd','ls','cd','mount','read','cat','edit','download','remove','new','import','asset','upload','posts','projects','search','config','status','changes','git','preview','build','publish','bridge','shell','harness'];
+  const available = ['help','connect','disconnect','clear','exit','theme','pet','meow','gif','party','resources','about','friends','pwd','ls','cd','mount','read','cat','edit','download','remove','new','import','asset','upload','posts','projects','search','config','status','changes','git','preview','build','publish','bridge','shell','harness'];
   let progress=0,lastKey=0,dialog,output,input,status,editor,editing=null;
   let busy=false,history=[],cursor=0,session=null,mode='site',pairing=null,cwd='~',credentialHintShown=false;
   const histories={site:[],harness:[]};let logs;
@@ -40,8 +40,8 @@
     if(cmd!=='connect'){history.push(line);history=history.slice(-100);histories[mode]=history;}cursor=history.length;
     credentialHintShown=false;setBusy(true);
     try {
-      if(cmd==='about'&&tail==='help'){await help('about');return;}
-      if(mode==='harness'&&cmd==='about'){print('about is a website management command. Type /exit, then run it in the website shell.','term-error');return;}
+      if(['about','friends'].includes(cmd)&&tail==='help'){await help(cmd);return;}
+      if(mode==='harness'&&['about','friends'].includes(cmd)){print(cmd+' is a website management command. Type /exit, then run it in the website shell.','term-error');return;}
       if(cmd==='help'){await help(tail);return;}
       if(cmd==='clear'||line==='/clear'){logs[mode].replaceChildren();return;}
       if(mode==='site'&&['pet','meow','party','gif'].includes(cmd)){
