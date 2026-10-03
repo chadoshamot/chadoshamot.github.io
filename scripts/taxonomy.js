@@ -54,10 +54,12 @@ hexo.extend.filter.register('after_render:html', html => {
       if(c) tag.addClass('shamot-colored-tag').attr('style',`--tag-light:${c.light};--tag-dark:${c.dark}`);
     });
   }
-  $('.post-card').each((_,node)=>{
-    const card=$(node),names=card.find('.card-tags .tag-chip').map((_,tag)=>$(tag).text().trim()).get();
-    const category=card.find('.cap.breadcrumb');
-    if(names.includes(category.text().trim())) category.remove();
+  // 列表卡片用带文件夹图标的 breadcrumb 显示文章分类，因此不再重复渲染同名的 # 标签。
+  // 卡片最多显示 5 个标签（主题 tagLinks.slice(0,5)），分类标签追加在最后，标签多的文章会被它挤出列表。
+  $('.card-tags').each((_,node)=>{
+    const tags=$(node), name=tags.siblings('.cap.breadcrumb').text().trim();
+    if(!name) return;
+    tags.children('.tag-chip').filter((_,chip)=>$(chip).text().trim()===name).remove();
   });
   return $.html();
 });
