@@ -49,3 +49,4 @@ tags:
   Python: {light: '#4b6b2f', dark: '#bcd79a'}
   算法: {light: '#6a5a2f', dark: '#d3c48a'}
   Git: {light: '#5a5f8a', dark: '#b9bfe0'}
+  Infra: {light: '#356f72', dark: '#9cd8d3'}
