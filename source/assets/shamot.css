@@ -232,3 +232,13 @@ body[data-section='about'] .md-text .shamot-about-note .shamot-about-media{font-
 .shamot-about-media a{overflow-wrap:anywhere;text-underline-offset:4px}
 .shamot-about-media a::after{content:' ↗';font-size:.9em}
 @media(max-width:768px){body[data-section='about'] .md-text .shamot-about-note p{font-size:15px}body[data-section='about'] .md-text .shamot-about-note .shamot-about-note-title{font-size:17px}}
+
+/* Friend links share the page surface and follow the section accent. */
+.shamot-friend-list{display:flex;flex-wrap:wrap;gap:16px 32px;margin:24px 0 32px}
+.md-text a.shamot-friend-link{display:inline-flex;align-items:center;gap:16px;max-width:100%;min-height:64px;padding:8px 4px;color:var(--text-p1);background:transparent;border:0;border-radius:0;box-shadow:none;text-decoration:none;transition:color 180ms ease}
+.md-text a.shamot-friend-link:hover{background:transparent;color:var(--shamot-accent);text-decoration:none}
+.md-text .shamot-friend-link img.shamot-friend-avatar{display:block;flex:0 0 48px;width:48px;height:48px;margin:0;object-fit:cover;border-radius:50%;border:0;box-shadow:none}
+.shamot-friend-name{min-width:0;font-size:18px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+.shamot-friend-arrow{flex-shrink:0;color:var(--shamot-accent);font-size:20px;opacity:.75;transition:opacity 180ms ease,transform 180ms ease}
+.shamot-friend-link:hover .shamot-friend-arrow,.shamot-friend-link:focus-visible .shamot-friend-arrow{opacity:1;transform:translate(2px,-2px)}
+@media(prefers-reduced-motion:reduce){.shamot-friend-link .shamot-friend-arrow{transition:none;transform:none!important}}
