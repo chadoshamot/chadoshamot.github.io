@@ -11,9 +11,9 @@ items:
 
       面向更新后窗口未出现、并伴随 cua_node 暂存目录异常的特定情况。这是一个非官方社区工具，使用条件、操作步骤与最新说明以仓库 README 为准。
   - id: paper-librarian
-    name: Paper Librarian
+    name: Paper Librarian v2.0
     category: applications
-    description: 本地运行的 AI 论文管家：PDF 入库、双语知识库、语义检索、ModelScope 同步与每日检索，并提供统一的馆长 agent。
+    description: 本地运行的 AI 论文管家 v2.0：PDF 入库、双语知识库、语义检索、ModelScope 同步与每日检索，并提供统一的馆长 agent 与桌面版 PaperBook。
     repository: https://github.com/chadoshamot/paper-librarian
     article: posts/paper-librarian-ai-paper-agent/
     language: Python
@@ -23,15 +23,16 @@ items:
       - **录入**：PDF 抓元数据，AI 读全文生成摘要，再自动分类、归档、重命名，输出双语 Markdown 卡片。
       - **检索**：语义向量 + 关键词 + 标题加权，支持精准与探索（MMR）两种模式。
       - **论文库**：大领域 → 方向 → work 三级目录树，可跳原文、就地改元数据、删除。
-      - **每日检索**：多源抓取 + 质量评分 + LLM 裁判，输出日报，可推库或发邮件。
+      - **每日检索**：多源抓取 + 质量评分 + LLM 裁判，输出日报，可推库或发邮件；检索方向保存在 `research-profile.md`。
       - **馆长 agent**：查库、深读全文、联网搜索、下载入库、上云与去重都在对话里完成；删除与上云等操作先生成计划，确认后才执行。
+      - **聊天记录**：对话自动保存到本地并同步到私有 ModelScope 仓库，可继续历史会话。
       - **上云**：ModelScope 增量同步，PDF 走 git-lfs，知识库走 Markdown。
+      - **界面**：交互式 CLI、零依赖 Web 界面，以及桌面版 `paperbook.pyw`（原生窗口，含「设置」控制台，双击即开、关闭停服），三处共用同一个馆长 agent。
 
       ## 使用前注意
 
       - 环境需要 Python 3.10+ 与带 git-lfs 的 Git，`python setup.py` 会交互式生成配置与 `.env`。
+      - 桌面版需先装 `pywebview` 与 `pythonnet`（`requirements.txt` 已包含）。
       - 密钥只写在本地 `.env`（已被 gitignore），仓库里只有空值的 `.env.example`；其中只有 DeepSeek 的 Key 是必需的。
       - 首次检索会下载 jina-v2-base-zh 嵌入模型，几百 MB，之后走缓存。
       - 换 LLM 要同时改 `.env` 的 key 与 `config.yml` 的 model 段（provider / base_url / model 三处）。
-
-      桌面版 `paperbook.pyw` 把整套 Web 界面装进原生窗口，双击即开，关闭窗口自动停服。
