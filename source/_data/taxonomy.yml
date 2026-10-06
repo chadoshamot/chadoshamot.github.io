@@ -51,3 +51,4 @@ tags:
   Git: {light: '#5a5f8a', dark: '#b9bfe0'}
   Infra: {light: '#356f72', dark: '#9cd8d3'}
   C++: {light: '#27648c', dark: '#9acdf2'}
+  Linux: {light: '#7e6131', dark: '#ddc59a'}
