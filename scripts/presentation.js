@@ -10,7 +10,7 @@ hexo.extend.filter.register('after_render:html', html => {
  const active = $('#leftbar-region .widget-instance--menu .is-active').first();
  const section = menu.find(item => item.title === active.attr('title') || item.title === active.find('.ui-collection__title').text().trim()) || menu[0];
  $('html').attr('style', `--shamot-accent:${section.accent};--theme:${section.accent};--accent:${section.accent};--link:${section.accent}`);
- const switchButton = `<select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option></select>`;
+ const switchButton = `<select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select>`;
  $('.widget-instance--menu').first().before(`<div class="shamot-theme-control">${switchButton}</div>`);
  $('body').attr('data-section', section.id).prepend(`<header class="shamot-mobile-header"><a href="${root}">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions">${switchButton}<button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header>`);
  const canonical = $('link[rel=canonical]').attr('href') || $('meta[property="og:url"]').attr('content') || '';

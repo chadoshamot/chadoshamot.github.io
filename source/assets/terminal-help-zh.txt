@@ -12,7 +12,7 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
   help en [keyword]              英文帮助与查找。
   clear                          清屏；Enter 执行，↑ ↓ 历史，Tab 补全，Ctrl+C 中断。
   exit                           关闭终端；在 Harness 中则返回网站命令模式。
-  theme beige|navy|green          米黄、藏蓝、澄绿。
+  theme beige|navy|green|purple          米黄、藏蓝、澄绿、紫色（#714288）。
   pet cat / meow / gif cat       在终端显示像素猫 GIF；不用配对也能运行。
   party                         显示彩色像素猫；clear 清除屏幕上的动图。
   素材为 alizard 的 CC0 跑步猫：https://opengameart.org/content/pixel-cat-0
@@ -134,7 +134,7 @@ Harness 配置命令说明：
   friends edit                                      编辑 source/_data/friends.yml，保存时校验。
   friends help                                      离线查看帮助；help zh friends / help en friends。
   friends 识别：读取主页 HTML 中的站名和头像；动态加载的网站可以用 --name 和 --avatar 手动指定。
-  friends 样式：不显示简介，透明背景适配米黄、藏蓝、澄绿；没有头像时用字母标记。
+  friends 样式：不显示简介，透明背景适配米黄、藏蓝、澄绿、紫色；没有头像时用字母标记。
   friends 校验：禁止重复 ID 和地址；只接受无内嵌凭据的 HTTP/HTTPS URL，远程 HTML 不执行。
   friends 网络：读取失败可重试或提供 --name；同时指定 --name 和 --avatar 时不读取远程网页。
   friends 保存：修改本地数据并自动备份到 .shamot/backups，不会自动发布。

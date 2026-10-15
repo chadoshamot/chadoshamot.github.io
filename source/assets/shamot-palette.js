@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const key = 'shamot.palette';
-  const palettes = new Set(['beige', 'navy', 'green']);
+  const palettes = new Set(['beige', 'navy', 'green', 'purple']);
   const root = document.documentElement;
   const read = () => {
     try {

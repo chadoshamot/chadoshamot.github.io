@@ -17,7 +17,7 @@ START
   resources                     Show every website resource location and local path.
   clear                         Clear the terminal output.
   exit                          Hide the terminal (does not stop the bridge).
-  theme beige|navy|green         Change this browser's website palette.
+  theme beige|navy|green|purple         Change this browser's website palette.
   pet cat / meow / gif cat       Display the CC0 pixel-cat GIF in the terminal.
   party                         Show a colorful pixel cat. clear removes GIFs.
     Works offline without pairing. Author: alizard; OpenGameArt; CC0.
@@ -176,7 +176,7 @@ Friend links (website shell; no AI required)
   friends edit                                      Edit source/_data/friends.yml with validation on save.
   friends help                                      Offline help; help en friends / help zh friends.
   friends: names and avatars are auto-detected from homepage HTML; JavaScript-only sites may need overrides.
-  friends: no descriptions; transparent layout adapts to beige, navy and green. IDs and URLs cannot be duplicated.
+  friends: no descriptions; transparent layout adapts to beige, navy, green and purple. IDs and URLs cannot be duplicated.
   friends: URL must be HTTP/HTTPS without credentials. Remote HTML is not executed; names are escaped.
   friends: if fetching fails, retry or provide --name; --name plus --avatar bypasses auto-detection.
   friends: changes are local, with backups in .shamot/backups; no automatic publishing.

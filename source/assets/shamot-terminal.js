@@ -52,7 +52,7 @@
       if(cmd==='exit'||line==='/exit'){if(mode==='harness'){switchMode('site');print('Returned to website shell.');}else dialog.close();return;}
       if(mode==='site'&&line==='harness'){switchMode('harness');if(!logs.harness.children.length)print('DeepSeek Harness session\nType an English task directly. /help · /new · /configure · /exit\nWebsite commands remain in the separate website shell.');return;}
       if(mode==='harness'&&(line==='/help'||line.startsWith('/help '))){await help(line.slice(5).trim());return;}
-      if(cmd==='theme'){if(!['beige','navy','green'].includes(tail))throw Error('Use theme beige, theme navy or theme green.');if(window.setShamotPalette)window.setShamotPalette(tail);else {document.documentElement.dataset.palette=tail;document.documentElement.dataset.theme=tail==='beige'?'light':'dark';}print('Palette: '+tail);return;}
+      if(cmd==='theme'){if(!['beige','navy','green','purple'].includes(tail))throw Error('Use theme beige, theme navy, theme green or theme purple.');if(window.setShamotPalette)window.setShamotPalette(tail);else {document.documentElement.dataset.palette=tail;document.documentElement.dataset.theme=tail==='beige'?'light':'dark';}print('Palette: '+tail);return;}
       if(cmd==='connect'){
         if(!tail){pairing={step:'url'};print('Bridge URL: press Enter for http://127.0.0.1:4317, or type your local bridge URL.');prompt();return;}
         const normalized=tail.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'$2').replace(/["'`]/g,'').trim();
