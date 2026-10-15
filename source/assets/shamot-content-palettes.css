@@ -1,0 +1,20 @@
+/* Approved palette: content surfaces share the cover base colors. */
+:root[data-palette='purple']{--background:#140e1e;--card:#140e1e;--text:#f5effb;--text-p0:#f5effb;--text-p1:#f5effb;--text-p2:#c1b6ce;--text-p3:#c1b6ce;--text-p4:#c1b6ce;--block:#0e0916;--block-border:#0e0916;--text-meta:#c1b6ce;--text-code:#f5effb}
+:root[data-palette='purple'],:root[data-palette='purple'] body{background:#140e1e!important;color:#f5effb}
+:root[data-palette='purple'] .brand-title .brand-tagline,:root[data-palette='purple'] .shamot-eyebrow,:root[data-palette='purple'] .shamot-intro-description,:root[data-palette='purple'] .post-list .post-card .excerpt p,:root[data-palette='purple'] .post-card .meta,:root[data-palette='purple'] .post-card .cap,:root[data-palette='purple'] .page-footer .text{color:#c1b6ce}
+:root[data-palette='purple'] .md-text p,:root[data-palette='purple'] .md-text li{color:#f5effb}
+:root[data-palette='purple'] .md-text pre,:root[data-palette='purple'] .md-text .highlight{background:#0e0916}
+:root[data-palette='purple'] .search-dialog{background:#140e1e;border-color:#0e0916}
+:root[data-palette='navy']{--background:#0b1523;--card:#0b1523;--text:#eff5fb;--text-p0:#eff5fb;--text-p1:#eff5fb;--text-p2:#aebdd0;--text-p3:#aebdd0;--text-p4:#aebdd0;--block:#070f1b;--block-border:#070f1b;--text-meta:#aebdd0;--text-code:#eff5fb}
+:root[data-palette='navy'],:root[data-palette='navy'] body{background:#0b1523!important;color:#eff5fb}
+:root[data-palette='navy'] .brand-title .brand-tagline,:root[data-palette='navy'] .shamot-eyebrow,:root[data-palette='navy'] .shamot-intro-description,:root[data-palette='navy'] .post-list .post-card .excerpt p,:root[data-palette='navy'] .post-card .meta,:root[data-palette='navy'] .post-card .cap,:root[data-palette='navy'] .page-footer .text{color:#aebdd0}
+:root[data-palette='navy'] .md-text p,:root[data-palette='navy'] .md-text li{color:#eff5fb}
+:root[data-palette='navy'] .md-text pre,:root[data-palette='navy'] .md-text .highlight{background:#070f1b}
+:root[data-palette='navy'] .search-dialog{background:#0b1523;border-color:#070f1b}
+:root[data-palette='green']{--background:#0a1b1d;--card:#0a1b1d;--text:#edf8f6;--text-p0:#edf8f6;--text-p1:#edf8f6;--text-p2:#abc6c2;--text-p3:#abc6c2;--text-p4:#abc6c2;--block:#071416;--block-border:#071416;--text-meta:#abc6c2;--text-code:#edf8f6}
+:root[data-palette='green'],:root[data-palette='green'] body{background:#0a1b1d!important;color:#edf8f6}
+:root[data-palette='green'] .brand-title .brand-tagline,:root[data-palette='green'] .shamot-eyebrow,:root[data-palette='green'] .shamot-intro-description,:root[data-palette='green'] .post-list .post-card .excerpt p,:root[data-palette='green'] .post-card .meta,:root[data-palette='green'] .post-card .cap,:root[data-palette='green'] .page-footer .text{color:#abc6c2}
+:root[data-palette='green'] .md-text p,:root[data-palette='green'] .md-text li{color:#edf8f6}
+:root[data-palette='green'] .md-text pre,:root[data-palette='green'] .md-text .highlight{background:#071416}
+:root[data-palette='green'] .search-dialog{background:#0a1b1d;border-color:#071416}
+:root[data-palette] body::before{display:none!important}

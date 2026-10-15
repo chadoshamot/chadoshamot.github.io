@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto'),esbuild=require('esbuild');
+const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const json=value=>JSON.stringify(value).replace(/</g,'\\u003c');
+async function coverRoutes(root,settings={}){
+ const built=await esbuild.build({absWorkingDir:root,entryPoints:['cover/src/main.jsx'],bundle:true,minify:true,jsx:'automatic',outdir:path.join(root,'.shamot/cover-build'),entryNames:'app',legalComments:'linked',external:['/assets/cover/*'],write:false});
+ const revision=crypto.createHash('sha256').update(built.outputFiles.map(file=>file.text).join('')).digest('hex').slice(0,12);
+ const config={name:settings.name||'shamot',signature:settings.signature||'Nothing is impossible!',avatar:settings.avatar||'https://avatars.githubusercontent.com/u/160225157?v=4',background:['galaxy','particles','grid','glitch'].includes(settings.background)?settings.background:'galaxy',palette:['beige','navy','green','purple'].includes(settings.palette)?settings.palette:'purple'};
+ const asset='/assets/cover/';const settingsJson=json(config);
+ const seed=`window.shamotCoverConfig=${settingsJson};(()=>{const colors={beige:'#e8dbba',navy:'#0b1523',green:'#0a1b1d',purple:'#140e1e'};let saved;try{saved=localStorage.getItem('shamot.palette')}catch{}const requested=new URLSearchParams(location.search).get('palette');const selected=requested in colors?requested:saved in colors?saved:window.shamotCoverConfig.palette;document.documentElement.style.backgroundColor=colors[selected]})()`;
+ const html=`<!doctype html><html lang="en" data-shamot-cover><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="description" content="${esc(config.name)} — A personal space for learning, building and sharing."><title>${esc(config.name)}</title><link rel="canonical" href="https://chadoshamot.github.io/"><meta property="og:title" content="${esc(config.name)}"><meta property="og:type" content="website"><meta property="og:url" content="https://chadoshamot.github.io/"><link rel="icon" href="${esc(config.avatar)}"><script>${seed}</script><link rel="preload" href="${asset}great-vibes.ttf" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="${asset}app.css?v=${revision}"><link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"></head><body><div id="root"></div><noscript><main style="color:#f5effb;text-align:center;gap:24px;align-content:center"><h1>${esc(config.name)}</h1><nav><a href="/blog/">Blog</a> · <a href="/wiki/">Projects</a> · <a href="/notes/">Explore</a> · <a href="/friends/">Friends</a> · <a href="/about/">About</a> · <a href="https://github.com/chadoshamot">GitHub</a></nav></main></noscript><script src="${asset}app.js?v=${revision}" defer></script><script src="/assets/shamot-terminal.js?v=6" defer></script></body></html>`;
+ const routes=built.outputFiles.map(file=>({path:'assets/cover/'+path.basename(file.path),data:Buffer.from(file.contents)}));
+ routes.push({path:'index.html',data:html},{path:'assets/cover/great-vibes.ttf',data:await fs.readFile(path.join(root,'cover/assets/great-vibes.ttf'))});
+ for(const file of ['great-vibes.txt','react-bits.md','octicons.txt'])routes.push({path:'assets/cover/licenses/'+file,data:await fs.readFile(path.join(root,'cover/licenses',file))});
+ return routes;
+}
+module.exports={coverRoutes};

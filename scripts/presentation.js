@@ -1,9 +1,10 @@
 const cheerio = require('cheerio');
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const blogTabs = [['近期发布',''],['分类','blog/categories/'],['标签','blog/tags/'],['专栏','topic/'],['归档','blog/archives/']];
+const blogTabs = [['近期发布','blog/'],['分类','blog/categories/'],['标签','blog/tags/'],['专栏','topic/'],['归档','blog/archives/']];
 const projectTabs = () => [['所有项目','wiki/'], ...hexo.locals.get('data').taxonomy.project_categories.map(item => [item.name,`wiki/${item.slug}/`])];
 const exploreLinks = [['OKR & 手记','notes/'],['收藏夹','notes/bookmarks/']];
 hexo.extend.filter.register('after_render:html', html => {
+ if(html.includes('data-shamot-cover'))return html;
  const $ = cheerio.load(html);
  const root = hexo.config.root;
  const menu = hexo.theme.config.leftbar.menu;
@@ -34,7 +35,7 @@ hexo.extend.filter.register('after_render:html', html => {
   $('.article-banner-wrap').first().after(figure);
  }
  $('.recent-widget').css('--theme',menu[0].accent).css('--item-theme',menu[0].accent);
- if($('body').attr('data-page-type') === 'index' && pathname === '') {
+ if($('body').attr('data-page-type') === 'index' && pathname === 'blog/') {
   $('.shamot-section-nav').after(`<section class="shamot-intro"><p class="shamot-eyebrow">SHAMOT / BLOG</p><h1 id="shamot-intro-title">学习、实践与记录</h1><p class="shamot-intro-description">${esc(hexo.theme.config.leftbar.brand.tagline)}</p></section>`);
  }
  return $.html();
@@ -59,7 +60,7 @@ hexo.extend.generator.register('shamot-sections', locals => {
    const body=hexo.render.renderSync({text:project.description+'\n\n## 项目入口\n\n[查看 GitHub 仓库]('+project.repository+')'+(project.article ? '\n\n[阅读介绍文章]('+hexo.config.root+project.article+')' : '')+'\n\n'+(project.details || '使用方法与最新说明以项目仓库为准。'),engine:'markdown'});
    add(`wiki/${project.id}/`,project.name,'projects',`<div><p>${chip(kind.name,hexo.config.root+'wiki/'+kind.slug+'/')}</p>${body}</div>`);
  });
- add('topic/','专栏','post','这里用于整理围绕同一主题连续写作的文章。\n\n目前还没有专栏，可以先浏览[近期发布]('+hexo.config.root+')。');
+ add('topic/','专栏','post','这里用于整理围绕同一主题连续写作的文章。\n\n目前还没有专栏，可以先浏览[近期发布]('+hexo.config.root+'blog/)。');
  add('notes/','OKR & 手记','explore','记录阶段目标、实践进展和随手想到的事情。\n\n## 手记\n\n目前还没有手记。\n\n## OKR\n\n阶段目标尚未公开。');
  add('notes/bookmarks/','收藏夹','explore','## 网站与文档\n\n- [Stellar 官方文档](https://xaoxuu.com/wiki/stellar/)\n- [Hexo 官方文档](https://hexo.io/zh-cn/docs/)\n- [我的 GitHub](https://github.com/chadoshamot)');
  return pages;

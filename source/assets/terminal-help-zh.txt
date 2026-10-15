@@ -12,7 +12,7 @@ SHAMOT 终端 / 中文帮助（命令使用英文）
   help en [keyword]              英文帮助与查找。
   clear                          清屏；Enter 执行，↑ ↓ 历史，Tab 补全，Ctrl+C 中断。
   exit                           关闭终端；在 Harness 中则返回网站命令模式。
-  theme beige|navy|green|purple          米黄、藏蓝、澄绿、紫色（#714288）。
+  theme beige|navy|green|purple          米黄、藏蓝、澄绿、紫色（#140E1E）。
   pet cat / meow / gif cat       在终端显示像素猫 GIF；不用配对也能运行。
   party                         显示彩色像素猫；clear 清除屏幕上的动图。
   素材为 alizard 的 CC0 跑步猫：https://opengameart.org/content/pixel-cat-0

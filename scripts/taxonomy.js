@@ -40,6 +40,7 @@ hexo.extend.generator.register('shamot-categories', locals => {
   return pages;
 });
 hexo.extend.filter.register('after_render:html', html => {
+  if(html.includes('data-shamot-cover'))return html;
   const $=cheerio.load(html);
   $('.card-tags .tag-chip, .article-tags a.tag, #tags a.tag, .widget-wrapper.tagcloud a, .cap.breadcrumb > span').each((_,node)=>{
     const tag=$(node), name=tag.text().trim();

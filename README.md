@@ -105,3 +105,8 @@ publish "Add my post"
 配对后在网站命令模式使用 `about list`、`about show TAB ID`、`about add`、`about set`、`about remove TAB ID --confirm` 或 `about edit`。TAB 为 `topics`、`music`、`sports`、`other`。`help zh about` 和 `help en about` 提供完整参数示例。
 
 内容保存于 `source/_data/about.yml`；`source/about/index.md` 的 `{% shamot_about %}` 自动生成四个标签页。每次命令修改和编辑器保存都会校验并备份，之后通过 `preview` 检查、`publish` 发布。正文使用纯文本，`--text` 和 `--link "名称" "URL"` 可重复；`set` 只替换提供的字段。
+
+
+## Entrance cover
+
+The English entrance is served at `/`; the blog article index is `/blog/`. Existing article URLs are unchanged. Cover editing, shared palettes, build integration and credits are documented in [cover/README.md](cover/README.md).

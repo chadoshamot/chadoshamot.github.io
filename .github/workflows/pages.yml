@@ -21,6 +21,7 @@ jobs:
       - run: npm run bridge:test
       - run: npm run doctor
       - run: npm run build
+      - run: npm run site:test
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
