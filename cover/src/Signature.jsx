@@ -12,9 +12,10 @@ const strokes=[
  ['M810 212 L888 212',220],
 ];
 
-export default function Signature({name='shamot',reduced=false}){
+export default function Signature({name='shamot',reduced=false,onComplete}){
  const id=useId().replace(/:/g,''),group=useRef(null);
  const [complete,setComplete]=useState(reduced||name!=='shamot');
+ useEffect(()=>{if(complete)onComplete?.()},[complete,onComplete]);
  useEffect(()=>{
   if(reduced||name!=='shamot'){setComplete(true);return}
   let cancelled=false;const animations=[];
