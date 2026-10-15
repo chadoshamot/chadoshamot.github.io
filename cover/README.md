@@ -8,6 +8,7 @@ Existing `/posts/...`, `/wiki/`, `/notes/`, `/friends/`, `/about/` URLs remain v
 - Avatar: the shared `leftbar.brand.image.src` in `_config.stellar.yml`.
 - Content colors: `source/assets/shamot-content-palettes.css`.
 - Font: Great Vibes (local file), no trailing period in the headline.
+- `Signature.jsx` reveals the original `shamot` font with hand-traced pen routes, once per page load after the font is ready (about 4.7 seconds including the opening pause). Palette/background changes and screen navigation do not restart it. Reduced motion shows the finished name immediately. A different configured name uses static text until its own pen routes are added.
 - Both screens keep the six destinations, four background options and four palette shortcuts.
 - Scroll down to enter, scroll up to return; mobile supports swipe and the bottom control.
 - `shamot.palette` is shared by cover and content; the background choice is remembered in `shamot.cover.background`.

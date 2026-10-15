@@ -16,3 +16,6 @@
 .cover:not(.is-light) .ambient-galaxy,.cover:not(.is-light) .ambient-particles{mix-blend-mode:screen}
 
 .cover-footer .palette-controls{margin-left:auto}
+.intro h1.handwritten-name{padding:0;line-height:1.3;height:1.3em}
+.handwritten-name svg{display:block;margin:auto;width:2.25em;height:1.3em;overflow:visible}
+.handwritten-name text{font-family:'Shamot Script',cursive;font-size:400px;font-weight:400;fill:currentColor}
