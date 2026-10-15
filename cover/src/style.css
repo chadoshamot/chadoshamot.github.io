@@ -28,3 +28,6 @@
 .cover.is-opening{background:#000}
 .is-opening .ambient,.is-opening .atmosphere,.is-opening .cover-header,.is-opening .cover-footer,.is-opening .intro .signature,.is-opening .intro .intro-actions{opacity:0;visibility:hidden;pointer-events:none}
 .is-opening .handwritten-name{color:#f5effb}
+.cover-footer .study-switch{margin:0}
+@media(min-width:701px) and (max-width:1100px){.cover-footer .scroll-cue{bottom:80px;white-space:nowrap}}
+@media(max-width:700px){.cover-footer .mobile-variants{padding:0;min-height:20px}.cover-footer .palette-controls{min-height:20px}}

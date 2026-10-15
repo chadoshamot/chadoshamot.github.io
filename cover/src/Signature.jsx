@@ -11,6 +11,7 @@ const strokes=[
  ['M878 156 C853 166 828 232 811 273 C796 312 792 354 818 353 C844 356 875 316 888 287',600],
  ['M810 212 L888 212',220],
 ];
+const durationScale=2000/(strokes.reduce((total,[,duration])=>total+duration,0)-45*(strokes.length-1));
 
 export default function Signature({name='shamot',reduced=false,onComplete}){
  const id=useId().replace(/:/g,''),group=useRef(null);
@@ -23,10 +24,10 @@ export default function Signature({name='shamot',reduced=false,onComplete}){
    try{
     await document.fonts.load('400px "Shamot Script"');
     if(cancelled)return;
-    let delay=550;
+    let delay=0;
     for(const [i,path] of [...group.current.children].entries()){
      const duration=strokes[i][1];
-     animations.push(path.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration,delay,easing:'linear',fill:'forwards'}));
+     animations.push(path.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:duration*durationScale,delay:delay*durationScale,easing:'linear',fill:'forwards'}));
      delay+=duration-45;
     }
     await Promise.all(animations.map(animation=>animation.finished));
