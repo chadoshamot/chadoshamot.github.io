@@ -1,0 +1,599 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light" style="--shamot-accent:#f4d35e;--theme:#f4d35e;--accent:#f4d35e;--link:#f4d35e"><head>
+  
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0" theme-name="Stellar" theme-version="2.0.0">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title data-stellar-page-meta="">Infra学习day1 - shamot</title>
+  <script data-stellar-script="core">
+    (function () {
+      var key = 'stellar:v2:leftbar-state';
+      var fallback = "expanded";
+      try {
+        var value = localStorage.getItem(key);
+        document.documentElement.dataset.leftbarState = value === 'collapsed' || value === 'expanded' ? value : fallback;
+      } catch (error) {
+        document.documentElement.dataset.leftbarState = fallback;
+      }
+    })();
+  </script>
+
+  <meta name="description" content="Infra 学习第一天的 Python 前置知识笔记，涵盖对象引用、函数参数、拷贝、闭包、类与数据模型、生成器、装饰器和异常处理。" data-stellar-page-meta="">
+<meta property="og:type" content="article" data-stellar-page-meta="">
+<meta property="og:title" content="Infra学习day1" data-stellar-page-meta="">
+<meta property="og:url" content="https://chadoshamot.github.io/posts/infra-learning-day1/" data-stellar-page-meta="">
+<meta property="og:site_name" content="shamot" data-stellar-page-meta="">
+<meta property="og:description" content="Infra 学习第一天的 Python 前置知识笔记，涵盖对象引用、函数参数、拷贝、闭包、类与数据模型、生成器、装饰器和异常处理。" data-stellar-page-meta="">
+<meta property="og:locale" content="zh_CN" data-stellar-page-meta="">
+<meta property="article:author" content="shamot" data-stellar-page-meta="">
+<meta property="article:published_time" content="2026-10-02T16:00:00.000Z" data-stellar-page-meta="">
+<meta property="article:modified_time" content="2026-10-03T09:55:42.000Z" data-stellar-page-meta="">
+<meta property="article:tag" content="Infra" data-stellar-page-meta="">
+<meta property="article:tag" content="Note" data-stellar-page-meta="">
+<meta property="article:tag" content="Python" data-stellar-page-meta="">
+<meta property="article:tag" content="Summary" data-stellar-page-meta="">
+<meta name="twitter:card" content="summary" data-stellar-page-meta=""><meta name="twitter:title" content="Infra学习day1" data-stellar-page-meta="">
+  
+  
+  <meta name="keywords" content="Note,Infra,Python,Summary" data-stellar-page-meta="">
+
+  <!-- feed -->
+  
+
+  <link rel="preload" href="/css/main.css?v=2.0.0" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=2.0.0">
+  <style>:root{--text-loading:"正在加载";--text-loading-error:"加载失败，请稍后重试。"}</style>
+
+
+  
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/160225157?s=64&amp;v=4">
+  
+
+  
+
+  <script type="application/ld+json" data-stellar-page-meta="">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"dateCreated":"2026-10-03T00:00:00+08:00","dateModified":"2026-10-03T17:55:42+08:00","datePublished":"2026-10-03T00:00:00+08:00","description":"Infra 学习第一天，先补齐 Python 前置知识。从 is 与 == 开始，梳理对象引用、可变默认参数、浅拷贝与深拷贝，以及闭包、生成器和异常链。","headline":"Infra学习day1","mainEntityOfPage":{"@type":"WebPage","@id":"https://chadoshamot.github.io/posts/infra-learning-day1/"},"publisher":{"@type":"Organization","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"url":"https://chadoshamot.github.io/posts/infra-learning-day1/","image":["https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"],"keywords":"Note, Infra, Python, Summary","thumbnailUrl":"https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"}</script>
+  <link rel="stylesheet" href="/assets/shamot.css?v=9"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><link rel="stylesheet" href="/assets/shamot-purple.css?v=1"><link rel="stylesheet" href="/assets/shamot-content-palettes.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=2"></script>
+
+  <link rel="stylesheet" href="/css/stellar-icons.css?v=7c185ad1a9a79674">
+  <link rel="preload" as="script" href="/js/stellar-icons.js?v=39c6ac17e854ffe2">
+  
+  
+</head>
+<body data-page-type="content" data-page-layout="post" data-article-style="tech" data-section="post"><header class="shamot-mobile-header"><a href="/">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select><button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header><div data-stellar-runtime-region="" id="site-cover" class="site-cover"></div><div class="site-shell" id="start" data-regions="leftbar rightbar"><div class="site-workspace">
+<aside data-stellar-runtime-region="" id="leftbar-region" class="site-region site-region--leftbar" data-region="leftbar" aria-label="Leftbar"><div class="site-region__surface ui-surface"><div class="site-region__decoration" aria-hidden="true"></div><div class="site-region__viewport"><header class="site-region__header site-region__zone site-region__zone--top">
+    <div class="widget-instance widget-instance--brand" data-widget-id="leftbar:fixed:brand" data-presentation="leftbar" data-leftbar-rail="">
+<header class="brand-header brand-header--compact brand-header--site"><div class="brand-wrap"><a class="brand-image brand-image--avatar" href="/"><img no-lazy="" src="https://avatars.githubusercontent.com/u/160225157?v=4" alt="" onerror="this.onerror=null;this.src=&quot;/images/stellar-error.491ee870f4940739.svg&quot;"></a><a class="brand-title" href="/"><div class="brand-name">shamot</div><div class="brand-tagline cap">Nothing is impossible!</div></a></div><div class="brand-search">
+
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<button class="ui-collection__item ui-interactive card-hover card-hover--spotlight search-trigger has-hover-surface" type="button" title="搜索" aria-label="搜索" data-shell-action="open-search" data-search-instance="leftbar-brand-search" data-search-domain="blog" data-search-domain-label="博客" data-search-domain-blog="true">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">搜索</span>
+      
+      
+    </span>
+  
+  <kbd class="search-shortcut" aria-hidden="true">⌘K</kbd>
+
+  
+</button>
+
+  
+</div>
+
+
+</div></header>
+</div>
+  </header>
+  <div class="site-region__body site-region__zone site-region__zone--body">
+    <div class="shamot-theme-control"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select></div><div class="widget-instance widget-instance--menu" data-widget-id="leftbar:fixed:menu" data-presentation="leftbar" data-leftbar-rail="">
+
+
+<nav class="menu dis-select">
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-active is-themed" href="/blog/" title="博客" aria-current="page" style="--item-theme:#f4d35e;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"></path><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">博客</span>
+      
+      
+    </span>
+  
+  
+  <span class="ui-collection__indicator"></span>
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/wiki/" title="项目" style="--item-theme:#73daca;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" opacity=".5"></path><path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z"></path><path fill-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" clip-rule="evenodd"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">项目</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/notes/" title="探索" style="--item-theme:#bb9af7;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M10.7226 3.20068C10.8335 2.80158 10.5998 2.38817 10.2007 2.27731C9.80163 2.16645 9.38822 2.40011 9.27736 2.79921L7.76327 8.24995H4C3.58579 8.24995 3.25 8.58573 3.25 8.99995C3.25 9.41416 3.58579 9.74995 4 9.74995H7.3466L5.81882 15.2499H2C1.58579 15.2499 1.25 15.5857 1.25 15.9999C1.25 16.4142 1.58579 16.7499 2 16.7499H5.40216L4.27736 20.7992C4.1665 21.1983 4.40016 21.6117 4.79927 21.7226C5.19837 21.8334 5.61178 21.5998 5.72264 21.2007L6.95895 16.7499H14.4022L13.2774 20.7992C13.1665 21.1983 13.4002 21.6117 13.7993 21.7226C14.1984 21.8334 14.6118 21.5998 14.7226 21.2007L15.959 16.7499H20C20.4142 16.7499 20.75 16.4142 20.75 15.9999C20.75 15.5857 20.4142 15.2499 20 15.2499H16.3756L17.9034 9.74995H22C22.4142 9.74995 22.75 9.41416 22.75 8.99995C22.75 8.58573 22.4142 8.24995 22 8.24995H18.3201L19.7226 3.20068C19.8335 2.80158 19.5998 2.38817 19.2007 2.27731C18.8016 2.16645 18.3882 2.40011 18.2774 2.79921L16.7633 8.24995H9.32006L10.7226 3.20068ZM14.8188 15.2499L16.3466 9.74995H8.9034L7.37562 15.2499H14.8188Z" clip-rule="evenodd"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">探索</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/friends/" title="友链" style="--item-theme:#9ece6a;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">友链</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/about/" title="关于" style="--item-theme:#f79b87;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20" opacity=".5"></path><path d="M12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 7.5c-3.04 0-5.5 1.57-5.5 3.5c0 .65.28 1.26.77 1.77A7.96 7.96 0 0 0 12 20.5a7.96 7.96 0 0 0 4.73-1.73c.49-.51.77-1.12.77-1.77c0-1.93-2.46-3.5-5.5-3.5"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">关于</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div>
+
+</nav>
+
+</div>
+    <div class="widgets widget-stack widget-stack--leftbar widget-stack--body"><div class="widget-instance widget-instance--recent" data-widget-id="leftbar:0:recent" data-presentation="leftbar">
+
+<widget class="widget-wrapper slide-up recent-widget" style="--theme: #f4d35e; --item-theme: #f4d35e;">
+  
+    <div class="widget-header dis-select">
+      <span class="name">最近更新</span>
+      
+    </div>
+  
+  <div class="widget-body"><div class="ui-collection" data-layout="list" data-variant="nav" data-density="compact">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day5/" title="Infra学习day5" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day5</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day6/" title="Infra学习day6" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day6</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/paper-librarian-ai-paper-agent/" title="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">P</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Paper Librarian v2.0：一个本地的 AI 论文管家</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day4/" title="Infra学习day4" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day4</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day3/" title="Infra学习day3" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day3</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day2/" title="Infra学习day2" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day2</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day1/" title="Infra学习day1" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day1</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/codex-windows-runtime-fix/" title="修复 Codex 在 Windows 上的运行时暂存故障" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">修</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">修复 Codex 在 Windows 上的运行时暂存故障</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/myalgo-algorithm-notes/" title="MyAlgo：一个算法初学者的题库与笔记仓库" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MyAlgo：一个算法初学者的题库与笔记仓库</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div></div>
+  
+</widget>
+
+
+</div></div>
+  </div>
+  <footer class="site-region__footer">
+    
+    <div class="site-region__system ui-collection" data-layout="inline" data-variant="nav" data-density="compact">
+      <div class="site-region__settings"><div class="widget-instance widget-instance--settings" data-widget-id="leftbar:fixed:settings" data-presentation="leftbar" data-leftbar-rail="">
+<a class="settings-widget ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/settings/" data-profile-provider="" data-profile-identity-enabled="false" data-profile-fallback-avatar="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg" data-settings-placement="leftbar" data-settings-label="设置" aria-label="设置" title="设置">
+  <span class="settings-widget__avatar" aria-hidden="true">
+    <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M12.4277 2C11.3139 2 10.2995 2.6007 8.27081 3.80211L7.58466 4.20846C5.55594 5.40987 4.54158 6.01057 3.98466 7C3.42773 7.98943 3.42773 9.19084 3.42773 11.5937V12.4063C3.42773 14.8092 3.42773 16.0106 3.98466 17C4.54158 17.9894 5.55594 18.5901 7.58466 19.7915L8.27081 20.1979C10.2995 21.3993 11.3139 22 12.4277 22C13.5416 22 14.5559 21.3993 16.5847 20.1979L17.2708 19.7915C19.2995 18.5901 20.3139 17.9894 20.8708 17C21.4277 16.0106 21.4277 14.8092 21.4277 12.4063V11.5937C21.4277 9.19084 21.4277 7.98943 20.8708 7C20.3139 6.01057 19.2995 5.40987 17.2708 4.20846L16.5847 3.80211C14.5559 2.6007 13.5416 2 12.4277 2Z" clip-rule="evenodd" opacity=".5"></path><path d="M12.4277 8.25C10.3567 8.25 8.67773 9.92893 8.67773 12C8.67773 14.0711 10.3567 15.75 12.4277 15.75C14.4988 15.75 16.1777 14.0711 16.1777 12C16.1777 9.92893 14.4988 8.25 12.4277 8.25Z"></path></g></svg></span>
+  </span>
+  <span class="settings-widget__name ui-collection__title">设置</span>
+</a>
+</div></div>
+      <button type="button" class="leftbar-state-toggle ui-collection__item ui-interactive card-hover card-hover--spotlight is-icon-only" aria-label="Collapse leftbar" aria-expanded="true" data-shell-action="toggle-leftbar"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.172 4.172C2 5.343 2 7.229 2 11v2c0 3.771 0 5.657 1.172 6.828S6.229 21 10 21h5V3h-5C6.229 3 4.343 3 3.172 4.172" clip-rule="evenodd" opacity=".5"></path><path fill="currentColor" d="M5.5 9.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zm1 4a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5zM22 13v-2c0-3.771 0-5.657-1.172-6.828c-.974-.975-3.192-1.139-5.828-1.166v17.988c2.636-.027 4.854-.191 5.828-1.166C22 18.657 22 16.771 22 13"></path></svg></span></button>
+    </div>
+  </footer></div></div></aside>
+<main data-stellar-runtime-region="" class="site-main" id="main"><nav class="shamot-section-nav" aria-label="博客导航"><a href="/blog/">近期发布</a><a href="/blog/categories/">分类</a><a href="/blog/tags/">标签</a><a href="/topic/">专栏</a><a href="/blog/archives/">归档</a></nav>
+
+
+<div class="article-banner-wrap slide-up"><div class="article banner top">
+  <div class="content">
+    
+    <div class="top bread-nav footnote"><div class="top-row"><div class="left" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/learning/">学习</a>
+</div><div class="right"><span class="cap reading">1950 字 · 预计阅读 7 分钟</span></div></div><div class="meta-row">
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-10-02T16:00:00.000Z">2026-10-03</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-10-03T09:55:42.000Z">2026-10-03</time></span></div>
+</div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Infra学习day1</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div></div>
+<article class="md-text content slide-up"><p>Infra 学习第一天，先补齐 Python 的前置知识。</p>
+<p>今天的学习内容围绕 Python 的对象引用、函数参数、拷贝、闭包、类与数据模型，以及迭代器、生成器、装饰器和异常处理展开。</p>
+<!-- more -->
+
+<h2 id="1-is-与"><a href="#1-is-与" class="headerlink" title="1. is 与 ==" data-stellar-navigation=""></a>1. <code>is</code> 与 <code>==</code></h2><p><code>is</code> 判断两个引用是否指向同一个对象，<code>==</code> 判断两个对象的值是否相等。两个列表可以具有相同的内容，同时分别属于不同的对象。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">b = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">c = a</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a == b)  <span class="comment"># True</span></span><br><span class="line"><span class="built_in">print</span>(a <span class="keyword">is</span> b)  <span class="comment"># False</span></span><br><span class="line"><span class="built_in">print</span>(a <span class="keyword">is</span> c)  <span class="comment"># True</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>判断一个值是否为 <code>None</code> 时，可以使用 <code>value is None</code>。</p>
+<h2 id="2-函数参数与对象引用"><a href="#2-函数参数与对象引用" class="headerlink" title="2. 函数参数与对象引用" data-stellar-navigation=""></a>2. 函数参数与对象引用</h2><p>Python 调用函数时，形参会绑定到传入的对象。修改这个对象与重新绑定形参，会产生不同的结果。</p>
+<h3 id="修改传入的对象"><a href="#修改传入的对象" class="headerlink" title="修改传入的对象" data-stellar-navigation=""></a>修改传入的对象</h3><figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">a: <span class="built_in">list</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    a.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">data = []</span><br><span class="line">f(data)</span><br><span class="line"><span class="built_in">print</span>(data)  <span class="comment"># [1]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>调用 <code>f(data)</code> 后，<code>data</code> 和形参 <code>a</code> 指向同一个列表。<code>a.append(1)</code> 修改了这个列表，因此通过 <code>data</code> 也能看到修改后的内容。</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">data ──┐</span><br><span class="line">       ├────► 同一个列表：[] → [1]</span><br><span class="line">a    ──┘</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="重新绑定形参"><a href="#重新绑定形参" class="headerlink" title="重新绑定形参" data-stellar-navigation=""></a>重新绑定形参</h3><figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">f2</span>(<span class="params">a: <span class="built_in">list</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">data = [<span class="number">1</span>]</span><br><span class="line">f2(data)</span><br><span class="line"><span class="built_in">print</span>(data)  <span class="comment"># [1]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>a = [1, 2]</code> 创建了一个新列表，并让局部变量 <code>a</code> 指向它。这个赋值不会改变 <code>data</code> 的绑定，也没有修改原来的列表。</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">data ─────► [1]</span><br><span class="line">a    ─────► [1, 2]</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="3-默认参数的创建时机"><a href="#3-默认参数的创建时机" class="headerlink" title="3. 默认参数的创建时机" data-stellar-navigation=""></a>3. 默认参数的创建时机</h2><p>函数的默认参数表达式在函数定义执行时求值，而不是在每次调用时求值。使用列表作为默认参数时，省略该参数的多次调用会共享同一个列表。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">collect_shared</span>(<span class="params">x: <span class="built_in">int</span>, result: <span class="built_in">list</span>[<span class="built_in">int</span>] = []</span>) -&gt; <span class="built_in">list</span>[<span class="built_in">int</span>]:</span><br><span class="line">    result.append(x)</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(collect_shared(<span class="number">1</span>))  <span class="comment"># [1]</span></span><br><span class="line"><span class="built_in">print</span>(collect_shared(<span class="number">2</span>))  <span class="comment"># [1, 2]</span></span><br><span class="line"><span class="built_in">print</span>(collect_shared(<span class="number">3</span>))  <span class="comment"># [1, 2, 3]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果需要每次省略参数时都创建一个新列表，可以用 <code>None</code> 表示未提供列表，再在函数体内创建它。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">collect</span>(<span class="params">x: <span class="built_in">int</span>, result: <span class="built_in">list</span>[<span class="built_in">int</span>] | <span class="literal">None</span> = <span class="literal">None</span></span>) -&gt; <span class="built_in">list</span>[<span class="built_in">int</span>]:</span><br><span class="line">    <span class="keyword">if</span> result <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        result = []</span><br><span class="line">    result.append(x)</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(collect(<span class="number">1</span>))  <span class="comment"># [1]</span></span><br><span class="line"><span class="built_in">print</span>(collect(<span class="number">2</span>))  <span class="comment"># [2]</span></span><br><span class="line"><span class="built_in">print</span>(collect(<span class="number">3</span>))  <span class="comment"># [3]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里的新列表是在每次 <code>result is None</code> 的调用中创建的。显式传入列表时，函数会向该列表追加元素。</p>
+<h2 id="4-浅拷贝与深拷贝"><a href="#4-浅拷贝与深拷贝" class="headerlink" title="4. 浅拷贝与深拷贝" data-stellar-navigation=""></a>4. 浅拷贝与深拷贝</h2><p>浅拷贝创建新的外层容器，但其中的元素仍然引用原来的对象。深拷贝递归复制内部对象；在下面的嵌套列表示例中，内层列表也会被复制。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> copy</span><br><span class="line"></span><br><span class="line">src = [[<span class="number">1</span>], [<span class="number">2</span>]]</span><br><span class="line">shallow = src.copy()</span><br><span class="line">deep = copy.deepcopy(src)</span><br><span class="line"></span><br><span class="line">shallow[<span class="number">0</span>].append(<span class="number">9</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(src)      <span class="comment"># [[1, 9], [2]]</span></span><br><span class="line"><span class="built_in">print</span>(shallow)  <span class="comment"># [[1, 9], [2]]</span></span><br><span class="line"><span class="built_in">print</span>(deep)     <span class="comment"># [[1], [2]]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>src</code> 与 <code>shallow</code> 是两个外层列表，但它们的第一个元素指向同一个内层列表。因此，<code>shallow[0].append(9)</code> 的结果也会出现在 <code>src</code> 中。<code>deep</code> 的内层列表独立于原列表，不受这次修改影响。</p>
+<h2 id="5-闭包与延迟绑定"><a href="#5-闭包与延迟绑定" class="headerlink" title="5. 闭包与延迟绑定" data-stellar-navigation=""></a>5. 闭包与延迟绑定</h2><h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包" data-stellar-navigation=""></a>闭包</h3><p>内部函数可以引用外层函数作用域中的变量。当内部函数被返回后，即使外层函数已经执行结束，它仍然可以访问这些变量。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> collections.abc <span class="keyword">import</span> <span class="type">Callable</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">make_multiplier</span>(<span class="params">scale: <span class="built_in">float</span></span>) -&gt; <span class="type">Callable</span>[[<span class="built_in">float</span>], <span class="built_in">float</span>]:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">multiply</span>(<span class="params">x: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">        <span class="keyword">return</span> x * scale</span><br><span class="line">    <span class="keyword">return</span> multiply</span><br><span class="line"></span><br><span class="line">double = make_multiplier(<span class="number">2.0</span>)</span><br><span class="line"><span class="built_in">print</span>(double(<span class="number">3.0</span>))  <span class="comment"># 6.0</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>make_multiplier</code> 接收一个 <code>float</code> 类型的 <code>scale</code>，返回一个接收 <code>float</code> 并返回 <code>float</code> 的函数。返回的 <code>multiply</code> 保留了对外层变量 <code>scale</code> 的访问，这构成了闭包。</p>
+<h3 id="延迟绑定"><a href="#延迟绑定" class="headerlink" title="延迟绑定" data-stellar-navigation=""></a>延迟绑定</h3><p>闭包中的自由变量通常在函数实际执行时读取。在循环中创建多个函数时，它们可能引用同一个循环变量。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">functions = [<span class="keyword">lambda</span>: i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line"><span class="built_in">print</span>([fn() <span class="keyword">for</span> fn <span class="keyword">in</span> functions])  <span class="comment"># [2, 2, 2]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>这些函数在列表推导式结束后执行，此时它们读取到的 <code>i</code> 都是 <code>2</code>。</p>
+<p>可以利用默认参数在每次创建函数时保存当前值：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">functions = [<span class="keyword">lambda</span> i=i: i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line"><span class="built_in">print</span>([fn() <span class="keyword">for</span> fn <span class="keyword">in</span> functions])  <span class="comment"># [0, 1, 2]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里每个函数的参数 <code>i</code> 都有各自的默认值，分别是 <code>0</code>、<code>1</code> 和 <code>2</code>。</p>
+<h2 id="6-类、数据模型与协议"><a href="#6-类、数据模型与协议" class="headerlink" title="6. 类、数据模型与协议" data-stellar-navigation=""></a>6. 类、数据模型与协议</h2><p><code>class</code> 语句用于定义类。<code>@...</code> 是装饰器语法，可以作用于函数或类；它的具体作用取决于所使用的装饰器。</p>
+<p>Python 数据模型通过特殊方法将对象与语言操作连接起来。例如，<code>len(obj)</code> 对应长度协议中的 <code>__len__</code>，迭代涉及 <code>__iter__</code> 和 <code>__next__</code>，调用对象涉及 <code>__call__</code>。对象实现相应的方法后，就可以参与对应的操作。</p>
+<p><code>@classmethod</code> 和 <code>@staticmethod</code> 的参数绑定方式不同：</p>
+<ul>
+<li><code>@classmethod</code> 定义类方法，隐式接收类本身作为第一个参数，通常命名为 <code>cls</code>。类方法可以用来实现备选构造器。</li>
+<li><code>@staticmethod</code> 定义静态方法，不隐式接收实例或类，可以用于组织与类相关的函数。</li>
+</ul>
+<p>这两种装饰器本身都不意味着方法一定会创建实例，是否创建实例取决于方法体的实现。</p>
+<h2 id="7-迭代器与生成器"><a href="#7-迭代器与生成器" class="headerlink" title="7. 迭代器与生成器" data-stellar-navigation=""></a>7. 迭代器与生成器</h2><p>迭代器通过 <code>next()</code> 逐个提供元素，耗尽时抛出 <code>StopIteration</code>。包含 <code>yield</code> 的函数是生成器函数，调用后返回一个生成器对象，生成器也是迭代器。</p>
+<p>下面的生成器按批次读取文本文件：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> collections.abc <span class="keyword">import</span> Iterator</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_batches</span>(<span class="params">path: <span class="built_in">str</span>, batch_size: <span class="built_in">int</span></span>) -&gt; Iterator[<span class="built_in">list</span>[<span class="built_in">str</span>]]:</span><br><span class="line">    batch: <span class="built_in">list</span>[<span class="built_in">str</span>] = []</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(path, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> file:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">            batch.append(line.rstrip(<span class="string">"\n"</span>))</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(batch) == batch_size:</span><br><span class="line">                <span class="keyword">yield</span> batch</span><br><span class="line">                batch = []</span><br><span class="line">    <span class="keyword">if</span> batch:</span><br><span class="line">        <span class="keyword">yield</span> batch</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这段代码以正整数 <code>batch_size</code> 为批次大小。每当一个批次达到指定大小，就通过 <code>yield</code> 产出该列表；文件读取结束后，如果还有不足一个完整批次的数据，也会产出。</p>
+<p>调用 <code>read_batches(...)</code> 时，函数体尚未执行。第一次调用 <code>next()</code> 或开始迭代时，函数体才开始运行。执行到 <code>yield</code> 后，函数产出一个值并暂停；下一次迭代从暂停处继续。</p>
+<p>逐批消费且不保留所有批次时，函数内保存的数据量通常与单个批次相关。生成器耗尽后不能从头重新遍历，需要重新调用生成器函数创建新的对象。函数体中的异常也会在执行到相关语句的迭代阶段出现。</p>
+<p>使用 <code>list(read_batches(...))</code> 会消费生成器并保存所有产出的批次，使全部结果同时驻留内存。</p>
+<h2 id="8-装饰器"><a href="#8-装饰器" class="headerlink" title="8. 装饰器" data-stellar-navigation=""></a>8. 装饰器</h2><p>装饰器接收一个函数，并返回用于替换原函数的对象。常见用法是返回一个包装函数，在调用原函数前后添加计时等行为。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">@timed</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process</span>():</span><br><span class="line">    ...</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在 <code>timed</code> 已定义的前提下，上面的写法相当于：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">process</span>():</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">process = timed(process)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>装饰后的 <code>process</code> 绑定到 <code>timed(process)</code> 的返回值，调用时执行该返回对象提供的行为。</p>
+<h2 id="9-异常处理与异常链"><a href="#9-异常处理与异常链" class="headerlink" title="9. 异常处理与异常链" data-stellar-navigation=""></a>9. 异常处理与异常链</h2><p><code>try</code> 包含需要捕获异常的代码，<code>except</code> 用于处理匹配的异常类型。如果需要将底层异常转换为另一种异常，同时保留原因，可以在处理过程中使用 <code>raise ... from ...</code>。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    value = <span class="built_in">int</span>(<span class="string">"abc"</span>)</span><br><span class="line"><span class="keyword">except</span> ValueError <span class="keyword">as</span> exc:</span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">"输入无法转换为整数"</span>) <span class="keyword">from</span> exc</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里的 <code>except ValueError as exc</code> 捕获转换失败产生的异常，<code>raise ... from exc</code> 抛出新的异常，并将 <code>exc</code> 记录为它的直接原因。<code>from</code> 属于 <code>raise</code> 的语法。</p>
+<p>异常处理的性能需要区分正常执行路径与异常发生路径。抛出和捕获异常会产生额外开销；在频繁执行的代码中，如果异常不断发生，就需要关注这部分成本。是否使用异常处理，应结合实际异常频率与测量结果判断。</p>
+</article>
+<div class="article-tags slide-up"><a class="tag shamot-colored-tag" href="/blog/tags/Note/" style="--tag-light:#4a7a6a;--tag-dark:#a9d6c8"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Note</a><a class="tag shamot-colored-tag" href="/blog/tags/Infra/" style="--tag-light:#356f72;--tag-dark:#9cd8d3"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Infra</a><a class="tag shamot-colored-tag" href="/blog/tags/Python/" style="--tag-light:#4b6b2f;--tag-dark:#bcd79a"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Python</a><a class="tag shamot-colored-tag" href="/blog/tags/Summary/" style="--tag-light:#6b6f8a;--tag-dark:#c2c6e0"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Summary</a><a class="tag shamot-colored-tag" href="/blog/tags/%E5%AD%A6%E4%B9%A0/" style="--tag-light:#9a4b3e;--tag-dark:#f1b5a1"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>学习</a></div>
+
+
+
+
+
+<div class="related-wrap slide-up" id="read-next"><section class="body"><div class="item" id="prev"><div class="note"><svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-left" aria-hidden="true"></svg> 较新文章</div><a href="/posts/infra-learning-day2/" data-stellar-navigation="">Infra学习day2</a></div><div class="item" id="next"><div class="note">较早文章 <svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-right" aria-hidden="true"></svg></div><a href="/posts/myalgo-algorithm-notes/" data-stellar-navigation="">MyAlgo：一个算法初学者的题库与笔记仓库</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer slide-up footnote"><hr><div class="text"><p>© shamot · 由 <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 与 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 驱动。</p>
+</div></footer>
+</main>
+<aside data-stellar-runtime-region="" id="rightbar-region" class="site-region site-region--rightbar" data-region="rightbar" aria-label="Rightbar"><div class="site-region__surface ui-drawer-surface"><div class="site-region__viewport"><div class="widgets widget-stack widget-stack--rightbar widget-stack--rightbar"><div class="widget-instance widget-instance--toc" data-widget-id="rightbar:0:toc" data-presentation="rightbar">
+
+
+<widget class="widget-wrapper slide-up toc" id="data-toc" collapse="false">
+  
+    <div class="widget-header dis-select">
+      <span class="name">本文目录</span>
+      <button type="button" class="cap-action ui-interactive card-hover card-hover--spotlight" data-shell-action="toggle-toc" aria-label="Toggle table of contents" aria-pressed="false"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg></span></button>
+    </div>
+  
+  <div class="widget-body"><ol class="toc ui-collection-adapter"><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#1-is-%E4%B8%8E" data-stellar-navigation=""><span class="toc-text">1. is 与 ==</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#2-%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E4%B8%8E%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8" data-stellar-navigation=""><span class="toc-text">2. 函数参数与对象引用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E4%BF%AE%E6%94%B9%E4%BC%A0%E5%85%A5%E7%9A%84%E5%AF%B9%E8%B1%A1" data-stellar-navigation=""><span class="toc-text">修改传入的对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E9%87%8D%E6%96%B0%E7%BB%91%E5%AE%9A%E5%BD%A2%E5%8F%82" data-stellar-navigation=""><span class="toc-text">重新绑定形参</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#3-%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0%E7%9A%84%E5%88%9B%E5%BB%BA%E6%97%B6%E6%9C%BA" data-stellar-navigation=""><span class="toc-text">3. 默认参数的创建时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#4-%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D" data-stellar-navigation=""><span class="toc-text">4. 浅拷贝与深拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#5-%E9%97%AD%E5%8C%85%E4%B8%8E%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A" data-stellar-navigation=""><span class="toc-text">5. 闭包与延迟绑定</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E9%97%AD%E5%8C%85" data-stellar-navigation=""><span class="toc-text">闭包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A" data-stellar-navigation=""><span class="toc-text">延迟绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#6-%E7%B1%BB%E3%80%81%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%8D%8F%E8%AE%AE" data-stellar-navigation=""><span class="toc-text">6. 类、数据模型与协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#7-%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8" data-stellar-navigation=""><span class="toc-text">7. 迭代器与生成器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#8-%E8%A3%85%E9%A5%B0%E5%99%A8" data-stellar-navigation=""><span class="toc-text">8. 装饰器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#9-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E4%B8%8E%E5%BC%82%E5%B8%B8%E9%93%BE" data-stellar-navigation=""><span class="toc-text">9. 异常处理与异常链</span></a></li></ol></div>
+  <div class="widget-footer"><a class="top ui-interactive" onclick="util.scrollTop()"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M20.536 3.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464" opacity=".5"></path><path fill="currentColor" d="M9.53 12.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 9.56z"></path><path fill="currentColor" d="M9.53 16.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 13.56z"></path></svg></span><span>回到顶部</span></a></div>
+</widget>
+
+
+</div></div></div></div></aside>
+</div><button type="button" class="site-scrim" data-shell-action="dismiss-drawer" aria-label="Close navigation" tabindex="-1"></button><div data-stellar-runtime-region="" class="site-dock" role="group" aria-label="Layout panels">
+  <button type="button" class="site-dock__button site-dock__button--rightbar ui-interactive" aria-label="Open rightbar" aria-controls="rightbar-region" aria-expanded="false" data-shell-action="toggle-rightbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+  </button>
+  <button type="button" class="site-dock__button site-dock__button--leftbar ui-interactive" aria-label="Open leftbar" aria-controls="leftbar-region" aria-expanded="false" data-shell-action="toggle-leftbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"></path><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"></path></g></svg>
+  </button>
+</div>
+
+<dialog data-stellar-runtime-region="" class="search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+  <div class="search-dialog__panel search-wrapper" id="site-search-wrapper" searching="false">
+    <div class="search-dialog__header">
+      <div class="search-form" role="search">
+        <span class="search-button" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+        <input type="search" class="search-input" id="site-search-input" aria-labelledby="site-search-title" placeholder="搜索">
+      </div>
+      <button type="button" class="search-dialog__close" data-shell-action="close-search" aria-label="关闭搜索">×</button>
+    </div>
+    
+      <div class="search-dialog__scope" role="radiogroup" aria-labelledby="site-search-title" hidden="">
+        <label class="search-dialog__scope-option" data-search-scope-option="all">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="all">
+          <span>全站</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="blog" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="blog">
+          <span>博客</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="current" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="current">
+          <span data-search-scope-current-label=""></span>
+        </label>
+      </div>
+    
+    <h2 class="search-dialog__title" id="site-search-title">站内搜索</h2>
+    <div class="search-result" id="site-search-result"></div>
+    <div class="search-no-result">没有找到内容！</div>
+  </div>
+</dialog>
+</div><div class="site-scripts">
+<script data-stellar-script="core" src="/js/stellar-icons.js?v=39c6ac17e854ffe2"></script>
+
+<script data-stellar-script="defines">
+  window.canonical = window.stellarClientData.canonical;
+  const ctx = window.stellarClientData.ctx;
+  window.canonical.param = {permalink: "https://chadoshamot.github.io/posts/infra-learning-day1/", checklink: ctx.services.video.js};
+  ctx.date_suffix = {"just":"刚刚","min":"分钟前","hour":"小时前","day":"天前"};
+  if (ctx.search) Object.assign(ctx.search, {"more":"更多","no_more":"没有更多了"});
+  const def = window.stellarClientData.def;
+  window.ctx = ctx;
+  window.def = def;
+</script>
+
+
+<!-- core: 迁移期 DOM/资源兼容工具；Extension 注册与生命周期由 ESM runtime 所有 -->
+<script data-stellar-script="core" src="/js/utils.js?v=2.0.0"></script>
+<script data-stellar-script="core" src="/js/main.js?v=2.0.0" defer=""></script>
+<script data-stellar-script="core" defer="" src="/js/profile.js?v=2.0.0"></script>
+
+
+
+
+
+<script data-stellar-script="core" type="application/json" id="stellar-runtime-config">{"version":1,"root":"/","policy":{"cache":{"enabled":true,"defaultTtl":3600,"ttl":{"giscus":600,"waline":600,"artalk":600,"memos":600,"memos-user":86400,"sites":86400,"friends":86400,"friends_and_posts":86400,"siteinfo":86400},"maxEntries":200},"request":{"retries":2,"timeoutMs":5000,"idleTimeoutMs":3000,"maxCacheEntryBytes":204800},"features":{"codeCopyToastMs":2500},"providers":{"linkPrefetch":"flying_pages","lightbox":"fancybox","diagrams":"mermaid"}},"extensions":[{"id":"pin-slider","module":"/js/runtime/extensions/pin-slider.js","scope":"region","when":{"selector":".pin-slider"},"config":{}},{"id":"page-controls","module":"/js/runtime/extensions/page-controls.js","scope":"region","when":{"always":true},"config":{"highlight":"/js/search/highlight.js","tagtree":"/js/tagtree.js"}},{"id":"partial-navigation","module":"/js/runtime/extensions/partial-navigation.js","scope":"document","when":{"always":true},"config":{}},{"id":"search","module":"/js/runtime/extensions/search.js","scope":"document","when":{"selector":".search-input"},"config":{"provider":"local","options":{"scope":"all","includeContent":true,"cacheTtlSeconds":86400},"assets":{"client":null,"provider":"/js/search/local-search.js","shortcut":"/js/search/shortcut.js"}}},{"id":"hero-parallax","module":"/js/runtime/extensions/hero-parallax.js","scope":"region","when":{"selector":".wiki-hero"},"config":{}},{"id":"hero-effect","module":"/js/runtime/extensions/hero-effect.js","scope":"region","when":{"selector":"canvas[data-hero-effect]"},"config":{}},{"id":"lazy-loading","module":"/js/runtime/extensions/lazy-loading.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"}},{"id":"deferred-icons","module":"/js/runtime/extensions/deferred-icons.js","scope":"region","when":{"selector":"svg.icon[data-icon]"},"config":{}},{"id":"dropdown","module":"/js/runtime/extensions/dropdown.js","scope":"region","when":{"selector":"details.dropdown"},"config":{}},{"id":"services","module":"/js/runtime/extensions/services.js","scope":"region","when":{"selector":"#artalk_container, #twikoo_container, #waline_container, .data-service, [class*='ds-'], a[cardlink], a[data-md-link][data-siteinfo-api], .site-card [data-siteinfo-api], .voice\u003eaudio, .video\u003evideo, .chat-file"},"config":{"marked":"https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js"}},{"id":"settings","module":"/js/runtime/extensions/settings.js","scope":"region","when":{"selector":".settings-page"},"config":{}},{"id":"link-prefetch","module":"/js/runtime/extensions/link-prefetch.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"}},{"id":"lightbox","module":"/js/runtime/extensions/lightbox.js","scope":"region","when":{"selector":"[data-fancybox]:not(.error), .with-fancybox, .ds-memos, .timenode p\u003eimg"},"config":{"enabled":true,"selector":".timenode p\u003eimg","assets":{"localCss":"/css/plugins/fancybox.css","js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"}}},{"id":"reveal","module":"/js/runtime/extensions/reveal.js","scope":"region","when":{"selector":".slide-up"},"config":{"enabled":true,"duration":300,"interval":50,"distance":5,"blur":0}},{"id":"code-copy","module":"/js/runtime/extensions/code-copy.js","scope":"region","when":{"selector":".code"},"config":{"assets":{"js":"/js/plugins/copycode.js"},"messages":{"label":"复制","copied":"复制成功","denied":"未获得剪贴板权限","unsupported":"当前浏览器不支持剪贴板或页面不是 HTTPS"}}},{"id":"adaptive-text","module":"/js/runtime/extensions/adaptive-text.js","scope":"region","when":{"selector":"[data-text-adaptive]"},"config":{"assets":{"colorJs":"/js/color.js","js":"/js/plugins/adaptive-text.js"}}},{"id":"swiper","module":"/js/runtime/extensions/swiper.js","scope":"region","when":{"selector":"#swiper-api"},"config":{"assets":{"localCss":"/css/plugins/swiper.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js","css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css"}}}]}</script>
+<script data-stellar-script="core" type="module" src="/js/runtime/index.js?v=2.0.0&amp;runtime=1"></script>
+
+
+<!-- inject -->
+<link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"><script data-stellar-script="asset" src="/assets/shamot-terminal.js?v=6" defer=""></script>
+
+<script data-stellar-script="core" defer="" src="/js/navigation-init.js?v=2.0.0"></script>
+</div>
+
+<script type="application/json" id="stellar-navigation-config">{"collection":"[\"post\",\"post\"]","url":"https://chadoshamot.github.io/posts/infra-learning-day1/","signature":"5c64a03af812b880ea02d211175b5db3c363a93b2c8d90a8df5d7a008499cce4"}</script></body></html>

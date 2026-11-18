@@ -1,0 +1,116 @@
+:root[data-theme="light"]{
+  color-scheme: light;
+  --background: #e8dbba;
+  --card: #e8dbba;
+  --text: #302c26;
+  --text-p0: #302c26;
+  --text-p1: #403b33;
+  --text-p2: #655e52;
+  --text-p3: #756c5d;
+  --text-p4: #807565;
+  --block: #ded0ac;
+  --block-border: #cdbb94;
+  --text-meta: #b4a58d;
+  --text-code: #554332;
+}
+:root[data-theme="light"],
+:root[data-theme="light"] body{ background: #e8dbba; color: #302c26; }
+:root[data-theme="light"] body::before{
+  background: radial-gradient(ellipse at 0 12%, #b8c9b838, transparent 64%),
+    radial-gradient(ellipse at 0 80%, #cdb8bc30, transparent 70%);
+}
+:root[data-theme="light"] ::selection{ background: #d7bf8d; color: #302c26; }
+:root[data-theme="light"] .brand-title .brand-tagline,
+:root[data-theme="light"] .shamot-eyebrow,
+:root[data-theme="light"] .shamot-intro-description,
+:root[data-theme="light"] .post-list .post-card .excerpt p,
+:root[data-theme="light"] .post-card .meta,
+:root[data-theme="light"] .post-card .cap,
+:root[data-theme="light"] .page-footer .text{ color: #756c5d; }
+:root[data-theme="light"] .site-main .post-list .post-title,
+:root[data-theme="light"] .shamot-intro h1,
+:root[data-theme="light"] .shamot-mobile-header a,
+:root[data-theme="light"] .shamot-mobile-header button,
+:root[data-theme="light"] .site-region--leftbar .ui-collection[data-variant='nav'] .ui-collection__item{ color: #302c26; }
+:root[data-theme="light"] .site-region--leftbar .ui-collection__item .ui-icon{ color: #807565; }
+:root[data-theme="light"] .md-text p,
+:root[data-theme="light"] .md-text li{ color: #403b33; }
+:root[data-theme="light"] .md-text pre,
+:root[data-theme="light"] .md-text .highlight{ background: #ded0ac; }
+:root[data-theme="light"] .site-main .post-list .post-card-wrap{ background: transparent; border: 0; box-shadow: none; }
+:root[data-theme="light"] .search-dialog{ background: #e8dbba; border-color: #cdbb94; color: #302c26; }
+:root[data-theme="light"] .search-dialog::backdrop{ background: #403b3340; }
+:root[data-theme="light"] #leftbar-region .recent-widget .ui-collection__item:hover .ui-collection__title{ color: #96701b; }
+@media(max-width:768px){:root[data-theme="light"] .site-shell[data-drawer='leftbar'] #leftbar-region .site-region__surface.ui-surface{ background: #e8dbbaf7; }
+}
+:root[data-theme="light"]:has(body[data-section="post"]) { --shamot-accent:#96701b !important; --theme:#96701b !important; --accent:#96701b !important; --link:#96701b !important; }
+:root[data-theme="light"] #leftbar-region .widget-instance--menu a[title="博客"] { --item-theme:#96701b !important; }
+:root[data-theme="light"]:has(body[data-section="projects"]) { --shamot-accent:#287b70 !important; --theme:#287b70 !important; --accent:#287b70 !important; --link:#287b70 !important; }
+:root[data-theme="light"] #leftbar-region .widget-instance--menu a[title="项目"] { --item-theme:#287b70 !important; }
+:root[data-theme="light"]:has(body[data-section="explore"]) { --shamot-accent:#7754a4 !important; --theme:#7754a4 !important; --accent:#7754a4 !important; --link:#7754a4 !important; }
+:root[data-theme="light"] #leftbar-region .widget-instance--menu a[title="探索"] { --item-theme:#7754a4 !important; }
+:root[data-theme="light"]:has(body[data-section="friends"]) { --shamot-accent:#507b32 !important; --theme:#507b32 !important; --accent:#507b32 !important; --link:#507b32 !important; }
+:root[data-theme="light"] #leftbar-region .widget-instance--menu a[title="友链"] { --item-theme:#507b32 !important; }
+:root[data-theme="light"]:has(body[data-section="about"]) { --shamot-accent:#ad5a47 !important; --theme:#ad5a47 !important; --accent:#ad5a47 !important; --link:#ad5a47 !important; }
+:root[data-theme="light"] #leftbar-region .widget-instance--menu a[title="关于"] { --item-theme:#ad5a47 !important; }
+:root[data-theme="light"] .recent-widget { --item-theme:#96701b !important; --theme:#96701b !important; }
+
+@media (prefers-color-scheme: light) {
+:root:not([data-theme]){
+  color-scheme: light;
+  --background: #e8dbba;
+  --card: #e8dbba;
+  --text: #302c26;
+  --text-p0: #302c26;
+  --text-p1: #403b33;
+  --text-p2: #655e52;
+  --text-p3: #756c5d;
+  --text-p4: #807565;
+  --block: #ded0ac;
+  --block-border: #cdbb94;
+  --text-meta: #b4a58d;
+  --text-code: #554332;
+}
+:root:not([data-theme]),
+:root:not([data-theme]) body{ background: #e8dbba; color: #302c26; }
+:root:not([data-theme]) body::before{
+  background: radial-gradient(ellipse at 0 12%, #b8c9b838, transparent 64%),
+    radial-gradient(ellipse at 0 80%, #cdb8bc30, transparent 70%);
+}
+:root:not([data-theme]) ::selection{ background: #d7bf8d; color: #302c26; }
+:root:not([data-theme]) .brand-title .brand-tagline,
+:root:not([data-theme]) .shamot-eyebrow,
+:root:not([data-theme]) .shamot-intro-description,
+:root:not([data-theme]) .post-list .post-card .excerpt p,
+:root:not([data-theme]) .post-card .meta,
+:root:not([data-theme]) .post-card .cap,
+:root:not([data-theme]) .page-footer .text{ color: #756c5d; }
+:root:not([data-theme]) .site-main .post-list .post-title,
+:root:not([data-theme]) .shamot-intro h1,
+:root:not([data-theme]) .shamot-mobile-header a,
+:root:not([data-theme]) .shamot-mobile-header button,
+:root:not([data-theme]) .site-region--leftbar .ui-collection[data-variant='nav'] .ui-collection__item{ color: #302c26; }
+:root:not([data-theme]) .site-region--leftbar .ui-collection__item .ui-icon{ color: #807565; }
+:root:not([data-theme]) .md-text p,
+:root:not([data-theme]) .md-text li{ color: #403b33; }
+:root:not([data-theme]) .md-text pre,
+:root:not([data-theme]) .md-text .highlight{ background: #ded0ac; }
+:root:not([data-theme]) .site-main .post-list .post-card-wrap{ background: transparent; border: 0; box-shadow: none; }
+:root:not([data-theme]) .search-dialog{ background: #e8dbba; border-color: #cdbb94; color: #302c26; }
+:root:not([data-theme]) .search-dialog::backdrop{ background: #403b3340; }
+:root:not([data-theme]) #leftbar-region .recent-widget .ui-collection__item:hover .ui-collection__title{ color: #96701b; }
+@media(max-width:768px){:root:not([data-theme]) .site-shell[data-drawer='leftbar'] #leftbar-region .site-region__surface.ui-surface{ background: #e8dbbaf7; }
+}
+:root:not([data-theme]):has(body[data-section="post"]) { --shamot-accent:#96701b !important; --theme:#96701b !important; --accent:#96701b !important; --link:#96701b !important; }
+:root:not([data-theme]) #leftbar-region .widget-instance--menu a[title="博客"] { --item-theme:#96701b !important; }
+:root:not([data-theme]):has(body[data-section="projects"]) { --shamot-accent:#287b70 !important; --theme:#287b70 !important; --accent:#287b70 !important; --link:#287b70 !important; }
+:root:not([data-theme]) #leftbar-region .widget-instance--menu a[title="项目"] { --item-theme:#287b70 !important; }
+:root:not([data-theme]):has(body[data-section="explore"]) { --shamot-accent:#7754a4 !important; --theme:#7754a4 !important; --accent:#7754a4 !important; --link:#7754a4 !important; }
+:root:not([data-theme]) #leftbar-region .widget-instance--menu a[title="探索"] { --item-theme:#7754a4 !important; }
+:root:not([data-theme]):has(body[data-section="friends"]) { --shamot-accent:#507b32 !important; --theme:#507b32 !important; --accent:#507b32 !important; --link:#507b32 !important; }
+:root:not([data-theme]) #leftbar-region .widget-instance--menu a[title="友链"] { --item-theme:#507b32 !important; }
+:root:not([data-theme]):has(body[data-section="about"]) { --shamot-accent:#ad5a47 !important; --theme:#ad5a47 !important; --accent:#ad5a47 !important; --link:#ad5a47 !important; }
+:root:not([data-theme]) #leftbar-region .widget-instance--menu a[title="关于"] { --item-theme:#ad5a47 !important; }
+:root:not([data-theme]) .recent-widget { --item-theme:#96701b !important; --theme:#96701b !important; }
+
+}

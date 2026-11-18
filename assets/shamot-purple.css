@@ -1,0 +1,42 @@
+/* Purple palette selected from the local color study. */
+:root[data-palette='purple'] {
+ color-scheme: dark;
+ --background: #714288;
+ --card: #714288;
+ --text: #fff7ff;
+ --text-p0: #fff7ff;
+ --text-p1: #f7edf9;
+ --text-p2: #e5d2ee;
+ --text-p3: #e5d2ee;
+ --text-p4: #e5d2ee;
+ --block: #603875;
+ --block-border: #603875;
+ --text-meta: #e5d2ee;
+ --text-code: #fff7ff;
+}
+:root[data-palette='purple'], :root[data-palette='purple'] body { background: var(--background); color: #fff7ff; }
+:root[data-palette='purple'] body::before {
+ display: none;
+ background: none;
+}
+:root[data-palette='purple'] .brand-title .brand-tagline,
+:root[data-palette='purple'] .shamot-eyebrow,
+:root[data-palette='purple'] .shamot-intro-description,
+:root[data-palette='purple'] .post-list .post-card .excerpt p,
+:root[data-palette='purple'] .post-card .meta,
+:root[data-palette='purple'] .post-card .cap,
+:root[data-palette='purple'] .page-footer .text { color: #e5d2ee; }
+:root[data-palette='purple'] .md-text p, :root[data-palette='purple'] .md-text li { color: #f7edf9; }
+:root[data-palette='purple'] .md-text pre, :root[data-palette='purple'] .md-text .highlight { background: #603875; }
+:root[data-palette='purple'] .search-dialog { background: var(--background); border-color: #603875; }
+@media(max-width:768px) {
+ :root[data-palette='purple'] .site-shell[data-drawer='leftbar'] #leftbar-region .site-region__surface.ui-surface { background: var(--background); }
+}
+
+
+
+:root[data-palette='purple'] body::before{display:block;background:radial-gradient(ellipse at 0 12%,#e5d3ef16,transparent 64%),radial-gradient(ellipse at 0 80%,#47355c12,transparent 70%)}
+:root[data-palette='purple'] #leftbar-region .recent-widget .ui-collection__title{color:var(--text-p3)}
+:root[data-palette='purple'] .shamot-colored-tag{color:color-mix(in srgb,var(--tag-dark) 80%,white)!important}
+:root[data-palette='purple']:has(body[data-section='explore']){--shamot-accent:#d0b7fa!important;--theme:#d0b7fa!important;--accent:#d0b7fa!important;--link:#d0b7fa!important}
+:root[data-palette='purple'] #leftbar-region .widget-instance--menu a[title='探索']{--item-theme:#d0b7fa!important}

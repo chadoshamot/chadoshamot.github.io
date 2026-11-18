@@ -1,0 +1,603 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light" style="--shamot-accent:#f4d35e;--theme:#f4d35e;--accent:#f4d35e;--link:#f4d35e"><head>
+  
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0" theme-name="Stellar" theme-version="2.0.0">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title data-stellar-page-meta="">Infra学习day4 - shamot</title>
+  <script data-stellar-script="core">
+    (function () {
+      var key = 'stellar:v2:leftbar-state';
+      var fallback = "expanded";
+      try {
+        var value = localStorage.getItem(key);
+        document.documentElement.dataset.leftbarState = value === 'collapsed' || value === 'expanded' ? value : fallback;
+      } catch (error) {
+        document.documentElement.dataset.leftbarState = fallback;
+      }
+    })();
+  </script>
+
+  <meta name="description" content="Infra 学习第四天的 C++ 与 Python 前置知识笔记，涵盖 CMake 目标配置与构建、RAII 互斥锁、跨语言调用、ctypes、pybind11 和零拷贝接口。" data-stellar-page-meta="">
+<meta property="og:type" content="article" data-stellar-page-meta="">
+<meta property="og:title" content="Infra学习day4" data-stellar-page-meta="">
+<meta property="og:url" content="https://chadoshamot.github.io/posts/infra-learning-day4/" data-stellar-page-meta="">
+<meta property="og:site_name" content="shamot" data-stellar-page-meta="">
+<meta property="og:description" content="Infra 学习第四天的 C++ 与 Python 前置知识笔记，涵盖 CMake 目标配置与构建、RAII 互斥锁、跨语言调用、ctypes、pybind11 和零拷贝接口。" data-stellar-page-meta="">
+<meta property="og:locale" content="zh_CN" data-stellar-page-meta="">
+<meta property="article:author" content="shamot" data-stellar-page-meta="">
+<meta property="article:published_time" content="2026-10-05T08:56:03.000Z" data-stellar-page-meta="">
+<meta property="article:modified_time" content="2026-10-05T08:56:03.000Z" data-stellar-page-meta="">
+<meta property="article:tag" content="C++" data-stellar-page-meta="">
+<meta property="article:tag" content="Infra" data-stellar-page-meta="">
+<meta property="article:tag" content="Note" data-stellar-page-meta="">
+<meta property="article:tag" content="Python" data-stellar-page-meta="">
+<meta property="article:tag" content="Summary" data-stellar-page-meta="">
+<meta name="twitter:card" content="summary" data-stellar-page-meta=""><meta name="twitter:title" content="Infra学习day4" data-stellar-page-meta="">
+  
+  
+  <meta name="keywords" content="Note,Infra,C++,Python,Summary" data-stellar-page-meta="">
+
+  <!-- feed -->
+  
+
+  <link rel="preload" href="/css/main.css?v=2.0.0" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=2.0.0">
+  <style>:root{--text-loading:"正在加载";--text-loading-error:"加载失败，请稍后重试。"}</style>
+
+
+  
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/160225157?s=64&amp;v=4">
+  
+
+  
+
+  <script type="application/ld+json" data-stellar-page-meta="">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"dateCreated":"2026-10-05T16:56:03+08:00","dateModified":"2026-10-05T16:56:03+08:00","datePublished":"2026-10-05T16:56:03+08:00","description":"Infra 学习第四天，从 CMake 的目标配置与构建流程出发，学习 RAII 互斥锁，再梳理 Python/C++ 互操作中的调用粒度、数据布局、零拷贝与所有权。","headline":"Infra学习day4","mainEntityOfPage":{"@type":"WebPage","@id":"https://chadoshamot.github.io/posts/infra-learning-day4/"},"publisher":{"@type":"Organization","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"url":"https://chadoshamot.github.io/posts/infra-learning-day4/","image":["https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"],"keywords":"Note, Infra, C++, Python, Summary","thumbnailUrl":"https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"}</script>
+  <link rel="stylesheet" href="/assets/shamot.css?v=9"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><link rel="stylesheet" href="/assets/shamot-purple.css?v=1"><link rel="stylesheet" href="/assets/shamot-content-palettes.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=2"></script>
+
+  <link rel="stylesheet" href="/css/stellar-icons.css?v=7c185ad1a9a79674">
+  <link rel="preload" as="script" href="/js/stellar-icons.js?v=39c6ac17e854ffe2">
+  
+  
+</head>
+<body data-page-type="content" data-page-layout="post" data-article-style="tech" data-section="post"><header class="shamot-mobile-header"><a href="/">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select><button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header><div data-stellar-runtime-region="" id="site-cover" class="site-cover"></div><div class="site-shell" id="start" data-regions="leftbar rightbar"><div class="site-workspace">
+<aside data-stellar-runtime-region="" id="leftbar-region" class="site-region site-region--leftbar" data-region="leftbar" aria-label="Leftbar"><div class="site-region__surface ui-surface"><div class="site-region__decoration" aria-hidden="true"></div><div class="site-region__viewport"><header class="site-region__header site-region__zone site-region__zone--top">
+    <div class="widget-instance widget-instance--brand" data-widget-id="leftbar:fixed:brand" data-presentation="leftbar" data-leftbar-rail="">
+<header class="brand-header brand-header--compact brand-header--site"><div class="brand-wrap"><a class="brand-image brand-image--avatar" href="/"><img no-lazy="" src="https://avatars.githubusercontent.com/u/160225157?v=4" alt="" onerror="this.onerror=null;this.src=&quot;/images/stellar-error.491ee870f4940739.svg&quot;"></a><a class="brand-title" href="/"><div class="brand-name">shamot</div><div class="brand-tagline cap">Nothing is impossible!</div></a></div><div class="brand-search">
+
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<button class="ui-collection__item ui-interactive card-hover card-hover--spotlight search-trigger has-hover-surface" type="button" title="搜索" aria-label="搜索" data-shell-action="open-search" data-search-instance="leftbar-brand-search" data-search-domain="blog" data-search-domain-label="博客" data-search-domain-blog="true">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">搜索</span>
+      
+      
+    </span>
+  
+  <kbd class="search-shortcut" aria-hidden="true">⌘K</kbd>
+
+  
+</button>
+
+  
+</div>
+
+
+</div></header>
+</div>
+  </header>
+  <div class="site-region__body site-region__zone site-region__zone--body">
+    <div class="shamot-theme-control"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select></div><div class="widget-instance widget-instance--menu" data-widget-id="leftbar:fixed:menu" data-presentation="leftbar" data-leftbar-rail="">
+
+
+<nav class="menu dis-select">
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-active is-themed" href="/blog/" title="博客" aria-current="page" style="--item-theme:#f4d35e;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"></path><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">博客</span>
+      
+      
+    </span>
+  
+  
+  <span class="ui-collection__indicator"></span>
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/wiki/" title="项目" style="--item-theme:#73daca;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" opacity=".5"></path><path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z"></path><path fill-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" clip-rule="evenodd"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">项目</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/notes/" title="探索" style="--item-theme:#bb9af7;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M10.7226 3.20068C10.8335 2.80158 10.5998 2.38817 10.2007 2.27731C9.80163 2.16645 9.38822 2.40011 9.27736 2.79921L7.76327 8.24995H4C3.58579 8.24995 3.25 8.58573 3.25 8.99995C3.25 9.41416 3.58579 9.74995 4 9.74995H7.3466L5.81882 15.2499H2C1.58579 15.2499 1.25 15.5857 1.25 15.9999C1.25 16.4142 1.58579 16.7499 2 16.7499H5.40216L4.27736 20.7992C4.1665 21.1983 4.40016 21.6117 4.79927 21.7226C5.19837 21.8334 5.61178 21.5998 5.72264 21.2007L6.95895 16.7499H14.4022L13.2774 20.7992C13.1665 21.1983 13.4002 21.6117 13.7993 21.7226C14.1984 21.8334 14.6118 21.5998 14.7226 21.2007L15.959 16.7499H20C20.4142 16.7499 20.75 16.4142 20.75 15.9999C20.75 15.5857 20.4142 15.2499 20 15.2499H16.3756L17.9034 9.74995H22C22.4142 9.74995 22.75 9.41416 22.75 8.99995C22.75 8.58573 22.4142 8.24995 22 8.24995H18.3201L19.7226 3.20068C19.8335 2.80158 19.5998 2.38817 19.2007 2.27731C18.8016 2.16645 18.3882 2.40011 18.2774 2.79921L16.7633 8.24995H9.32006L10.7226 3.20068ZM14.8188 15.2499L16.3466 9.74995H8.9034L7.37562 15.2499H14.8188Z" clip-rule="evenodd"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">探索</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/friends/" title="友链" style="--item-theme:#9ece6a;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">友链</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/about/" title="关于" style="--item-theme:#f79b87;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20" opacity=".5"></path><path d="M12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 7.5c-3.04 0-5.5 1.57-5.5 3.5c0 .65.28 1.26.77 1.77A7.96 7.96 0 0 0 12 20.5a7.96 7.96 0 0 0 4.73-1.73c.49-.51.77-1.12.77-1.77c0-1.93-2.46-3.5-5.5-3.5"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">关于</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div>
+
+</nav>
+
+</div>
+    <div class="widgets widget-stack widget-stack--leftbar widget-stack--body"><div class="widget-instance widget-instance--recent" data-widget-id="leftbar:0:recent" data-presentation="leftbar">
+
+<widget class="widget-wrapper slide-up recent-widget" style="--theme: #f4d35e; --item-theme: #f4d35e;">
+  
+    <div class="widget-header dis-select">
+      <span class="name">最近更新</span>
+      
+    </div>
+  
+  <div class="widget-body"><div class="ui-collection" data-layout="list" data-variant="nav" data-density="compact">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day5/" title="Infra学习day5" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day5</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day6/" title="Infra学习day6" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day6</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/paper-librarian-ai-paper-agent/" title="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">P</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Paper Librarian v2.0：一个本地的 AI 论文管家</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day4/" title="Infra学习day4" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day4</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day3/" title="Infra学习day3" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day3</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day2/" title="Infra学习day2" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day2</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day1/" title="Infra学习day1" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day1</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/codex-windows-runtime-fix/" title="修复 Codex 在 Windows 上的运行时暂存故障" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">修</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">修复 Codex 在 Windows 上的运行时暂存故障</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/myalgo-algorithm-notes/" title="MyAlgo：一个算法初学者的题库与笔记仓库" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MyAlgo：一个算法初学者的题库与笔记仓库</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div></div>
+  
+</widget>
+
+
+</div></div>
+  </div>
+  <footer class="site-region__footer">
+    
+    <div class="site-region__system ui-collection" data-layout="inline" data-variant="nav" data-density="compact">
+      <div class="site-region__settings"><div class="widget-instance widget-instance--settings" data-widget-id="leftbar:fixed:settings" data-presentation="leftbar" data-leftbar-rail="">
+<a class="settings-widget ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/settings/" data-profile-provider="" data-profile-identity-enabled="false" data-profile-fallback-avatar="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg" data-settings-placement="leftbar" data-settings-label="设置" aria-label="设置" title="设置">
+  <span class="settings-widget__avatar" aria-hidden="true">
+    <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M12.4277 2C11.3139 2 10.2995 2.6007 8.27081 3.80211L7.58466 4.20846C5.55594 5.40987 4.54158 6.01057 3.98466 7C3.42773 7.98943 3.42773 9.19084 3.42773 11.5937V12.4063C3.42773 14.8092 3.42773 16.0106 3.98466 17C4.54158 17.9894 5.55594 18.5901 7.58466 19.7915L8.27081 20.1979C10.2995 21.3993 11.3139 22 12.4277 22C13.5416 22 14.5559 21.3993 16.5847 20.1979L17.2708 19.7915C19.2995 18.5901 20.3139 17.9894 20.8708 17C21.4277 16.0106 21.4277 14.8092 21.4277 12.4063V11.5937C21.4277 9.19084 21.4277 7.98943 20.8708 7C20.3139 6.01057 19.2995 5.40987 17.2708 4.20846L16.5847 3.80211C14.5559 2.6007 13.5416 2 12.4277 2Z" clip-rule="evenodd" opacity=".5"></path><path d="M12.4277 8.25C10.3567 8.25 8.67773 9.92893 8.67773 12C8.67773 14.0711 10.3567 15.75 12.4277 15.75C14.4988 15.75 16.1777 14.0711 16.1777 12C16.1777 9.92893 14.4988 8.25 12.4277 8.25Z"></path></g></svg></span>
+  </span>
+  <span class="settings-widget__name ui-collection__title">设置</span>
+</a>
+</div></div>
+      <button type="button" class="leftbar-state-toggle ui-collection__item ui-interactive card-hover card-hover--spotlight is-icon-only" aria-label="Collapse leftbar" aria-expanded="true" data-shell-action="toggle-leftbar"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.172 4.172C2 5.343 2 7.229 2 11v2c0 3.771 0 5.657 1.172 6.828S6.229 21 10 21h5V3h-5C6.229 3 4.343 3 3.172 4.172" clip-rule="evenodd" opacity=".5"></path><path fill="currentColor" d="M5.5 9.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zm1 4a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5zM22 13v-2c0-3.771 0-5.657-1.172-6.828c-.974-.975-3.192-1.139-5.828-1.166v17.988c2.636-.027 4.854-.191 5.828-1.166C22 18.657 22 16.771 22 13"></path></svg></span></button>
+    </div>
+  </footer></div></div></aside>
+<main data-stellar-runtime-region="" class="site-main" id="main"><nav class="shamot-section-nav" aria-label="博客导航"><a href="/blog/">近期发布</a><a href="/blog/categories/">分类</a><a href="/blog/tags/">标签</a><a href="/topic/">专栏</a><a href="/blog/archives/">归档</a></nav>
+
+
+<div class="article-banner-wrap slide-up"><div class="article banner top">
+  <div class="content">
+    
+    <div class="top bread-nav footnote"><div class="top-row"><div class="left" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/learning/">学习</a>
+</div><div class="right"><span class="cap reading">1992 字 · 预计阅读 7 分钟</span></div></div><div class="meta-row">
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-10-05T08:56:03.000Z">2026-10-05</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-10-05T08:56:03.000Z">2026-10-05</time></span></div>
+</div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Infra学习day4</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div></div>
+<article class="md-text content slide-up"><p>第四天学习 C++ 与 Python 相关的前置知识，内容包括 CMake 的目标配置与构建流程、使用 RAII 管理互斥锁，以及 Python/C++ 互操作中的调用方式、数据布局和所有权。</p>
+<!-- more -->
+
+<h2 id="1-CMake-的项目结构"><a href="#1-CMake-的项目结构" class="headerlink" title="1. CMake 的项目结构" data-stellar-navigation=""></a>1. CMake 的项目结构</h2><p>CMake 根据项目配置生成构建系统，再由构建工具调用编译器完成编译和链接。一个库项目可以采用以下目录结构：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">vector_ops/</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── include/</span><br><span class="line">│   └── vector_ops.h</span><br><span class="line">└── src/</span><br><span class="line">    └── vector_ops.cpp</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>CMakeLists.txt</code> 描述构建目标及其配置，<code>include/vector_ops.h</code> 保存头文件，<code>src/vector_ops.cpp</code> 保存实现代码。</p>
+<h2 id="2-用-target-描述编译要求"><a href="#2-用-target-描述编译要求" class="headerlink" title="2. 用 target 描述编译要求" data-stellar-navigation=""></a>2. 用 target 描述编译要求</h2><p>笔记中的配置如下：</p>
+<figure class="highlight cmake"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.20</span>)</span><br><span class="line"><span class="keyword">project</span>(vector_ops LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_library</span>(vector_ops src/vector_ops.cpp)</span><br><span class="line"><span class="keyword">target_include_directories</span>(vector_ops PUBLIC <span class="keyword">include</span>)</span><br><span class="line"><span class="keyword">target_compile_features</span>(vector_ops PUBLIC cxx_std_20)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(CMAKE_CXX_COMPILER_ID <span class="keyword">MATCHES</span> <span class="string">"GNU|Clang"</span>)</span><br><span class="line">    <span class="keyword">target_compile_options</span>(vector_ops PRIVATE -Wall -Wextra -Wpedantic)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="项目与库目标"><a href="#项目与库目标" class="headerlink" title="项目与库目标" data-stellar-navigation=""></a>项目与库目标</h3><p><code>cmake_minimum_required(VERSION 3.20)</code> 声明最低 CMake 版本为 3.20。</p>
+<p><code>project(vector_ops LANGUAGES CXX)</code> 设置项目名称，并启用 C++ 语言。</p>
+<p><code>add_library(vector_ops src/vector_ops.cpp)</code> 定义名为 <code>vector_ops</code> 的库目标，将指定源文件加入该目标。这一步描述要构建的内容，实际编译发生在后续构建阶段。</p>
+<h3 id="头文件路径与配置传播"><a href="#头文件路径与配置传播" class="headerlink" title="头文件路径与配置传播" data-stellar-navigation=""></a>头文件路径与配置传播</h3><figure class="highlight cmake"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">target_include_directories</span>(vector_ops PUBLIC <span class="keyword">include</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这条命令将 <code>include</code> 加入目标的头文件搜索路径。<code>PUBLIC</code> 表示该路径既用于构建 <code>vector_ops</code>，也作为使用要求传递给通过 CMake 依赖关系链接该目标的消费者。</p>
+<p>目标配置的作用范围分为三种：</p>
+<ul>
+<li><code>PRIVATE</code>：用于目标自身。</li>
+<li><code>INTERFACE</code>：提供给依赖该目标的消费者。</li>
+<li><code>PUBLIC</code>：同时用于目标自身和消费者。</li>
+</ul>
+<p>这种传播依赖目标之间的关系，并不表示项目中的所有文件都会自动获得该配置。参见 <a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/command/target_include_directories.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>CMake 的 target_include_directories 文档</a>。</p>
+<h3 id="C-标准要求"><a href="#C-标准要求" class="headerlink" title="C++ 标准要求" data-stellar-navigation=""></a>C++ 标准要求</h3><figure class="highlight cmake"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">target_compile_features</span>(vector_ops PUBLIC cxx_std_20)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这条命令声明目标需要至少支持 C++20 的编译模式，并将要求传递给消费者。CMake 根据编译器情况选择所需选项，因此不能将其固定理解为一定添加 <code>-std=c++20</code>。参见 <a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/command/target_compile_features.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>CMake 的 target_compile_features 文档</a>。</p>
+<h3 id="编译警告选项"><a href="#编译警告选项" class="headerlink" title="编译警告选项" data-stellar-navigation=""></a>编译警告选项</h3><p>配置通过 <code>CMAKE_CXX_COMPILER_ID</code> 判断编译器标识是否匹配 <code>GNU</code> 或 <code>Clang</code>，匹配时添加：</p>
+<figure class="highlight cmake"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">target_compile_options</span>(vector_ops PRIVATE -Wall -Wextra -Wpedantic)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这些选项启用相应的编译诊断。这里使用 <code>PRIVATE</code>，表示警告选项用于编译 <code>vector_ops</code> 自身，不作为使用要求传递给消费者。</p>
+<p>在目标配置方式中，<code>target_include_directories</code> 描述头文件搜索路径，<code>target_compile_features</code> 描述语言特性要求，<code>target_link_libraries</code> 描述链接依赖。不同目标可以拥有各自的配置，而不必让整个项目共享同一组设置。</p>
+<h2 id="3-配置与构建是两个阶段"><a href="#3-配置与构建是两个阶段" class="headerlink" title="3. 配置与构建是两个阶段" data-stellar-navigation=""></a>3. 配置与构建是两个阶段</h2><p>在项目目录中执行：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">cmake -S . -B build -DCMAKE_BUILD_TYPE=Release</span><br><span class="line">cmake --build build --parallel</span><br></pre></td></tr></tbody></table></figure>
+
+<p>第一条命令完成配置和生成：</p>
+<ul>
+<li><code>-S .</code> 指定当前目录为源码目录，读取其中的 <code>CMakeLists.txt</code>。</li>
+<li><code>-B build</code> 指定构建目录为 <code>build/</code>，目录不存在时会创建它。</li>
+<li><code>-DCMAKE_BUILD_TYPE=Release</code> 为单配置生成器指定 Release 配置。</li>
+</ul>
+<p>构建目录中保存 CMake 缓存、生成的构建系统文件，以及后续产生的编译输出。具体生成 Makefile、Ninja 文件还是其他项目文件，取决于生成器。</p>
+<p>第二条命令启动实际构建。<code>--build build</code> 指定已有构建目录，<code>--parallel</code> 启用并行构建，具体并行度由底层构建工具等因素决定。</p>
+<p>Release 通常启用优化，Debug 通常用于调试，具体编译选项取决于工具链配置。对于 Visual Studio 等多配置生成器，构建时通过 <code>--config</code> 选择配置：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">cmake -S . -B build</span><br><span class="line">cmake --build build --config Release --parallel</span><br></pre></td></tr></tbody></table></figure>
+
+<p>参见 <a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/manual/cmake.1.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>CMake 命令行文档</a>。</p>
+<h2 id="4-C-并发：使用-RAII-管理互斥锁"><a href="#4-C-并发：使用-RAII-管理互斥锁" class="headerlink" title="4. C++ 并发：使用 RAII 管理互斥锁" data-stellar-navigation=""></a>4. C++ 并发：使用 RAII 管理互斥锁</h2><p>多个线程访问共享状态时，可以通过互斥锁保护需要互斥执行的代码段。</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mutex&gt;</span></span></span><br><span class="line"></span><br><span class="line">std::mutex mutex;</span><br><span class="line"><span class="type">int</span> counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">increment</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="function">std::lock_guard&lt;std::mutex&gt; <span class="title">guard</span><span class="params">(mutex)</span></span>;</span><br><span class="line">    ++counter;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>std::lock_guard&lt;std::mutex&gt;</code> 在构造时获取 <code>mutex</code>，在析构时释放它。<code>guard</code> 是局部对象，因此离开 <code>increment()</code> 的作用域时会自动解锁；因异常展开栈而离开作用域时，也会进行析构。</p>
+<p>这延续了 RAII 的资源管理方式：锁的持有时间与 <code>guard</code> 的生命周期绑定。<code>++counter</code> 位于锁保护的范围内，使用同一把锁的线程不能同时执行这段操作。</p>
+<p>这项保护要求其他可能并发冲突的访问也遵循相同的同步规则。仅在某一个写入位置加锁，并不能自动保护所有对 <code>counter</code> 的访问。</p>
+<h2 id="5-Python-C-互操作与调用粒度"><a href="#5-Python-C-互操作与调用粒度" class="headerlink" title="5. Python/C++ 互操作与调用粒度" data-stellar-navigation=""></a>5. Python/C++ 互操作与调用粒度</h2><p>Python/C++ 互操作是让 Python 调用原生代码，同时规定参数、返回值和资源如何穿过语言边界。</p>
+<p>跨语言调用可能涉及函数分派、参数检查、类型转换和对象管理等开销。如果每处理一个元素都调用一次 C++，这些开销会随着调用次数重复发生。</p>
+<p>批量接口将一组数据一次传入原生函数，再由原生代码完成整批处理。它减少了跨边界调用次数，但实际成本仍然取决于数据是否需要转换或复制。</p>
+<h2 id="6-ctypes-与-pybind11"><a href="#6-ctypes-与-pybind11" class="headerlink" title="6. ctypes 与 pybind11" data-stellar-navigation=""></a>6. <code>ctypes</code> 与 <code>pybind11</code></h2><h3 id="ctypes：调用-C-风格动态库接口"><a href="#ctypes：调用-C-风格动态库接口" class="headerlink" title="ctypes：调用 C 风格动态库接口" data-stellar-navigation=""></a><code>ctypes</code>：调用 C 风格动态库接口</h3><p><code>ctypes</code> 是 Python 标准库提供的外部函数接口，可以加载动态库，并调用其中导出的函数。</p>
+<p>调用方需要正确声明参数类型、返回类型、调用约定，以及指针所指数据的布局和有效期。C++ 实现也可以提供 C 风格的导出接口供它调用；普通 C++ 类接口并不会因此自动映射为 Python 类。参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/ctypes.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Python 的 ctypes 文档</a>。</p>
+<h3 id="pybind11：绑定-C-函数与类"><a href="#pybind11：绑定-C-函数与类" class="headerlink" title="pybind11：绑定 C++ 函数与类" data-stellar-navigation=""></a><code>pybind11</code>：绑定 C++ 函数与类</h3><p><code>pybind11</code> 用于将 C++ 函数和类暴露为 Python 扩展模块，提供类型转换以及 NumPy、缓冲区等接口支持。</p>
+<p>绑定接口仍然需要明确数据转换、返回值所有权和生命周期规则。进入由 Python 调用的 C++ 函数时，GIL 默认仍然被持有；需要释放 GIL 的计算区间，要在满足相应条件时显式处理。参见 <a target="_blank" rel="noopener" href="https://pybind11.readthedocs.io/en/stable/advanced/misc.html#global-interpreter-lock-gil" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>pybind11 的 GIL 文档</a>。</p>
+<h2 id="7-零拷贝的数据接口"><a href="#7-零拷贝的数据接口" class="headerlink" title="7. 零拷贝的数据接口" data-stellar-navigation=""></a>7. 零拷贝的数据接口</h2><p>零拷贝表示 Python 与 C++ 访问同一块底层内存，而不是为跨语言传递重新复制数据。共享内存仍然需要明确接口约束。</p>
+<p>跨语言传递数组时，接口描述包含以下信息：</p>
+<ul>
+<li><strong>地址</strong>：数据存放在哪里。</li>
+<li><strong>元素类型</strong>：每个元素的类型与大小。</li>
+<li><strong>形状</strong>：各维度的元素数量。</li>
+<li><strong>步长</strong>：沿各维度移动一个元素时，地址变化多少。</li>
+<li><strong>设备</strong>：数据位于 CPU 内存还是 GPU 等设备内存。</li>
+<li><strong>生命周期</strong>：谁拥有数据，数据何时失效。</li>
+<li><strong>可变性</strong>：接收方是否可以修改数据。</li>
+</ul>
+<p>仅提供首地址无法表达这些信息。例如，转置后的 NumPy 数组可能不是 C 连续布局。如果 C++ 只按首地址连续读取，就可能忽略实际步长，得到与逻辑数组顺序不同的结果。</p>
+<p>如果绑定接口要求特定元素类型或连续布局，传入不符合要求的数组时，可能发生转换和复制，也可能被接口拒绝，具体行为取决于绑定设置。参见 <a target="_blank" rel="noopener" href="https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>pybind11 的 NumPy 与缓冲区文档</a>。</p>
+<p>共享底层内存时，还需要保证所有者在原生代码使用数据期间保持存活，并明确修改权限。数据布局和所有权共同构成跨语言接口的一部分。</p>
+</article>
+<div class="article-tags slide-up"><a class="tag shamot-colored-tag" href="/blog/tags/Note/" style="--tag-light:#4a7a6a;--tag-dark:#a9d6c8"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Note</a><a class="tag shamot-colored-tag" href="/blog/tags/Infra/" style="--tag-light:#356f72;--tag-dark:#9cd8d3"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Infra</a><a class="tag shamot-colored-tag" href="/blog/tags/Python/" style="--tag-light:#4b6b2f;--tag-dark:#bcd79a"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Python</a><a class="tag shamot-colored-tag" href="/blog/tags/Summary/" style="--tag-light:#6b6f8a;--tag-dark:#c2c6e0"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Summary</a><a class="tag shamot-colored-tag" href="/blog/tags/C/" style="--tag-light:#27648c;--tag-dark:#9acdf2"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>C++</a><a class="tag shamot-colored-tag" href="/blog/tags/%E5%AD%A6%E4%B9%A0/" style="--tag-light:#9a4b3e;--tag-dark:#f1b5a1"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>学习</a></div>
+
+
+
+
+
+<div class="related-wrap slide-up" id="read-next"><section class="body"><div class="item" id="prev"><div class="note"><svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-left" aria-hidden="true"></svg> 较新文章</div><a href="/posts/paper-librarian-ai-paper-agent/" data-stellar-navigation="">Paper Librarian v2.0：一个本地的 AI 论文管家</a></div><div class="item" id="next"><div class="note">较早文章 <svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-right" aria-hidden="true"></svg></div><a href="/posts/infra-learning-day3/" data-stellar-navigation="">Infra学习day3</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer slide-up footnote"><hr><div class="text"><p>© shamot · 由 <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 与 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 驱动。</p>
+</div></footer>
+</main>
+<aside data-stellar-runtime-region="" id="rightbar-region" class="site-region site-region--rightbar" data-region="rightbar" aria-label="Rightbar"><div class="site-region__surface ui-drawer-surface"><div class="site-region__viewport"><div class="widgets widget-stack widget-stack--rightbar widget-stack--rightbar"><div class="widget-instance widget-instance--toc" data-widget-id="rightbar:0:toc" data-presentation="rightbar">
+
+
+<widget class="widget-wrapper slide-up toc" id="data-toc" collapse="false">
+  
+    <div class="widget-header dis-select">
+      <span class="name">本文目录</span>
+      <button type="button" class="cap-action ui-interactive card-hover card-hover--spotlight" data-shell-action="toggle-toc" aria-label="Toggle table of contents" aria-pressed="false"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg></span></button>
+    </div>
+  
+  <div class="widget-body"><ol class="toc ui-collection-adapter"><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#1-CMake-%E7%9A%84%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84" data-stellar-navigation=""><span class="toc-text">1. CMake 的项目结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#2-%E7%94%A8-target-%E6%8F%8F%E8%BF%B0%E7%BC%96%E8%AF%91%E8%A6%81%E6%B1%82" data-stellar-navigation=""><span class="toc-text">2. 用 target 描述编译要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E9%A1%B9%E7%9B%AE%E4%B8%8E%E5%BA%93%E7%9B%AE%E6%A0%87" data-stellar-navigation=""><span class="toc-text">项目与库目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E5%A4%B4%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E4%B8%8E%E9%85%8D%E7%BD%AE%E4%BC%A0%E6%92%AD" data-stellar-navigation=""><span class="toc-text">头文件路径与配置传播</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#C-%E6%A0%87%E5%87%86%E8%A6%81%E6%B1%82" data-stellar-navigation=""><span class="toc-text">C++ 标准要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E7%BC%96%E8%AF%91%E8%AD%A6%E5%91%8A%E9%80%89%E9%A1%B9" data-stellar-navigation=""><span class="toc-text">编译警告选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#3-%E9%85%8D%E7%BD%AE%E4%B8%8E%E6%9E%84%E5%BB%BA%E6%98%AF%E4%B8%A4%E4%B8%AA%E9%98%B6%E6%AE%B5" data-stellar-navigation=""><span class="toc-text">3. 配置与构建是两个阶段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#4-C-%E5%B9%B6%E5%8F%91%EF%BC%9A%E4%BD%BF%E7%94%A8-RAII-%E7%AE%A1%E7%90%86%E4%BA%92%E6%96%A5%E9%94%81" data-stellar-navigation=""><span class="toc-text">4. C++ 并发：使用 RAII 管理互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#5-Python-C-%E4%BA%92%E6%93%8D%E4%BD%9C%E4%B8%8E%E8%B0%83%E7%94%A8%E7%B2%92%E5%BA%A6" data-stellar-navigation=""><span class="toc-text">5. Python/C++ 互操作与调用粒度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#6-ctypes-%E4%B8%8E-pybind11" data-stellar-navigation=""><span class="toc-text">6. ctypes 与 pybind11</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#ctypes%EF%BC%9A%E8%B0%83%E7%94%A8-C-%E9%A3%8E%E6%A0%BC%E5%8A%A8%E6%80%81%E5%BA%93%E6%8E%A5%E5%8F%A3" data-stellar-navigation=""><span class="toc-text">ctypes：调用 C 风格动态库接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#pybind11%EF%BC%9A%E7%BB%91%E5%AE%9A-C-%E5%87%BD%E6%95%B0%E4%B8%8E%E7%B1%BB" data-stellar-navigation=""><span class="toc-text">pybind11：绑定 C++ 函数与类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#7-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8E%A5%E5%8F%A3" data-stellar-navigation=""><span class="toc-text">7. 零拷贝的数据接口</span></a></li></ol></div>
+  <div class="widget-footer"><a class="top ui-interactive" onclick="util.scrollTop()"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M20.536 3.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464" opacity=".5"></path><path fill="currentColor" d="M9.53 12.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 9.56z"></path><path fill="currentColor" d="M9.53 16.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 13.56z"></path></svg></span><span>回到顶部</span></a></div>
+</widget>
+
+
+</div></div></div></div></aside>
+</div><button type="button" class="site-scrim" data-shell-action="dismiss-drawer" aria-label="Close navigation" tabindex="-1"></button><div data-stellar-runtime-region="" class="site-dock" role="group" aria-label="Layout panels">
+  <button type="button" class="site-dock__button site-dock__button--rightbar ui-interactive" aria-label="Open rightbar" aria-controls="rightbar-region" aria-expanded="false" data-shell-action="toggle-rightbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+  </button>
+  <button type="button" class="site-dock__button site-dock__button--leftbar ui-interactive" aria-label="Open leftbar" aria-controls="leftbar-region" aria-expanded="false" data-shell-action="toggle-leftbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"></path><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"></path></g></svg>
+  </button>
+</div>
+
+<dialog data-stellar-runtime-region="" class="search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+  <div class="search-dialog__panel search-wrapper" id="site-search-wrapper" searching="false">
+    <div class="search-dialog__header">
+      <div class="search-form" role="search">
+        <span class="search-button" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+        <input type="search" class="search-input" id="site-search-input" aria-labelledby="site-search-title" placeholder="搜索">
+      </div>
+      <button type="button" class="search-dialog__close" data-shell-action="close-search" aria-label="关闭搜索">×</button>
+    </div>
+    
+      <div class="search-dialog__scope" role="radiogroup" aria-labelledby="site-search-title" hidden="">
+        <label class="search-dialog__scope-option" data-search-scope-option="all">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="all">
+          <span>全站</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="blog" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="blog">
+          <span>博客</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="current" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="current">
+          <span data-search-scope-current-label=""></span>
+        </label>
+      </div>
+    
+    <h2 class="search-dialog__title" id="site-search-title">站内搜索</h2>
+    <div class="search-result" id="site-search-result"></div>
+    <div class="search-no-result">没有找到内容！</div>
+  </div>
+</dialog>
+</div><div class="site-scripts">
+<script data-stellar-script="core" src="/js/stellar-icons.js?v=39c6ac17e854ffe2"></script>
+
+<script data-stellar-script="defines">
+  window.canonical = window.stellarClientData.canonical;
+  const ctx = window.stellarClientData.ctx;
+  window.canonical.param = {permalink: "https://chadoshamot.github.io/posts/infra-learning-day4/", checklink: ctx.services.video.js};
+  ctx.date_suffix = {"just":"刚刚","min":"分钟前","hour":"小时前","day":"天前"};
+  if (ctx.search) Object.assign(ctx.search, {"more":"更多","no_more":"没有更多了"});
+  const def = window.stellarClientData.def;
+  window.ctx = ctx;
+  window.def = def;
+</script>
+
+
+<!-- core: 迁移期 DOM/资源兼容工具；Extension 注册与生命周期由 ESM runtime 所有 -->
+<script data-stellar-script="core" src="/js/utils.js?v=2.0.0"></script>
+<script data-stellar-script="core" src="/js/main.js?v=2.0.0" defer=""></script>
+<script data-stellar-script="core" defer="" src="/js/profile.js?v=2.0.0"></script>
+
+
+
+
+
+<script data-stellar-script="core" type="application/json" id="stellar-runtime-config">{"version":1,"root":"/","policy":{"cache":{"enabled":true,"defaultTtl":3600,"ttl":{"giscus":600,"waline":600,"artalk":600,"memos":600,"memos-user":86400,"sites":86400,"friends":86400,"friends_and_posts":86400,"siteinfo":86400},"maxEntries":200},"request":{"retries":2,"timeoutMs":5000,"idleTimeoutMs":3000,"maxCacheEntryBytes":204800},"features":{"codeCopyToastMs":2500},"providers":{"linkPrefetch":"flying_pages","lightbox":"fancybox","diagrams":"mermaid"}},"extensions":[{"id":"pin-slider","module":"/js/runtime/extensions/pin-slider.js","scope":"region","when":{"selector":".pin-slider"},"config":{}},{"id":"page-controls","module":"/js/runtime/extensions/page-controls.js","scope":"region","when":{"always":true},"config":{"highlight":"/js/search/highlight.js","tagtree":"/js/tagtree.js"}},{"id":"partial-navigation","module":"/js/runtime/extensions/partial-navigation.js","scope":"document","when":{"always":true},"config":{}},{"id":"search","module":"/js/runtime/extensions/search.js","scope":"document","when":{"selector":".search-input"},"config":{"provider":"local","options":{"scope":"all","includeContent":true,"cacheTtlSeconds":86400},"assets":{"client":null,"provider":"/js/search/local-search.js","shortcut":"/js/search/shortcut.js"}}},{"id":"hero-parallax","module":"/js/runtime/extensions/hero-parallax.js","scope":"region","when":{"selector":".wiki-hero"},"config":{}},{"id":"hero-effect","module":"/js/runtime/extensions/hero-effect.js","scope":"region","when":{"selector":"canvas[data-hero-effect]"},"config":{}},{"id":"lazy-loading","module":"/js/runtime/extensions/lazy-loading.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"}},{"id":"deferred-icons","module":"/js/runtime/extensions/deferred-icons.js","scope":"region","when":{"selector":"svg.icon[data-icon]"},"config":{}},{"id":"dropdown","module":"/js/runtime/extensions/dropdown.js","scope":"region","when":{"selector":"details.dropdown"},"config":{}},{"id":"services","module":"/js/runtime/extensions/services.js","scope":"region","when":{"selector":"#artalk_container, #twikoo_container, #waline_container, .data-service, [class*='ds-'], a[cardlink], a[data-md-link][data-siteinfo-api], .site-card [data-siteinfo-api], .voice\u003eaudio, .video\u003evideo, .chat-file"},"config":{"marked":"https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js"}},{"id":"settings","module":"/js/runtime/extensions/settings.js","scope":"region","when":{"selector":".settings-page"},"config":{}},{"id":"link-prefetch","module":"/js/runtime/extensions/link-prefetch.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"}},{"id":"lightbox","module":"/js/runtime/extensions/lightbox.js","scope":"region","when":{"selector":"[data-fancybox]:not(.error), .with-fancybox, .ds-memos, .timenode p\u003eimg"},"config":{"enabled":true,"selector":".timenode p\u003eimg","assets":{"localCss":"/css/plugins/fancybox.css","js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"}}},{"id":"reveal","module":"/js/runtime/extensions/reveal.js","scope":"region","when":{"selector":".slide-up"},"config":{"enabled":true,"duration":300,"interval":50,"distance":5,"blur":0}},{"id":"code-copy","module":"/js/runtime/extensions/code-copy.js","scope":"region","when":{"selector":".code"},"config":{"assets":{"js":"/js/plugins/copycode.js"},"messages":{"label":"复制","copied":"复制成功","denied":"未获得剪贴板权限","unsupported":"当前浏览器不支持剪贴板或页面不是 HTTPS"}}},{"id":"adaptive-text","module":"/js/runtime/extensions/adaptive-text.js","scope":"region","when":{"selector":"[data-text-adaptive]"},"config":{"assets":{"colorJs":"/js/color.js","js":"/js/plugins/adaptive-text.js"}}},{"id":"swiper","module":"/js/runtime/extensions/swiper.js","scope":"region","when":{"selector":"#swiper-api"},"config":{"assets":{"localCss":"/css/plugins/swiper.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js","css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css"}}}]}</script>
+<script data-stellar-script="core" type="module" src="/js/runtime/index.js?v=2.0.0&amp;runtime=1"></script>
+
+
+<!-- inject -->
+<link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"><script data-stellar-script="asset" src="/assets/shamot-terminal.js?v=6" defer=""></script>
+
+<script data-stellar-script="core" defer="" src="/js/navigation-init.js?v=2.0.0"></script>
+</div>
+
+<script type="application/json" id="stellar-navigation-config">{"collection":"[\"post\",\"post\"]","url":"https://chadoshamot.github.io/posts/infra-learning-day4/","signature":"c7c53f7697696a1c51fff894171c3e8fc3fb0737337ef0a5b6faebbadb2f2ee6"}</script></body></html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light" style="--shamot-accent:#f4d35e;--theme:#f4d35e;--accent:#f4d35e;--link:#f4d35e"><head>
+  
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0" theme-name="Stellar" theme-version="2.0.0">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title data-stellar-page-meta="">Infra学习day2 - shamot</title>
+  <script data-stellar-script="core">
+    (function () {
+      var key = 'stellar:v2:leftbar-state';
+      var fallback = "expanded";
+      try {
+        var value = localStorage.getItem(key);
+        document.documentElement.dataset.leftbarState = value === 'collapsed' || value === 'expanded' ? value : fallback;
+      } catch (error) {
+        document.documentElement.dataset.leftbarState = fallback;
+      }
+    })();
+  </script>
+
+  <meta name="description" content="Infra 学习第二天的 Python 前置知识笔记，涵盖并发与并行、线程与进程、asyncio、CPU 与 GPU 性能计时，以及性能分析与优化顺序。" data-stellar-page-meta="">
+<meta property="og:type" content="article" data-stellar-page-meta="">
+<meta property="og:title" content="Infra学习day2" data-stellar-page-meta="">
+<meta property="og:url" content="https://chadoshamot.github.io/posts/infra-learning-day2/" data-stellar-page-meta="">
+<meta property="og:site_name" content="shamot" data-stellar-page-meta="">
+<meta property="og:description" content="Infra 学习第二天的 Python 前置知识笔记，涵盖并发与并行、线程与进程、asyncio、CPU 与 GPU 性能计时，以及性能分析与优化顺序。" data-stellar-page-meta="">
+<meta property="og:locale" content="zh_CN" data-stellar-page-meta="">
+<meta property="article:author" content="shamot" data-stellar-page-meta="">
+<meta property="article:published_time" content="2026-10-03T16:00:00.000Z" data-stellar-page-meta="">
+<meta property="article:modified_time" content="2026-10-03T16:30:06.000Z" data-stellar-page-meta="">
+<meta property="article:tag" content="Infra" data-stellar-page-meta="">
+<meta property="article:tag" content="Note" data-stellar-page-meta="">
+<meta property="article:tag" content="Python" data-stellar-page-meta="">
+<meta property="article:tag" content="Summary" data-stellar-page-meta="">
+<meta name="twitter:card" content="summary" data-stellar-page-meta=""><meta name="twitter:title" content="Infra学习day2" data-stellar-page-meta="">
+  
+  
+  <meta name="keywords" content="Note,Infra,Python,Summary" data-stellar-page-meta="">
+
+  <!-- feed -->
+  
+
+  <link rel="preload" href="/css/main.css?v=2.0.0" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=2.0.0">
+  <style>:root{--text-loading:"正在加载";--text-loading-error:"加载失败，请稍后重试。"}</style>
+
+
+  
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/160225157?s=64&amp;v=4">
+  
+
+  
+
+  <script type="application/ld+json" data-stellar-page-meta="">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"dateCreated":"2026-10-04T00:00:00+08:00","dateModified":"2026-10-04T00:30:06+08:00","datePublished":"2026-10-04T00:00:00+08:00","description":"Infra 学习第二天，从并发、并行与 GIL 出发，梳理多进程和 asyncio 的适用场景，再学习 CPU / GPU 计时、性能分析工具与优化顺序。","headline":"Infra学习day2","mainEntityOfPage":{"@type":"WebPage","@id":"https://chadoshamot.github.io/posts/infra-learning-day2/"},"publisher":{"@type":"Organization","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"url":"https://chadoshamot.github.io/posts/infra-learning-day2/","image":["https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"],"keywords":"Note, Infra, Python, Summary","thumbnailUrl":"https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"}</script>
+  <link rel="stylesheet" href="/assets/shamot.css?v=9"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><link rel="stylesheet" href="/assets/shamot-purple.css?v=1"><link rel="stylesheet" href="/assets/shamot-content-palettes.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=2"></script>
+
+  <link rel="stylesheet" href="/css/stellar-icons.css?v=7c185ad1a9a79674">
+  <link rel="preload" as="script" href="/js/stellar-icons.js?v=39c6ac17e854ffe2">
+  
+  
+</head>
+<body data-page-type="content" data-page-layout="post" data-article-style="tech" data-section="post"><header class="shamot-mobile-header"><a href="/">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select><button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header><div data-stellar-runtime-region="" id="site-cover" class="site-cover"></div><div class="site-shell" id="start" data-regions="leftbar rightbar"><div class="site-workspace">
+<aside data-stellar-runtime-region="" id="leftbar-region" class="site-region site-region--leftbar" data-region="leftbar" aria-label="Leftbar"><div class="site-region__surface ui-surface"><div class="site-region__decoration" aria-hidden="true"></div><div class="site-region__viewport"><header class="site-region__header site-region__zone site-region__zone--top">
+    <div class="widget-instance widget-instance--brand" data-widget-id="leftbar:fixed:brand" data-presentation="leftbar" data-leftbar-rail="">
+<header class="brand-header brand-header--compact brand-header--site"><div class="brand-wrap"><a class="brand-image brand-image--avatar" href="/"><img no-lazy="" src="https://avatars.githubusercontent.com/u/160225157?v=4" alt="" onerror="this.onerror=null;this.src=&quot;/images/stellar-error.491ee870f4940739.svg&quot;"></a><a class="brand-title" href="/"><div class="brand-name">shamot</div><div class="brand-tagline cap">Nothing is impossible!</div></a></div><div class="brand-search">
+
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<button class="ui-collection__item ui-interactive card-hover card-hover--spotlight search-trigger has-hover-surface" type="button" title="搜索" aria-label="搜索" data-shell-action="open-search" data-search-instance="leftbar-brand-search" data-search-domain="blog" data-search-domain-label="博客" data-search-domain-blog="true">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">搜索</span>
+      
+      
+    </span>
+  
+  <kbd class="search-shortcut" aria-hidden="true">⌘K</kbd>
+
+  
+</button>
+
+  
+</div>
+
+
+</div></header>
+</div>
+  </header>
+  <div class="site-region__body site-region__zone site-region__zone--body">
+    <div class="shamot-theme-control"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select></div><div class="widget-instance widget-instance--menu" data-widget-id="leftbar:fixed:menu" data-presentation="leftbar" data-leftbar-rail="">
+
+
+<nav class="menu dis-select">
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-active is-themed" href="/blog/" title="博客" aria-current="page" style="--item-theme:#f4d35e;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"></path><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">博客</span>
+      
+      
+    </span>
+  
+  
+  <span class="ui-collection__indicator"></span>
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/wiki/" title="项目" style="--item-theme:#73daca;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" opacity=".5"></path><path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z"></path><path fill-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" clip-rule="evenodd"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">项目</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/notes/" title="探索" style="--item-theme:#bb9af7;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M10.7226 3.20068C10.8335 2.80158 10.5998 2.38817 10.2007 2.27731C9.80163 2.16645 9.38822 2.40011 9.27736 2.79921L7.76327 8.24995H4C3.58579 8.24995 3.25 8.58573 3.25 8.99995C3.25 9.41416 3.58579 9.74995 4 9.74995H7.3466L5.81882 15.2499H2C1.58579 15.2499 1.25 15.5857 1.25 15.9999C1.25 16.4142 1.58579 16.7499 2 16.7499H5.40216L4.27736 20.7992C4.1665 21.1983 4.40016 21.6117 4.79927 21.7226C5.19837 21.8334 5.61178 21.5998 5.72264 21.2007L6.95895 16.7499H14.4022L13.2774 20.7992C13.1665 21.1983 13.4002 21.6117 13.7993 21.7226C14.1984 21.8334 14.6118 21.5998 14.7226 21.2007L15.959 16.7499H20C20.4142 16.7499 20.75 16.4142 20.75 15.9999C20.75 15.5857 20.4142 15.2499 20 15.2499H16.3756L17.9034 9.74995H22C22.4142 9.74995 22.75 9.41416 22.75 8.99995C22.75 8.58573 22.4142 8.24995 22 8.24995H18.3201L19.7226 3.20068C19.8335 2.80158 19.5998 2.38817 19.2007 2.27731C18.8016 2.16645 18.3882 2.40011 18.2774 2.79921L16.7633 8.24995H9.32006L10.7226 3.20068ZM14.8188 15.2499L16.3466 9.74995H8.9034L7.37562 15.2499H14.8188Z" clip-rule="evenodd"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">探索</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/friends/" title="友链" style="--item-theme:#9ece6a;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">友链</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/about/" title="关于" style="--item-theme:#f79b87;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20" opacity=".5"></path><path d="M12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 7.5c-3.04 0-5.5 1.57-5.5 3.5c0 .65.28 1.26.77 1.77A7.96 7.96 0 0 0 12 20.5a7.96 7.96 0 0 0 4.73-1.73c.49-.51.77-1.12.77-1.77c0-1.93-2.46-3.5-5.5-3.5"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">关于</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div>
+
+</nav>
+
+</div>
+    <div class="widgets widget-stack widget-stack--leftbar widget-stack--body"><div class="widget-instance widget-instance--recent" data-widget-id="leftbar:0:recent" data-presentation="leftbar">
+
+<widget class="widget-wrapper slide-up recent-widget" style="--theme: #f4d35e; --item-theme: #f4d35e;">
+  
+    <div class="widget-header dis-select">
+      <span class="name">最近更新</span>
+      
+    </div>
+  
+  <div class="widget-body"><div class="ui-collection" data-layout="list" data-variant="nav" data-density="compact">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day5/" title="Infra学习day5" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day5</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day6/" title="Infra学习day6" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day6</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/paper-librarian-ai-paper-agent/" title="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">P</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Paper Librarian v2.0：一个本地的 AI 论文管家</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day4/" title="Infra学习day4" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day4</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day3/" title="Infra学习day3" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day3</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day2/" title="Infra学习day2" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day2</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day1/" title="Infra学习day1" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day1</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/codex-windows-runtime-fix/" title="修复 Codex 在 Windows 上的运行时暂存故障" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">修</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">修复 Codex 在 Windows 上的运行时暂存故障</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/myalgo-algorithm-notes/" title="MyAlgo：一个算法初学者的题库与笔记仓库" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MyAlgo：一个算法初学者的题库与笔记仓库</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div></div>
+  
+</widget>
+
+
+</div></div>
+  </div>
+  <footer class="site-region__footer">
+    
+    <div class="site-region__system ui-collection" data-layout="inline" data-variant="nav" data-density="compact">
+      <div class="site-region__settings"><div class="widget-instance widget-instance--settings" data-widget-id="leftbar:fixed:settings" data-presentation="leftbar" data-leftbar-rail="">
+<a class="settings-widget ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/settings/" data-profile-provider="" data-profile-identity-enabled="false" data-profile-fallback-avatar="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg" data-settings-placement="leftbar" data-settings-label="设置" aria-label="设置" title="设置">
+  <span class="settings-widget__avatar" aria-hidden="true">
+    <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M12.4277 2C11.3139 2 10.2995 2.6007 8.27081 3.80211L7.58466 4.20846C5.55594 5.40987 4.54158 6.01057 3.98466 7C3.42773 7.98943 3.42773 9.19084 3.42773 11.5937V12.4063C3.42773 14.8092 3.42773 16.0106 3.98466 17C4.54158 17.9894 5.55594 18.5901 7.58466 19.7915L8.27081 20.1979C10.2995 21.3993 11.3139 22 12.4277 22C13.5416 22 14.5559 21.3993 16.5847 20.1979L17.2708 19.7915C19.2995 18.5901 20.3139 17.9894 20.8708 17C21.4277 16.0106 21.4277 14.8092 21.4277 12.4063V11.5937C21.4277 9.19084 21.4277 7.98943 20.8708 7C20.3139 6.01057 19.2995 5.40987 17.2708 4.20846L16.5847 3.80211C14.5559 2.6007 13.5416 2 12.4277 2Z" clip-rule="evenodd" opacity=".5"></path><path d="M12.4277 8.25C10.3567 8.25 8.67773 9.92893 8.67773 12C8.67773 14.0711 10.3567 15.75 12.4277 15.75C14.4988 15.75 16.1777 14.0711 16.1777 12C16.1777 9.92893 14.4988 8.25 12.4277 8.25Z"></path></g></svg></span>
+  </span>
+  <span class="settings-widget__name ui-collection__title">设置</span>
+</a>
+</div></div>
+      <button type="button" class="leftbar-state-toggle ui-collection__item ui-interactive card-hover card-hover--spotlight is-icon-only" aria-label="Collapse leftbar" aria-expanded="true" data-shell-action="toggle-leftbar"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.172 4.172C2 5.343 2 7.229 2 11v2c0 3.771 0 5.657 1.172 6.828S6.229 21 10 21h5V3h-5C6.229 3 4.343 3 3.172 4.172" clip-rule="evenodd" opacity=".5"></path><path fill="currentColor" d="M5.5 9.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zm1 4a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5zM22 13v-2c0-3.771 0-5.657-1.172-6.828c-.974-.975-3.192-1.139-5.828-1.166v17.988c2.636-.027 4.854-.191 5.828-1.166C22 18.657 22 16.771 22 13"></path></svg></span></button>
+    </div>
+  </footer></div></div></aside>
+<main data-stellar-runtime-region="" class="site-main" id="main"><nav class="shamot-section-nav" aria-label="博客导航"><a href="/blog/">近期发布</a><a href="/blog/categories/">分类</a><a href="/blog/tags/">标签</a><a href="/topic/">专栏</a><a href="/blog/archives/">归档</a></nav>
+
+
+<div class="article-banner-wrap slide-up"><div class="article banner top">
+  <div class="content">
+    
+    <div class="top bread-nav footnote"><div class="top-row"><div class="left" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/learning/">学习</a>
+</div><div class="right"><span class="cap reading">2307 字 · 预计阅读 8 分钟</span></div></div><div class="meta-row">
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-10-03T16:00:00.000Z">2026-10-04</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-10-03T16:30:06.000Z">2026-10-04</time></span></div>
+</div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Infra学习day2</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div></div>
+<article class="md-text content slide-up"><p>第二天继续学习 Python 前置知识，内容包括并发与并行、线程与进程、<code>asyncio</code>，以及 CPU 和 GPU 的性能计时、性能分析与优化顺序。</p>
+<!-- more -->
+
+<h2 id="1-并发与并行"><a href="#1-并发与并行" class="headerlink" title="1. 并发与并行" data-stellar-navigation=""></a>1. 并发与并行</h2><p>并发指多个任务在同一段时间内推进，任务之间可以交替执行；并行指多个任务在同一时刻执行。并发不一定要求多个计算核心，而并行通常依赖多个 CPU 核心或 GPU 等计算资源。</p>
+<p>任务的主要耗时来源，会影响执行模型的选择：</p>
+<ul>
+<li><strong>大量等待网络或磁盘的任务</strong>：例如下载、API 请求和小文件读写，可以使用线程；具有异步接口的 I/O 也可以使用 <code>asyncio</code>。</li>
+<li><strong>纯 Python 的 CPU 计算</strong>：例如 Python 循环和主要由 Python 代码完成的解析，可以使用多进程分配计算任务。</li>
+<li><strong>NumPy、PyTorch 的 CPU 运算</strong>：例如矩阵计算，并行能力通常由底层原生算子及其线程池提供，实际行为取决于算子和后端配置。</li>
+<li><strong>GPU 计算</strong>：例如 PyTorch CUDA 运算，计算并行主要发生在 GPU 上，Python 负责提交任务与调度。</li>
+</ul>
+<h2 id="2-多线程、GIL-与共享内存"><a href="#2-多线程、GIL-与共享内存" class="headerlink" title="2. 多线程、GIL 与共享内存" data-stellar-navigation=""></a>2. 多线程、GIL 与共享内存</h2><p>在启用 GIL 的 CPython 中，一个进程可以包含多个线程，但同一时刻只有一个线程能够执行 Python 字节码。GIL 是解释器层面的全局锁，并不是因为线程存在等待才需要添加的锁。这里讨论的是启用 GIL 的构建；自由线程构建的行为有所不同。参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/threading.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Python 线程文档</a>。</p>
+<p>线程执行阻塞 I/O 时，相关实现通常会释放 GIL，让其他线程继续执行。例如，一个线程等待网络响应时，另一个线程可以处理自己的任务。因此，线程可以使多个 I/O 任务的等待时间重叠。</p>
+<p>多个线程共享同一进程的内存。当它们同时读写共享状态时，仍然可能产生竞态条件。GIL 不保证由多步操作组成的业务逻辑具有原子性，需要根据共享状态的访问方式使用锁等同步机制。</p>
+<h2 id="3-多进程与任务批次"><a href="#3-多进程与任务批次" class="headerlink" title="3. 多进程与任务批次" data-stellar-navigation=""></a>3. 多进程与任务批次</h2><h3 id="主入口保护"><a href="#主入口保护" class="headerlink" title="主入口保护" data-stellar-navigation=""></a>主入口保护</h3><p>多进程可以将纯 Python 计算分配到不同进程，每个进程拥有自己的解释器和 GIL，从而利用多个 CPU 核心。</p>
+<p>进程启动方式包括 <code>spawn</code>、<code>fork</code> 和 <code>forkserver</code>，支持情况与默认值取决于平台和 Python 版本。Windows 使用 <code>spawn</code>，子进程会启动新的解释器并导入主模块。因此，创建进程的代码应放在主入口保护中，避免导入模块时再次创建进程：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></tbody></table></figure>
+
+<p>主入口保护与子进程导入主模块有关，并不能简单归因于 <code>fork</code>。参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/multiprocessing.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Python 多进程文档</a>。</p>
+<h3 id="多进程的成本"><a href="#多进程的成本" class="headerlink" title="多进程的成本" data-stellar-navigation=""></a>多进程的成本</h3><p>多进程除了计算本身，还可能涉及以下开销：</p>
+<ul>
+<li>创建进程；使用 <code>spawn</code> 时还要启动独立解释器并导入模块。</li>
+<li>在进程间传递参数和结果时进行序列化与反序列化。</li>
+<li>复制、映射或管理共享内存。</li>
+<li>进程间通信与同步。</li>
+</ul>
+<p>如果单个任务耗时很短，调度和数据传输成本可能超过计算本身。将多个小任务合并为一个批次，可以减少提交任务和通信的次数。批次大小也会影响内存占用和任务分配的均衡程度。</p>
+<h3 id="CUDA-与进程启动"><a href="#CUDA-与进程启动" class="headerlink" title="CUDA 与进程启动" data-stellar-navigation=""></a>CUDA 与进程启动</h3><p>CUDA 上下文与进程启动方式有关。父进程初始化 CUDA 后再使用 <code>fork</code>，可能导致子进程初始化或运行异常；多个进程建立各自的 CUDA 上下文，也可能增加显存占用。</p>
+<p>PyTorch 在 CUDA 子进程场景中要求使用 <code>spawn</code> 或 <code>forkserver</code>。使用数据加载和分布式能力时，启动方式应与框架要求一致。参见 <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/notes/multiprocessing.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>PyTorch 多进程文档</a>。</p>
+<h2 id="4-asyncio-与事件循环"><a href="#4-asyncio-与事件循环" class="headerlink" title="4. asyncio 与事件循环" data-stellar-navigation=""></a>4. <code>asyncio</code> 与事件循环</h2><p><code>asyncio</code> 通过事件循环调度协程。在同一个事件循环线程中，协程执行到需要等待的异步操作时，可以暂停并让其他任务继续运行。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">worker</span>(<span class="params">name: <span class="built_in">str</span>, delay: <span class="built_in">float</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">await</span> asyncio.sleep(delay)  <span class="comment"># 模拟异步等待</span></span><br><span class="line">    <span class="keyword">return</span> name</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    results = <span class="keyword">await</span> asyncio.gather(</span><br><span class="line">        worker(<span class="string">"a"</span>, <span class="number">0.2</span>),</span><br><span class="line">        worker(<span class="string">"b"</span>, <span class="number">0.1</span>),</span><br><span class="line">    )</span><br><span class="line">    <span class="built_in">print</span>(results)</span><br><span class="line"></span><br><span class="line">asyncio.run(main())</span><br></pre></td></tr></tbody></table></figure>
+
+<p>两个 <code>worker</code> 的等待过程可以重叠。虽然 <code>b</code> 的等待时间较短，但 <code>asyncio.gather</code> 按传入任务的顺序返回结果，因此输出为：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">['a', 'b']</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>await</code> 不会把普通的阻塞 I/O 或 CPU 计算自动变成非阻塞操作，也不保证每次执行都会切换任务。是否让出控制权，取决于等待的对象是否实际挂起当前协程。</p>
+<p>在事件循环线程中直接执行阻塞 I/O 或长时间 CPU 计算，会阻碍同一循环中的其他任务推进。阻塞操作可以交给线程执行，CPU 密集计算可以交给进程执行，再异步等待结果。参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/asyncio-dev.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>asyncio 开发文档</a>。</p>
+<h2 id="5-CPU-性能计时：预热与重复测量"><a href="#5-CPU-性能计时：预热与重复测量" class="headerlink" title="5. CPU 性能计时：预热与重复测量" data-stellar-navigation=""></a>5. CPU 性能计时：预热与重复测量</h2><p>单次运行的耗时可能受到首次初始化、缓存状态和系统调度等因素影响。预热后重复测量，可以观察多次运行的耗时，并使用统计量描述结果。</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> statistics <span class="keyword">import</span> median</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> perf_counter</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">benchmark</span>(<span class="params">fn, warmup: <span class="built_in">int</span> = <span class="number">5</span>, repeat: <span class="built_in">int</span> = <span class="number">20</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(warmup):</span><br><span class="line">        fn()</span><br><span class="line"></span><br><span class="line">    samples = []</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(repeat):</span><br><span class="line">        start = perf_counter()</span><br><span class="line">        fn()</span><br><span class="line">        samples.append(perf_counter() - start)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> median(samples)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这段代码先执行 5 次预热，再记录 20 次调用的耗时，返回以秒为单位的<strong>中位数</strong>，而不是算术平均值。<code>perf_counter()</code> 用于测量经过的时间。</p>
+<p>如果被测函数会修改输入或内部状态，多次调用可能对应不同的工作量；测量时需要明确每轮调用的条件。</p>
+<h2 id="6-GPU-性能计时：等待计算完成"><a href="#6-GPU-性能计时：等待计算完成" class="headerlink" title="6. GPU 性能计时：等待计算完成" data-stellar-navigation=""></a>6. GPU 性能计时：等待计算完成</h2><p>PyTorch 的 CUDA 操作通常相对于 CPU 异步执行。CPU 提交 GPU 工作后可以继续运行，因此仅在 <code>model(x)</code> 前后进行 CPU 计时，可能主要记录提交任务的时间，而没有包含完整的 GPU 执行时间。</p>
+<p>可以在计时前后同步 CUDA：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> perf_counter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 前提：model 和 x 已准备好，并在目标 CUDA 设备上完成预热。</span></span><br><span class="line">torch.cuda.synchronize()</span><br><span class="line">start = perf_counter()</span><br><span class="line"></span><br><span class="line">model(x)</span><br><span class="line"></span><br><span class="line">torch.cuda.synchronize()</span><br><span class="line">elapsed = perf_counter() - start</span><br><span class="line"><span class="built_in">print</span>(elapsed)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>计时前的同步用于等待此前提交的工作完成；计时后的同步用于等待本次工作完成。这个时间区间包含 CPU 提交开销以及等待 GPU 完成的时间，不等同于单个 GPU kernel 的执行时间。参见 <a target="_blank" rel="noopener" href="https://docs.pytorch.org/docs/stable/notes/cuda.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>PyTorch CUDA 文档</a>。</p>
+<h2 id="7-从整体计时到局部分析"><a href="#7-从整体计时到局部分析" class="headerlink" title="7. 从整体计时到局部分析" data-stellar-navigation=""></a>7. 从整体计时到局部分析</h2><p>性能分析可以逐步缩小观察范围：</p>
+<ol>
+<li><strong>端到端计时</strong>：测量完整流程，确认整体耗时及其变化。</li>
+<li><strong>阶段计时</strong>：分别记录数据处理、计算、通信和保存等阶段的耗时。</li>
+<li><strong>函数级分析</strong>：使用 <code>cProfile</code> 观察函数调用次数及耗时。</li>
+<li><strong>行级或采样分析</strong>：进一步定位热点代码行或原生调用栈。</li>
+<li><strong>内存分析</strong>：使用 <code>tracemalloc</code> 等工具观察 Python 内存分配。</li>
+<li><strong>GPU 分析</strong>：使用 PyTorch Profiler、Nsight Systems、Nsight Compute 等工具分析 GPU 工作。</li>
+</ol>
+<h3 id="使用-cProfile-分析函数耗时"><a href="#使用-cProfile-分析函数耗时" class="headerlink" title="使用 cProfile 分析函数耗时" data-stellar-navigation=""></a>使用 <code>cProfile</code> 分析函数耗时</h3><p><code>cProfile</code> 可以记录函数调用次数、函数自身耗时，以及包含子函数调用的累计耗时。累计耗时较高的函数，可能把时间花在其调用的其他函数中，需要结合调用关系理解结果。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">python -m cProfile -o profile.out train.py</span><br><span class="line">python -m pstats profile.out</span><br></pre></td></tr></tbody></table></figure>
+
+<p>进入 <code>pstats</code> 交互界面后，按累计耗时排序并显示前 30 项：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">sort cumulative</span><br><span class="line">stats 30</span><br></pre></td></tr></tbody></table></figure>
+
+<p>参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/profile.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Python 性能分析工具文档</a>。</p>
+<h3 id="使用-tracemalloc-观察内存分配"><a href="#使用-tracemalloc-观察内存分配" class="headerlink" title="使用 tracemalloc 观察内存分配" data-stellar-navigation=""></a>使用 <code>tracemalloc</code> 观察内存分配</h3><figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tracemalloc</span><br><span class="line"></span><br><span class="line">tracemalloc.start()</span><br><span class="line"><span class="comment"># 在这里运行待检查代码。</span></span><br><span class="line">snapshot = tracemalloc.take_snapshot()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> stat <span class="keyword">in</span> snapshot.statistics(<span class="string">"lineno"</span>)[:<span class="number">10</span>]:</span><br><span class="line">    <span class="built_in">print</span>(stat)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这段代码启动追踪后获取内存快照，按源码行汇总当前追踪到的分配，并显示占用较大的前 10 项。单个快照描述一个时刻的分配情况；观察增长需要比较不同时间的快照。</p>
+<p><code>tracemalloc</code> 主要追踪 Python 内存分配，不直接代表进程全部内存或 GPU 显存占用。参见 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/tracemalloc.html" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>tracemalloc 文档</a>。</p>
+<h2 id="8-性能优化的处理顺序"><a href="#8-性能优化的处理顺序" class="headerlink" title="8. 性能优化的处理顺序" data-stellar-navigation=""></a>8. 性能优化的处理顺序</h2><p>笔记中的优化顺序从算法和数据处理开始，再逐步进入底层实现：</p>
+<ol>
+<li>调整算法复杂度和数据结构，减少计算量或数据访问成本。</li>
+<li>减少不必要的 I/O、复制和序列化。</li>
+<li>将细粒度 Python 循环改为批处理或向量化原生算子。</li>
+<li>减少 Python 与 C++、GPU 之间频繁的调用和数据传递。</li>
+<li>在分析结果确认热点后，针对相应部分编写 C++、CUDA 或 Triton 扩展。</li>
+</ol>
+<p>每次修改后，使用一致的输入、计时范围和测量方法重新测量，以记录修改前后的性能变化。</p>
+</article>
+<div class="article-tags slide-up"><a class="tag shamot-colored-tag" href="/blog/tags/Note/" style="--tag-light:#4a7a6a;--tag-dark:#a9d6c8"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Note</a><a class="tag shamot-colored-tag" href="/blog/tags/Infra/" style="--tag-light:#356f72;--tag-dark:#9cd8d3"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Infra</a><a class="tag shamot-colored-tag" href="/blog/tags/Python/" style="--tag-light:#4b6b2f;--tag-dark:#bcd79a"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Python</a><a class="tag shamot-colored-tag" href="/blog/tags/Summary/" style="--tag-light:#6b6f8a;--tag-dark:#c2c6e0"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Summary</a><a class="tag shamot-colored-tag" href="/blog/tags/%E5%AD%A6%E4%B9%A0/" style="--tag-light:#9a4b3e;--tag-dark:#f1b5a1"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>学习</a></div>
+
+
+
+
+
+<div class="related-wrap slide-up" id="read-next"><section class="body"><div class="item" id="prev"><div class="note"><svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-left" aria-hidden="true"></svg> 较新文章</div><a href="/posts/infra-learning-day3/" data-stellar-navigation="">Infra学习day3</a></div><div class="item" id="next"><div class="note">较早文章 <svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-right" aria-hidden="true"></svg></div><a href="/posts/infra-learning-day1/" data-stellar-navigation="">Infra学习day1</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer slide-up footnote"><hr><div class="text"><p>© shamot · 由 <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 与 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 驱动。</p>
+</div></footer>
+</main>
+<aside data-stellar-runtime-region="" id="rightbar-region" class="site-region site-region--rightbar" data-region="rightbar" aria-label="Rightbar"><div class="site-region__surface ui-drawer-surface"><div class="site-region__viewport"><div class="widgets widget-stack widget-stack--rightbar widget-stack--rightbar"><div class="widget-instance widget-instance--toc" data-widget-id="rightbar:0:toc" data-presentation="rightbar">
+
+
+<widget class="widget-wrapper slide-up toc" id="data-toc" collapse="false">
+  
+    <div class="widget-header dis-select">
+      <span class="name">本文目录</span>
+      <button type="button" class="cap-action ui-interactive card-hover card-hover--spotlight" data-shell-action="toggle-toc" aria-label="Toggle table of contents" aria-pressed="false"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg></span></button>
+    </div>
+  
+  <div class="widget-body"><ol class="toc ui-collection-adapter"><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#1-%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%B9%B6%E8%A1%8C" data-stellar-navigation=""><span class="toc-text">1. 并发与并行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#2-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%81GIL-%E4%B8%8E%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98" data-stellar-navigation=""><span class="toc-text">2. 多线程、GIL 与共享内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#3-%E5%A4%9A%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%BB%BB%E5%8A%A1%E6%89%B9%E6%AC%A1" data-stellar-navigation=""><span class="toc-text">3. 多进程与任务批次</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E4%B8%BB%E5%85%A5%E5%8F%A3%E4%BF%9D%E6%8A%A4" data-stellar-navigation=""><span class="toc-text">主入口保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E7%9A%84%E6%88%90%E6%9C%AC" data-stellar-navigation=""><span class="toc-text">多进程的成本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#CUDA-%E4%B8%8E%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8" data-stellar-navigation=""><span class="toc-text">CUDA 与进程启动</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#4-asyncio-%E4%B8%8E%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF" data-stellar-navigation=""><span class="toc-text">4. asyncio 与事件循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#5-CPU-%E6%80%A7%E8%83%BD%E8%AE%A1%E6%97%B6%EF%BC%9A%E9%A2%84%E7%83%AD%E4%B8%8E%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F" data-stellar-navigation=""><span class="toc-text">5. CPU 性能计时：预热与重复测量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#6-GPU-%E6%80%A7%E8%83%BD%E8%AE%A1%E6%97%B6%EF%BC%9A%E7%AD%89%E5%BE%85%E8%AE%A1%E7%AE%97%E5%AE%8C%E6%88%90" data-stellar-navigation=""><span class="toc-text">6. GPU 性能计时：等待计算完成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#7-%E4%BB%8E%E6%95%B4%E4%BD%93%E8%AE%A1%E6%97%B6%E5%88%B0%E5%B1%80%E9%83%A8%E5%88%86%E6%9E%90" data-stellar-navigation=""><span class="toc-text">7. 从整体计时到局部分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E4%BD%BF%E7%94%A8-cProfile-%E5%88%86%E6%9E%90%E5%87%BD%E6%95%B0%E8%80%97%E6%97%B6" data-stellar-navigation=""><span class="toc-text">使用 cProfile 分析函数耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link ui-interactive" href="#%E4%BD%BF%E7%94%A8-tracemalloc-%E8%A7%82%E5%AF%9F%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D" data-stellar-navigation=""><span class="toc-text">使用 tracemalloc 观察内存分配</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#8-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E5%A4%84%E7%90%86%E9%A1%BA%E5%BA%8F" data-stellar-navigation=""><span class="toc-text">8. 性能优化的处理顺序</span></a></li></ol></div>
+  <div class="widget-footer"><a class="top ui-interactive" onclick="util.scrollTop()"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M20.536 3.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464" opacity=".5"></path><path fill="currentColor" d="M9.53 12.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 9.56z"></path><path fill="currentColor" d="M9.53 16.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 13.56z"></path></svg></span><span>回到顶部</span></a></div>
+</widget>
+
+
+</div></div></div></div></aside>
+</div><button type="button" class="site-scrim" data-shell-action="dismiss-drawer" aria-label="Close navigation" tabindex="-1"></button><div data-stellar-runtime-region="" class="site-dock" role="group" aria-label="Layout panels">
+  <button type="button" class="site-dock__button site-dock__button--rightbar ui-interactive" aria-label="Open rightbar" aria-controls="rightbar-region" aria-expanded="false" data-shell-action="toggle-rightbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+  </button>
+  <button type="button" class="site-dock__button site-dock__button--leftbar ui-interactive" aria-label="Open leftbar" aria-controls="leftbar-region" aria-expanded="false" data-shell-action="toggle-leftbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"></path><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"></path></g></svg>
+  </button>
+</div>
+
+<dialog data-stellar-runtime-region="" class="search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+  <div class="search-dialog__panel search-wrapper" id="site-search-wrapper" searching="false">
+    <div class="search-dialog__header">
+      <div class="search-form" role="search">
+        <span class="search-button" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+        <input type="search" class="search-input" id="site-search-input" aria-labelledby="site-search-title" placeholder="搜索">
+      </div>
+      <button type="button" class="search-dialog__close" data-shell-action="close-search" aria-label="关闭搜索">×</button>
+    </div>
+    
+      <div class="search-dialog__scope" role="radiogroup" aria-labelledby="site-search-title" hidden="">
+        <label class="search-dialog__scope-option" data-search-scope-option="all">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="all">
+          <span>全站</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="blog" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="blog">
+          <span>博客</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="current" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="current">
+          <span data-search-scope-current-label=""></span>
+        </label>
+      </div>
+    
+    <h2 class="search-dialog__title" id="site-search-title">站内搜索</h2>
+    <div class="search-result" id="site-search-result"></div>
+    <div class="search-no-result">没有找到内容！</div>
+  </div>
+</dialog>
+</div><div class="site-scripts">
+<script data-stellar-script="core" src="/js/stellar-icons.js?v=39c6ac17e854ffe2"></script>
+
+<script data-stellar-script="defines">
+  window.canonical = window.stellarClientData.canonical;
+  const ctx = window.stellarClientData.ctx;
+  window.canonical.param = {permalink: "https://chadoshamot.github.io/posts/infra-learning-day2/", checklink: ctx.services.video.js};
+  ctx.date_suffix = {"just":"刚刚","min":"分钟前","hour":"小时前","day":"天前"};
+  if (ctx.search) Object.assign(ctx.search, {"more":"更多","no_more":"没有更多了"});
+  const def = window.stellarClientData.def;
+  window.ctx = ctx;
+  window.def = def;
+</script>
+
+
+<!-- core: 迁移期 DOM/资源兼容工具；Extension 注册与生命周期由 ESM runtime 所有 -->
+<script data-stellar-script="core" src="/js/utils.js?v=2.0.0"></script>
+<script data-stellar-script="core" src="/js/main.js?v=2.0.0" defer=""></script>
+<script data-stellar-script="core" defer="" src="/js/profile.js?v=2.0.0"></script>
+
+
+
+
+
+<script data-stellar-script="core" type="application/json" id="stellar-runtime-config">{"version":1,"root":"/","policy":{"cache":{"enabled":true,"defaultTtl":3600,"ttl":{"giscus":600,"waline":600,"artalk":600,"memos":600,"memos-user":86400,"sites":86400,"friends":86400,"friends_and_posts":86400,"siteinfo":86400},"maxEntries":200},"request":{"retries":2,"timeoutMs":5000,"idleTimeoutMs":3000,"maxCacheEntryBytes":204800},"features":{"codeCopyToastMs":2500},"providers":{"linkPrefetch":"flying_pages","lightbox":"fancybox","diagrams":"mermaid"}},"extensions":[{"id":"pin-slider","module":"/js/runtime/extensions/pin-slider.js","scope":"region","when":{"selector":".pin-slider"},"config":{}},{"id":"page-controls","module":"/js/runtime/extensions/page-controls.js","scope":"region","when":{"always":true},"config":{"highlight":"/js/search/highlight.js","tagtree":"/js/tagtree.js"}},{"id":"partial-navigation","module":"/js/runtime/extensions/partial-navigation.js","scope":"document","when":{"always":true},"config":{}},{"id":"search","module":"/js/runtime/extensions/search.js","scope":"document","when":{"selector":".search-input"},"config":{"provider":"local","options":{"scope":"all","includeContent":true,"cacheTtlSeconds":86400},"assets":{"client":null,"provider":"/js/search/local-search.js","shortcut":"/js/search/shortcut.js"}}},{"id":"hero-parallax","module":"/js/runtime/extensions/hero-parallax.js","scope":"region","when":{"selector":".wiki-hero"},"config":{}},{"id":"hero-effect","module":"/js/runtime/extensions/hero-effect.js","scope":"region","when":{"selector":"canvas[data-hero-effect]"},"config":{}},{"id":"lazy-loading","module":"/js/runtime/extensions/lazy-loading.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"}},{"id":"deferred-icons","module":"/js/runtime/extensions/deferred-icons.js","scope":"region","when":{"selector":"svg.icon[data-icon]"},"config":{}},{"id":"dropdown","module":"/js/runtime/extensions/dropdown.js","scope":"region","when":{"selector":"details.dropdown"},"config":{}},{"id":"services","module":"/js/runtime/extensions/services.js","scope":"region","when":{"selector":"#artalk_container, #twikoo_container, #waline_container, .data-service, [class*='ds-'], a[cardlink], a[data-md-link][data-siteinfo-api], .site-card [data-siteinfo-api], .voice\u003eaudio, .video\u003evideo, .chat-file"},"config":{"marked":"https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js"}},{"id":"settings","module":"/js/runtime/extensions/settings.js","scope":"region","when":{"selector":".settings-page"},"config":{}},{"id":"link-prefetch","module":"/js/runtime/extensions/link-prefetch.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"}},{"id":"lightbox","module":"/js/runtime/extensions/lightbox.js","scope":"region","when":{"selector":"[data-fancybox]:not(.error), .with-fancybox, .ds-memos, .timenode p\u003eimg"},"config":{"enabled":true,"selector":".timenode p\u003eimg","assets":{"localCss":"/css/plugins/fancybox.css","js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"}}},{"id":"reveal","module":"/js/runtime/extensions/reveal.js","scope":"region","when":{"selector":".slide-up"},"config":{"enabled":true,"duration":300,"interval":50,"distance":5,"blur":0}},{"id":"code-copy","module":"/js/runtime/extensions/code-copy.js","scope":"region","when":{"selector":".code"},"config":{"assets":{"js":"/js/plugins/copycode.js"},"messages":{"label":"复制","copied":"复制成功","denied":"未获得剪贴板权限","unsupported":"当前浏览器不支持剪贴板或页面不是 HTTPS"}}},{"id":"adaptive-text","module":"/js/runtime/extensions/adaptive-text.js","scope":"region","when":{"selector":"[data-text-adaptive]"},"config":{"assets":{"colorJs":"/js/color.js","js":"/js/plugins/adaptive-text.js"}}},{"id":"swiper","module":"/js/runtime/extensions/swiper.js","scope":"region","when":{"selector":"#swiper-api"},"config":{"assets":{"localCss":"/css/plugins/swiper.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js","css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css"}}}]}</script>
+<script data-stellar-script="core" type="module" src="/js/runtime/index.js?v=2.0.0&amp;runtime=1"></script>
+
+
+<!-- inject -->
+<link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"><script data-stellar-script="asset" src="/assets/shamot-terminal.js?v=6" defer=""></script>
+
+<script data-stellar-script="core" defer="" src="/js/navigation-init.js?v=2.0.0"></script>
+</div>
+
+<script type="application/json" id="stellar-navigation-config">{"collection":"[\"post\",\"post\"]","url":"https://chadoshamot.github.io/posts/infra-learning-day2/","signature":"5c64a03af812b880ea02d211175b5db3c363a93b2c8d90a8df5d7a008499cce4"}</script></body></html>

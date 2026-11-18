@@ -1,0 +1,709 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light" style="--shamot-accent:#f4d35e;--theme:#f4d35e;--accent:#f4d35e;--link:#f4d35e"><head>
+  
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0" theme-name="Stellar" theme-version="2.0.0">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title data-stellar-page-meta="">Paper Librarian v2.0：一个本地的 AI 论文管家 - shamot</title>
+  <script data-stellar-script="core">
+    (function () {
+      var key = 'stellar:v2:leftbar-state';
+      var fallback = "expanded";
+      try {
+        var value = localStorage.getItem(key);
+        document.documentElement.dataset.leftbarState = value === 'collapsed' || value === 'expanded' ? value : fallback;
+      } catch (error) {
+        document.documentElement.dataset.leftbarState = fallback;
+      }
+    })();
+  </script>
+
+  <meta name="description" content="本地运行的论文管理 agent v2.0 版：PDF 入库、双语知识库、语义检索、ModelScope 同步、每日检索，以及一位会查库、会读全文、会联网、记得住上下文的馆长。" data-stellar-page-meta="">
+<meta property="og:type" content="article" data-stellar-page-meta="">
+<meta property="og:title" content="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-page-meta="">
+<meta property="og:url" content="https://chadoshamot.github.io/posts/paper-librarian-ai-paper-agent/" data-stellar-page-meta="">
+<meta property="og:site_name" content="shamot" data-stellar-page-meta="">
+<meta property="og:description" content="本地运行的论文管理 agent v2.0 版：PDF 入库、双语知识库、语义检索、ModelScope 同步、每日检索，以及一位会查库、会读全文、会联网、记得住上下文的馆长。" data-stellar-page-meta="">
+<meta property="og:locale" content="zh_CN" data-stellar-page-meta="">
+<meta property="article:author" content="shamot" data-stellar-page-meta="">
+<meta property="article:published_time" content="2026-10-05T12:22:00.000Z" data-stellar-page-meta="">
+<meta property="article:modified_time" content="2026-10-05T12:22:00.000Z" data-stellar-page-meta="">
+<meta property="article:tag" content="AI" data-stellar-page-meta="">
+<meta property="article:tag" content="Agent" data-stellar-page-meta="">
+<meta property="article:tag" content="Python" data-stellar-page-meta="">
+<meta property="article:tag" content="Summary" data-stellar-page-meta="">
+<meta property="article:tag" content="Tool" data-stellar-page-meta="">
+<meta name="twitter:card" content="summary" data-stellar-page-meta=""><meta name="twitter:title" content="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-page-meta="">
+  
+  
+  <meta name="keywords" content="Tool,AI,Agent,Python,Summary" data-stellar-page-meta="">
+
+  <!-- feed -->
+  
+
+  <link rel="preload" href="/css/main.css?v=2.0.0" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=2.0.0">
+  <style>:root{--text-loading:"正在加载";--text-loading-error:"加载失败，请稍后重试。"}</style>
+
+
+  
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/160225157?s=64&amp;v=4">
+  
+
+  
+
+  <script type="application/ld+json" data-stellar-page-meta="">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"dateCreated":"2026-10-05T20:22:00+08:00","dateModified":"2026-10-05T20:22:00+08:00","datePublished":"2026-10-05T20:22:00+08:00","description":"整理论文库最麻烦的不是读，而是收拾。这套本地 agent 把录入、归档、检索、上云和日常维护收进一个入口，v2.0 又补上了双击即开的桌面软件和一位有记忆的馆长。","headline":"Paper Librarian v2.0：一个本地的 AI 论文管家","mainEntityOfPage":{"@type":"WebPage","@id":"https://chadoshamot.github.io/posts/paper-librarian-ai-paper-agent/"},"publisher":{"@type":"Organization","name":"shamot","sameAs":["https://github.com/chadoshamot"]},"url":"https://chadoshamot.github.io/posts/paper-librarian-ai-paper-agent/","image":["https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"],"keywords":"Tool, AI, Agent, Python, Summary","thumbnailUrl":"https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"}</script>
+  <link rel="stylesheet" href="/assets/shamot.css?v=9"><link rel="stylesheet" href="/assets/shamot-light.css?v=2"><link rel="stylesheet" href="/assets/shamot-dark.css?v=1"><link rel="stylesheet" href="/assets/shamot-purple.css?v=1"><link rel="stylesheet" href="/assets/shamot-content-palettes.css?v=1"><script data-stellar-script="asset" src="/assets/shamot-palette.js?v=2"></script>
+
+  <link rel="stylesheet" href="/css/stellar-icons.css?v=7c185ad1a9a79674">
+  <link rel="preload" as="script" href="/js/stellar-icons.js?v=39c6ac17e854ffe2">
+  
+  
+</head>
+<body data-page-type="content" data-page-layout="post" data-article-style="tech" data-section="post"><header class="shamot-mobile-header"><a href="/">shamot<span aria-hidden="true">.</span></a><div class="shamot-mobile-actions"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select><button type="button" data-shell-action="toggle-leftbar-drawer" aria-label="打开导航" aria-controls="leftbar-region">菜单 ☰</button></div></header><div data-stellar-runtime-region="" id="site-cover" class="site-cover"></div><div class="site-shell" id="start" data-regions="leftbar rightbar"><div class="site-workspace">
+<aside data-stellar-runtime-region="" id="leftbar-region" class="site-region site-region--leftbar" data-region="leftbar" aria-label="Leftbar"><div class="site-region__surface ui-surface"><div class="site-region__decoration" aria-hidden="true"></div><div class="site-region__viewport"><header class="site-region__header site-region__zone site-region__zone--top">
+    <div class="widget-instance widget-instance--brand" data-widget-id="leftbar:fixed:brand" data-presentation="leftbar" data-leftbar-rail="">
+<header class="brand-header brand-header--compact brand-header--site"><div class="brand-wrap"><a class="brand-image brand-image--avatar" href="/"><img no-lazy="" src="https://avatars.githubusercontent.com/u/160225157?v=4" alt="" onerror="this.onerror=null;this.src=&quot;/images/stellar-error.491ee870f4940739.svg&quot;"></a><a class="brand-title" href="/"><div class="brand-name">shamot</div><div class="brand-tagline cap">Nothing is impossible!</div></a></div><div class="brand-search">
+
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<button class="ui-collection__item ui-interactive card-hover card-hover--spotlight search-trigger has-hover-surface" type="button" title="搜索" aria-label="搜索" data-shell-action="open-search" data-search-instance="leftbar-brand-search" data-search-domain="blog" data-search-domain-label="博客" data-search-domain-blog="true">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">搜索</span>
+      
+      
+    </span>
+  
+  <kbd class="search-shortcut" aria-hidden="true">⌘K</kbd>
+
+  
+</button>
+
+  
+</div>
+
+
+</div></header>
+</div>
+  </header>
+  <div class="site-region__body site-region__zone site-region__zone--body">
+    <div class="shamot-theme-control"><select class="shamot-palette-select" aria-label="网站配色" data-shamot-palette="" onchange="setShamotPalette(this.value)"><option value="beige">米黄</option><option value="navy">藏蓝</option><option value="green">澄绿</option><option value="purple">紫色</option></select></div><div class="widget-instance widget-instance--menu" data-widget-id="leftbar:fixed:menu" data-presentation="leftbar" data-leftbar-rail="">
+
+
+<nav class="menu dis-select">
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-active is-themed" href="/blog/" title="博客" aria-current="page" style="--item-theme:#f4d35e;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"></path><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">博客</span>
+      
+      
+    </span>
+  
+  
+  <span class="ui-collection__indicator"></span>
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/wiki/" title="项目" style="--item-theme:#73daca;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" opacity=".5"></path><path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z"></path><path fill-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" clip-rule="evenodd"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">项目</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/notes/" title="探索" style="--item-theme:#bb9af7;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M10.7226 3.20068C10.8335 2.80158 10.5998 2.38817 10.2007 2.27731C9.80163 2.16645 9.38822 2.40011 9.27736 2.79921L7.76327 8.24995H4C3.58579 8.24995 3.25 8.58573 3.25 8.99995C3.25 9.41416 3.58579 9.74995 4 9.74995H7.3466L5.81882 15.2499H2C1.58579 15.2499 1.25 15.5857 1.25 15.9999C1.25 16.4142 1.58579 16.7499 2 16.7499H5.40216L4.27736 20.7992C4.1665 21.1983 4.40016 21.6117 4.79927 21.7226C5.19837 21.8334 5.61178 21.5998 5.72264 21.2007L6.95895 16.7499H14.4022L13.2774 20.7992C13.1665 21.1983 13.4002 21.6117 13.7993 21.7226C14.1984 21.8334 14.6118 21.5998 14.7226 21.2007L15.959 16.7499H20C20.4142 16.7499 20.75 16.4142 20.75 15.9999C20.75 15.5857 20.4142 15.2499 20 15.2499H16.3756L17.9034 9.74995H22C22.4142 9.74995 22.75 9.41416 22.75 8.99995C22.75 8.58573 22.4142 8.24995 22 8.24995H18.3201L19.7226 3.20068C19.8335 2.80158 19.5998 2.38817 19.2007 2.27731C18.8016 2.16645 18.3882 2.40011 18.2774 2.79921L16.7633 8.24995H9.32006L10.7226 3.20068ZM14.8188 15.2499L16.3466 9.74995H8.9034L7.37562 15.2499H14.8188Z" clip-rule="evenodd"></path></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">探索</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/friends/" title="友链" style="--item-theme:#9ece6a;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">友链</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-themed" href="/about/" title="关于" style="--item-theme:#f79b87;">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20" opacity=".5"></path><path d="M12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 7.5c-3.04 0-5.5 1.57-5.5 3.5c0 .65.28 1.26.77 1.77A7.96 7.96 0 0 0 12 20.5a7.96 7.96 0 0 0 4.73-1.73c.49-.51.77-1.12.77-1.77c0-1.93-2.46-3.5-5.5-3.5"></path></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">关于</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div>
+
+</nav>
+
+</div>
+    <div class="widgets widget-stack widget-stack--leftbar widget-stack--body"><div class="widget-instance widget-instance--recent" data-widget-id="leftbar:0:recent" data-presentation="leftbar">
+
+<widget class="widget-wrapper slide-up recent-widget" style="--theme: #f4d35e; --item-theme: #f4d35e;">
+  
+    <div class="widget-header dis-select">
+      <span class="name">最近更新</span>
+      
+    </div>
+  
+  <div class="widget-body"><div class="ui-collection" data-layout="list" data-variant="nav" data-density="compact">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day5/" title="Infra学习day5" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day5</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day6/" title="Infra学习day6" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day6</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/paper-librarian-ai-paper-agent/" title="Paper Librarian v2.0：一个本地的 AI 论文管家" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">P</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Paper Librarian v2.0：一个本地的 AI 论文管家</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day4/" title="Infra学习day4" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day4</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day3/" title="Infra学习day3" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day3</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day2/" title="Infra学习day2" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day2</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/infra-learning-day1/" title="Infra学习day1" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">I</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Infra学习day1</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/codex-windows-runtime-fix/" title="修复 Codex 在 Windows 上的运行时暂存故障" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">修</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">修复 Codex 在 Windows 上的运行时暂存故障</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/posts/myalgo-algorithm-notes/" title="MyAlgo：一个算法初学者的题库与笔记仓库" data-stellar-navigation="">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MyAlgo：一个算法初学者的题库与笔记仓库</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div></div>
+  
+</widget>
+
+
+</div></div>
+  </div>
+  <footer class="site-region__footer">
+    
+    <div class="site-region__system ui-collection" data-layout="inline" data-variant="nav" data-density="compact">
+      <div class="site-region__settings"><div class="widget-instance widget-instance--settings" data-widget-id="leftbar:fixed:settings" data-presentation="leftbar" data-leftbar-rail="">
+<a class="settings-widget ui-collection__item ui-interactive card-hover card-hover--spotlight" href="/settings/" data-profile-provider="" data-profile-identity-enabled="false" data-profile-fallback-avatar="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg" data-settings-placement="leftbar" data-settings-label="设置" aria-label="设置" title="设置">
+  <span class="settings-widget__avatar" aria-hidden="true">
+    <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M12.4277 2C11.3139 2 10.2995 2.6007 8.27081 3.80211L7.58466 4.20846C5.55594 5.40987 4.54158 6.01057 3.98466 7C3.42773 7.98943 3.42773 9.19084 3.42773 11.5937V12.4063C3.42773 14.8092 3.42773 16.0106 3.98466 17C4.54158 17.9894 5.55594 18.5901 7.58466 19.7915L8.27081 20.1979C10.2995 21.3993 11.3139 22 12.4277 22C13.5416 22 14.5559 21.3993 16.5847 20.1979L17.2708 19.7915C19.2995 18.5901 20.3139 17.9894 20.8708 17C21.4277 16.0106 21.4277 14.8092 21.4277 12.4063V11.5937C21.4277 9.19084 21.4277 7.98943 20.8708 7C20.3139 6.01057 19.2995 5.40987 17.2708 4.20846L16.5847 3.80211C14.5559 2.6007 13.5416 2 12.4277 2Z" clip-rule="evenodd" opacity=".5"></path><path d="M12.4277 8.25C10.3567 8.25 8.67773 9.92893 8.67773 12C8.67773 14.0711 10.3567 15.75 12.4277 15.75C14.4988 15.75 16.1777 14.0711 16.1777 12C16.1777 9.92893 14.4988 8.25 12.4277 8.25Z"></path></g></svg></span>
+  </span>
+  <span class="settings-widget__name ui-collection__title">设置</span>
+</a>
+</div></div>
+      <button type="button" class="leftbar-state-toggle ui-collection__item ui-interactive card-hover card-hover--spotlight is-icon-only" aria-label="Collapse leftbar" aria-expanded="true" data-shell-action="toggle-leftbar"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.172 4.172C2 5.343 2 7.229 2 11v2c0 3.771 0 5.657 1.172 6.828S6.229 21 10 21h5V3h-5C6.229 3 4.343 3 3.172 4.172" clip-rule="evenodd" opacity=".5"></path><path fill="currentColor" d="M5.5 9.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zm1 4a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5zM22 13v-2c0-3.771 0-5.657-1.172-6.828c-.974-.975-3.192-1.139-5.828-1.166v17.988c2.636-.027 4.854-.191 5.828-1.166C22 18.657 22 16.771 22 13"></path></svg></span></button>
+    </div>
+  </footer></div></div></aside>
+<main data-stellar-runtime-region="" class="site-main" id="main"><nav class="shamot-section-nav" aria-label="博客导航"><a href="/blog/">近期发布</a><a href="/blog/categories/">分类</a><a href="/blog/tags/">标签</a><a href="/topic/">专栏</a><a href="/blog/archives/">归档</a></nav>
+
+
+<div class="article-banner-wrap slide-up"><div class="article banner top">
+  <div class="content">
+    
+    <div class="top bread-nav footnote"><div class="top-row"><div class="left" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/blog/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/blog/categories/design-development/">设计开发</a>
+</div><div class="right"><span class="cap reading">3188 字 · 预计阅读 11 分钟</span></div></div><div class="meta-row">
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-10-05T12:22:00.000Z">2026-10-05</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-10-05T12:22:00.000Z">2026-10-05</time></span></div>
+</div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Paper Librarian v2.0：一个本地的 AI 论文管家</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div></div>
+<article class="md-text content slide-up"><p>整理论文库最麻烦的从来不是读，而是收拾。下载下来的 PDF 堆在下载文件夹里，元数据要手抄，摘要要自己写，过两周想找「那篇讲 GPU 调度的文章」，只能靠回忆文件名。</p>
+<p><strong>Paper Librarian</strong> 是一套跑在本地的论文管理 agent，把录入、检索、同步和日常维护收进一个入口，另外还有一位可以对话的「馆长」。项目今天更新到 <strong>v2.0</strong>：桌面版 PaperBook 成了主推入口，馆长补齐了下载、上云、去重这些写操作，每日检索换上了自己的研究需求文件，还补了英文说明和聊天记录归档。</p>
+<p><strong><a target="_blank" rel="noopener" href="https://github.com/chadoshamot/paper-librarian" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Paper Librarian（AI 论文管家）· GitHub 仓库</a></strong></p>
+<p>它密钥自带、可直接复现：所有 API Key 都填在本地 <code>.env</code>，仓库里不含任何真实密钥或个人数据。</p>
+<!-- more -->
+
+<h2 id="v2-0-更新了什么"><a href="#v2-0-更新了什么" class="headerlink" title="v2.0 更新了什么" data-stellar-navigation=""></a>v2.0 更新了什么</h2><div class="md-table-scroll"><table>
+<thead>
+<tr>
+<th>更新</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>桌面版转正</td>
+<td>PaperBook 从附属入口变成主推界面，双击 <code>paperbook.pyw</code> 或 <code>PaperBook.bat</code> 即开，无终端黑窗，新增「设置」控制台</td>
+</tr>
+<tr>
+<td>馆长补齐写操作</td>
+<td>新增下载入库、推送上云、查重去重、批量修正标题等能力，网页能做的它都能做</td>
+</tr>
+<tr>
+<td>每日检索换配置</td>
+<td>检索方向从配置项迁到根目录 <code>research-profile.md</code>，网页内可直接编辑并保存快照</td>
+</tr>
+<tr>
+<td>聊天记录归档</td>
+<td>对话自动保存并同步到私有 ModelScope 仓库，支持历史会话继续与删除</td>
+</tr>
+<tr>
+<td>中英双语说明</td>
+<td>新增 <code>README_EN.md</code>，README 顶部可切换语言，同时统一了项目标志与品牌</td>
+</tr>
+<tr>
+<td>工程加固</td>
+<td>后台任务队列串行执行写操作、研究需求版本冲突检测、原子文件写入，并补上离线回归测试</td>
+</tr>
+</tbody></table></div>
+<p>加一个小注：仓库目前没有打 <code>v2.0</code> 的 git tag 或 Release 页，这个版本号是按这批更新的实际体量（新界面入口、新写操作、新配置体系、双语说明）标定的，装的时候认 README 即可。</p>
+<h2 id="功能一览"><a href="#功能一览" class="headerlink" title="功能一览" data-stellar-navigation=""></a>功能一览</h2><div class="md-table-scroll"><table>
+<thead>
+<tr>
+<th>环节</th>
+<th>做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>录入</td>
+<td>PDF → 抓元数据 → AI 阅读全文生成摘要 → 自动分类 / 归档 / 重命名 → 生成双语 Markdown 卡片；网页上传可一次多选，逐个排队入库</td>
+</tr>
+<tr>
+<td>检索</td>
+<td>语义向量 + 关键词 + 标题加权，支持精准与探索（MMR）两种模式</td>
+</tr>
+<tr>
+<td>论文库</td>
+<td>大领域 → 方向 → work 三级目录树，可跳原文、就地改元数据、按标题与已读状态筛选</td>
+</tr>
+<tr>
+<td>每日检索</td>
+<td>多源抓取 + 质量评分 + LLM 裁判，输出日报，可推库或发邮件；检索方向写在 <code>research-profile.md</code></td>
+</tr>
+<tr>
+<td>馆长 agent</td>
+<td>用对话完成查库、深读、联网搜索、下载入库、上云、去重</td>
+</tr>
+<tr>
+<td>上云</td>
+<td>ModelScope 增量同步，PDF 走 git-lfs，知识库走 Markdown，聊天记录另存私有仓库</td>
+</tr>
+<tr>
+<td>界面</td>
+<td>交互式 CLI + 零依赖 Web 界面 + PaperBook 桌面版，三处共用同一个馆长 agent</td>
+</tr>
+</tbody></table></div>
+<p>录入环节值得单独说一句：分类、归档、重命名不是按文件名猜的，而是先让模型读完全文生成摘要，再按摘要结果决定去处。顺序反过来之后，整理出来的库才像手动维护过的样子。</p>
+<h2 id="馆长-agent：一个统一入口"><a href="#馆长-agent：一个统一入口" class="headerlink" title="馆长 agent：一个统一入口" data-stellar-navigation=""></a>馆长 agent：一个统一入口</h2><p>网页界面右侧有一个常驻聊天栏，也就是馆长 agent，宽度可以拖拽调整。它以 DeepSeek 为主体掌握全局并做决策，只在需要联网时调用 Kimi 的 web-search，搜索结果回传给它拍板。</p>
+<p>它能调用的工具分几类：</p>
+<ul>
+<li><strong>查库与深读</strong>：<code>search_library</code>、<code>get_paper</code>、<code>deep_read</code>、<code>compare_papers</code>、<code>library_stats</code>、<code>list_by_area</code>，回答里用反引号给出可点击的 pid 引用</li>
+<li><strong>联网搜索</strong>：<code>web_search</code>，用来补库外的最新进展，带来源链接</li>
+<li><strong>维护库</strong>：<code>download_paper</code>（下载后自动录入）、<code>ingest_paper</code>、<code>reclassify_paper</code>、<code>edit_paper</code>、<code>fix_metadata</code>、<code>fix_all_titles</code>、<code>fix_summary</code>、<code>find_duplicates</code>、<code>deduplicate_papers</code>、<code>mark_read</code>、<code>pull_library</code>、<code>push_to_cloud</code>、<code>run_daily_retrieval</code>、<code>read_daily_report</code>、<code>send_daily_email</code> 等，凡是在网页上能做的它都能做</li>
+<li><strong>需要确认的动作</strong>：<code>delete_paper</code> 与 <code>push_to_cloud</code> 只先生成计划，等你在对话里点「确认执行」后才真正动手</li>
+</ul>
+<p>论文库里的「让馆长整理」会让它自己检查缺失信息和重复论文，拟一份整理计划出来；论文详情页的「与馆长讨论这篇论文」会自动带上真实 pid。对话过程中会显示当前工具的执行进度，结束后可以展开执行记录，恢复历史会话时这些记录也一起保留。</p>
+<p>它的行为不写死在代码里，而是仓库根目录的 <code>AGENT.md</code>：身份、任务、工具、记忆规范、回答规范、禁止事项都在里面，每次问答前自动加载。想调整它的行为，改这个文件即可。</p>
+<p>记忆分两层，都只存本地、不上云：<code>agent-memory.md</code> 记录使用者的画像、偏好与纠错，<code>agent-notes/{pid}.md</code> 存单篇深读笔记和对话里逐步积累的洞察。</p>
+<h2 id="聊天记录：自动保存，可追溯"><a href="#聊天记录：自动保存，可追溯" class="headerlink" title="聊天记录：自动保存，可追溯" data-stellar-navigation=""></a>聊天记录：自动保存，可追溯</h2><p>与馆长的每一次对话都会自动写进本地 <code>chat-logs/</code>，并同步到你的私有 ModelScope 仓库（<code>your-namespace/paper-chat-logs</code>，可见性设为 private，与公开的知识库、PDF 仓库隔离，聊天内容不公开）。</p>
+<ul>
+<li>每轮问答结束即保存并推送，不用手动操作；没有 token 时先存本地，填好后下次补传</li>
+<li>对话右上角「🕘 历史」里有会话列表（标题 + 时间 + 轮数），点击就能接着上次继续聊，适合跨天延续同一个上下文</li>
+<li>历史列表里也能删除单条会话，本地与云端一并清掉</li>
+</ul>
+<h2 id="桌面版-PaperBook"><a href="#桌面版-PaperBook" class="headerlink" title="桌面版 PaperBook" data-stellar-navigation=""></a>桌面版 PaperBook</h2><p>不用每次进终端起服务。<code>paperbook.pyw</code> 把整套 Web 界面装进一个原生窗口，双击即开，关闭窗口自动停服，没有终端黑窗；不想用 <code>.pyw</code> 也可以双击 <code>PaperBook.bat</code>。</p>
+<ul>
+<li>Windows 走系统自带的 WebView2 渲染（Win11 预装），没有 WebView2 时回退为默认浏览器打开</li>
+<li>首次使用先装桌面依赖：<code>python -m pip install pywebview pythonnet</code>，<code>requirements.txt</code> 里已经包含</li>
+<li>顶部导航有「设置」控制台，模型、检索、每日检索、质量权重、云端仓库，以及 <code>.env</code> 里的各家密钥都能在界面里改，保存后立即生效</li>
+<li>密钥仍然只落在本地 <code>.env</code></li>
+<li>想加桌面或开始菜单快捷方式，右键 <code>install-shortcuts.ps1</code> 用 PowerShell 运行，脚本与路径无关，项目搬到别处重跑一次即可</li>
+</ul>
+<p>命令行同样可以起桌面壳：<code>python -m service.desktop</code>。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装" data-stellar-navigation=""></a>安装</h2><p>环境要求是 Python 3.10+（推荐 3.11 / 3.12；3.14 部分依赖 wheel 可能滞后）和带 git-lfs 的 Git。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/chadoshamot/paper-librarian.git</span><br><span class="line"><span class="built_in">cd</span> paper-librarian</span><br><span class="line">python setup.py</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>setup.py</code> 是交互式的：检查 Python、建目录、导入或初始化论文库、生成配置与 <code>.env</code>、装依赖、冒烟验证。可选项直接回车跳过，对应功能会优雅降级。</p>
+<p>跑起来主要有两种方式：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">python -m service          <span class="comment"># 交互式 CLI 主菜单</span></span><br><span class="line">python -m service.web      <span class="comment"># 网页界面，默认 http://127.0.0.1:8000</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>常用命令：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">python -m service.ingest papers/xxx.pdf                          <span class="comment"># 完整录入一篇</span></span><br><span class="line">python -m service.search <span class="string">"GPU 集群调度"</span> --mode explore --top 10  <span class="comment"># 语义检索 / 探索</span></span><br><span class="line">python -m service.cloud <span class="built_in">sync</span>                                     <span class="comment"># 增量同步到 ModelScope</span></span><br><span class="line">python -m service.daily --top 10                                 <span class="comment"># 生成当日检索日报</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Web 和桌面共用同一套本地 HTTP 服务，前端通过 JSON API 发起任务并轮询进度；CLI 直接调用同一组领域模块。Web 的写任务走在一条有界队列里串行执行，避免同一进程内的 manifest 与云端 git 改动互相覆盖。需要说明的是，多个独立 CLI 进程同时改同一个库时还没有跨进程锁。</p>
+<h2 id="密钥配置"><a href="#密钥配置" class="headerlink" title="密钥配置" data-stellar-navigation=""></a>密钥配置</h2><p>所有密钥只写在 <code>.env</code>，而 <code>.env</code> 已被 <code>.gitignore</code> 排除，永远不会被提交；仓库里只有空值的 <code>.env.example</code>。论文库、PDF、检索索引、嵌入模型、日报、馆长记忆、深读笔记和聊天记录同样全部被 gitignore，由 <code>setup.py</code> 在本机生成。<code>config.example.yml</code> 里的 <code>__NAMESPACE__</code> 是占位符，安装时会替换成你自填的 ModelScope 用户名；<code>service/reconcile_truth.py</code> 里带的是一张空校准表，不随仓库携带任何个人数据。</p>
+<p>密钥按需填写，只有 DeepSeek 是必需的：</p>
+<div class="md-table-scroll"><table>
+<thead>
+<tr>
+<th>密钥</th>
+<th>用途</th>
+<th>是否必填</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DEEPSEEK_API_KEY</code></td>
+<td>分类、摘要、每日裁判、馆长 agent</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>MODELSCOPE_TOKEN</code></td>
+<td>自建库与云端同步</td>
+<td>自建库模式需要</td>
+</tr>
+<tr>
+<td><code>MOONSHOT_API_KEY</code></td>
+<td>馆长联网搜索（Kimi）</td>
+<td>否</td>
+</tr>
+<tr>
+<td><code>ZOTERO_USER_ID</code> / <code>ZOTERO_API_KEY</code></td>
+<td>Zotero 跳转链接</td>
+<td>否</td>
+</tr>
+<tr>
+<td><code>SMTP_*</code></td>
+<td>日报邮件推送</td>
+<td>否</td>
+</tr>
+</tbody></table></div>
+<p>可选项不填时，对应功能会返回友好错误，其余照常。DeepSeek 不填则录入、分类、每日裁判与馆长 agent 不可用，但检索与浏览仍然能用。</p>
+<h2 id="研究需求与每日检索"><a href="#研究需求与每日检索" class="headerlink" title="研究需求与每日检索" data-stellar-navigation=""></a>研究需求与每日检索</h2><p><code>python -m service.daily</code> 从 arXiv、OpenAlex、Semantic Scholar 抓候选，跨源去重、剔除本库已有，再按质量评分排序，输出 <code>reports/daily/YYYY-MM-DD.md</code> 与 <code>.json</code>。即使当天没有候选也会更新日报，不会继续展示旧的推荐。</p>
+<p>检索方向不再散落在配置里，而是统一收进根目录的 <code>research-profile.md</code>：研究目标、兴趣关键词、推荐偏好、篇数和时间范围都写在 YAML frontmatter 与正文里，供推荐裁判、深读和馆长对话共同使用；评分权重仍在 <code>knowledge-base/config.yml</code> 的 <code>quality</code> 段。</p>
+<p>在「每日简报 → 我的论文需求」里展开编辑器，就能直接改这些内容并保存，也可以展开「直接编辑 Markdown 文件」改原文。多窗口或 agent 同时编辑时，旧版本的保存会被拒绝，重新加载后再合并修改。每次保存都会把当时的配置快照存到 <code>reports/daily/profiles/YYYY-MM-DD.md</code>，文件本体只留在本地，不进入公开的云仓库。</p>
+<p>每日检索可以挂到系统定时任务上：</p>
+<p><strong>Windows（任务计划程序）</strong></p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">schtasks /Create /TN <span class="string">"PaperLibrarianDaily"</span> /TR <span class="string">"D:\你的路径\paper-librarian\run_daily.bat"</span> /<span class="built_in">SC</span> DAILY /ST <span class="number">08</span>:<span class="number">00</span> /F</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>Linux / macOS（cron）</strong></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">0 8 * * * /path/to/paper-librarian/run_daily.sh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>定时仍由系统任务触发，在网页里保存需求并不会自动创建新的计划任务。</p>
+<h2 id="两种数据模式"><a href="#两种数据模式" class="headerlink" title="两种数据模式" data-stellar-navigation=""></a>两种数据模式</h2><ul>
+<li><strong>示例库</strong>：如果设置了环境变量 <code>MODELSCOPE_DEMO_NS</code>，<code>setup.py</code> 会 clone 一个公开示例库，克隆完就能检索浏览，零 token</li>
+<li><strong>自建库</strong>：填自己的 ModelScope namespace 与 token，用 <code>python -m service.ingest</code> 建库，再 <code>python -m service.cloud sync</code> 上云</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项" data-stellar-navigation=""></a>注意事项</h2><ul>
+<li>首次检索会下载 jina-v2-base-zh 嵌入模型，几百 MB（走 <code>hf-mirror.com</code> 镜像），之后走缓存</li>
+<li>PDF 上云依赖 git-lfs；如果 clone 下来的 PDF 是文本指针而不是真文件，需要装好 LFS 再重新同步</li>
+<li>用 conda 时，要用目标环境执行 <code>setup.py</code> 与 <code>python -m service</code>，避免依赖装错环境</li>
+<li>换 LLM 要同时改 <code>.env</code> 的 key 与 <code>config.yml</code> 的 model 段（provider / base_url / model 三处）；换联网对话模型改 <code>chat</code> 段</li>
+<li>PDF 深读会跨页面抽取正文并记录页码与截断情况；扫描版或抽不出文本的 PDF 仍然需要 OCR，它不会假装读到了全文</li>
+</ul>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构" data-stellar-navigation=""></a>项目结构</h2><figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">service/            # 服务代码，含 desktop.py 桌面壳与 settings.py 设置读写</span><br><span class="line">service/static/     # 独立的 index.html / app.css / app.js，无构建步骤</span><br><span class="line">service/jobs.py     # 有界后台任务队列，写任务串行、进度事件隔离</span><br><span class="line">service/research_profile.py  # 研究需求的迁移、校验与版本冲突检测</span><br><span class="line">paperbook.pyw       # PaperBook 桌面启动器，双击打开，无终端黑窗</span><br><span class="line">PaperBook.bat       # 桌面启动的 bat 版，等价于双击 pyw</span><br><span class="line">assets/logo.png     # 项目标志，README / Web / 桌面图标共用</span><br><span class="line">README.md           # 中文说明（顶部可切换语言）</span><br><span class="line">README_EN.md        # 英文说明</span><br><span class="line">install-shortcuts.ps1  # 一键创建快捷方式（Windows，右键运行）</span><br><span class="line">AGENT.md            # 馆长 agent 的操作手册</span><br><span class="line">setup.py            # 一键安装（交互式生成 .env / 配置 / 数据）</span><br><span class="line">config.example.yml  # 配置模板</span><br><span class="line">taxonomy.yml        # 分类学</span><br><span class="line">tests/              # 离线流程与 HTTP 接口回归测试</span><br><span class="line">knowledge-base/     # 双语知识库（gitignored，本地生成）</span><br><span class="line">chat-logs/          # 聊天记录（私有仓库 paper-chat-logs 的本地副本，gitignored）</span><br><span class="line">agent-memory.md     # 馆长全局记忆（本地，不上云）</span><br><span class="line">agent-notes/        # 馆长单篇深读笔记（本地，不上云）</span><br><span class="line">research-profile.md # 研究目标与每日推荐配置（本地，gitignored）</span><br></pre></td></tr></tbody></table></figure>
+
+<p>回归测试是离线的，不调用真实模型、云端或邮件，也不碰个人论文库：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> <span class="literal">-m</span> unittest discover <span class="literal">-s</span> tests <span class="literal">-v</span></span><br><span class="line">node <span class="literal">--check</span> service/<span class="keyword">static</span>/app.js</span><br><span class="line">py <span class="literal">-3</span>.<span class="number">14</span> tests/ui_smoke.py   <span class="comment"># 可选：用已安装的 Chrome，临时库加模拟 agent</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果同样被论文文件夹折磨，可以直接 clone 下来试；用起来有问题欢迎到仓库开 Issue。</p>
+<p><strong><a target="_blank" rel="noopener" href="https://github.com/chadoshamot/paper-librarian" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>前往 GitHub：源码与最新说明</a></strong></p>
+</article>
+<div class="article-tags slide-up"><a class="tag shamot-colored-tag" href="/blog/tags/Python/" style="--tag-light:#4b6b2f;--tag-dark:#bcd79a"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Python</a><a class="tag shamot-colored-tag" href="/blog/tags/Summary/" style="--tag-light:#6b6f8a;--tag-dark:#c2c6e0"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Summary</a><a class="tag shamot-colored-tag" href="/blog/tags/Tool/" style="--tag-light:#815092;--tag-dark:#d6b5eb"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Tool</a><a class="tag shamot-colored-tag" href="/blog/tags/AI/" style="--tag-light:#2f6f7a;--tag-dark:#9fd4dc"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>AI</a><a class="tag shamot-colored-tag" href="/blog/tags/Agent/" style="--tag-light:#8a5a2b;--tag-dark:#e2b98a"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>Agent</a><a class="tag shamot-colored-tag" href="/blog/tags/%E8%AE%BE%E8%AE%A1%E5%BC%80%E5%8F%91/" style="--tag-light:#815092;--tag-dark:#d6b5eb"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>设计开发</a></div>
+
+
+
+
+
+<div class="related-wrap slide-up" id="read-next"><section class="body"><div class="item" id="prev"><div class="note"><svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-left" aria-hidden="true"></svg> 较新文章</div><a href="/posts/infra-learning-day5/" data-stellar-navigation="">Infra学习day5</a></div><div class="item" id="next"><div class="note">较早文章 <svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-right" aria-hidden="true"></svg></div><a href="/posts/infra-learning-day4/" data-stellar-navigation="">Infra学习day4</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer slide-up footnote"><hr><div class="text"><p>© shamot · 由 <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> 与 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 驱动。</p>
+</div></footer>
+</main>
+<aside data-stellar-runtime-region="" id="rightbar-region" class="site-region site-region--rightbar" data-region="rightbar" aria-label="Rightbar"><div class="site-region__surface ui-drawer-surface"><div class="site-region__viewport"><div class="widgets widget-stack widget-stack--rightbar widget-stack--rightbar"><div class="widget-instance widget-instance--toc" data-widget-id="rightbar:0:toc" data-presentation="rightbar">
+
+
+<widget class="widget-wrapper slide-up toc" id="data-toc" collapse="false">
+  
+    <div class="widget-header dis-select">
+      <span class="name">本文目录</span>
+      <button type="button" class="cap-action ui-interactive card-hover card-hover--spotlight" data-shell-action="toggle-toc" aria-label="Toggle table of contents" aria-pressed="false"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg></span></button>
+    </div>
+  
+  <div class="widget-body"><ol class="toc ui-collection-adapter"><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#v2-0-%E6%9B%B4%E6%96%B0%E4%BA%86%E4%BB%80%E4%B9%88" data-stellar-navigation=""><span class="toc-text">v2.0 更新了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E5%8A%9F%E8%83%BD%E4%B8%80%E8%A7%88" data-stellar-navigation=""><span class="toc-text">功能一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E9%A6%86%E9%95%BF-agent%EF%BC%9A%E4%B8%80%E4%B8%AA%E7%BB%9F%E4%B8%80%E5%85%A5%E5%8F%A3" data-stellar-navigation=""><span class="toc-text">馆长 agent：一个统一入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%EF%BC%9A%E8%87%AA%E5%8A%A8%E4%BF%9D%E5%AD%98%EF%BC%8C%E5%8F%AF%E8%BF%BD%E6%BA%AF" data-stellar-navigation=""><span class="toc-text">聊天记录：自动保存，可追溯</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E6%A1%8C%E9%9D%A2%E7%89%88-PaperBook" data-stellar-navigation=""><span class="toc-text">桌面版 PaperBook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E5%AE%89%E8%A3%85" data-stellar-navigation=""><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE" data-stellar-navigation=""><span class="toc-text">密钥配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E7%A0%94%E7%A9%B6%E9%9C%80%E6%B1%82%E4%B8%8E%E6%AF%8F%E6%97%A5%E6%A3%80%E7%B4%A2" data-stellar-navigation=""><span class="toc-text">研究需求与每日检索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E4%B8%A4%E7%A7%8D%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%BC%8F" data-stellar-navigation=""><span class="toc-text">两种数据模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" data-stellar-navigation=""><span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84" data-stellar-navigation=""><span class="toc-text">项目结构</span></a></li></ol></div>
+  <div class="widget-footer"><a class="top ui-interactive" onclick="util.scrollTop()"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M20.536 3.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464" opacity=".5"></path><path fill="currentColor" d="M9.53 12.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 9.56z"></path><path fill="currentColor" d="M9.53 16.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 13.56z"></path></svg></span><span>回到顶部</span></a></div>
+</widget>
+
+
+</div></div></div></div></aside>
+</div><button type="button" class="site-scrim" data-shell-action="dismiss-drawer" aria-label="Close navigation" tabindex="-1"></button><div data-stellar-runtime-region="" class="site-dock" role="group" aria-label="Layout panels">
+  <button type="button" class="site-dock__button site-dock__button--rightbar ui-interactive" aria-label="Open rightbar" aria-controls="rightbar-region" aria-expanded="false" data-shell-action="toggle-rightbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+  </button>
+  <button type="button" class="site-dock__button site-dock__button--leftbar ui-interactive" aria-label="Open leftbar" aria-controls="leftbar-region" aria-expanded="false" data-shell-action="toggle-leftbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"></path><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"></path></g></svg>
+  </button>
+</div>
+
+<dialog data-stellar-runtime-region="" class="search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+  <div class="search-dialog__panel search-wrapper" id="site-search-wrapper" searching="false">
+    <div class="search-dialog__header">
+      <div class="search-form" role="search">
+        <span class="search-button" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"></path><circle cx="14" cy="11" r="4"></circle></g></svg></span>
+        <input type="search" class="search-input" id="site-search-input" aria-labelledby="site-search-title" placeholder="搜索">
+      </div>
+      <button type="button" class="search-dialog__close" data-shell-action="close-search" aria-label="关闭搜索">×</button>
+    </div>
+    
+      <div class="search-dialog__scope" role="radiogroup" aria-labelledby="site-search-title" hidden="">
+        <label class="search-dialog__scope-option" data-search-scope-option="all">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="all">
+          <span>全站</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="blog" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="blog">
+          <span>博客</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="current" hidden="">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="current">
+          <span data-search-scope-current-label=""></span>
+        </label>
+      </div>
+    
+    <h2 class="search-dialog__title" id="site-search-title">站内搜索</h2>
+    <div class="search-result" id="site-search-result"></div>
+    <div class="search-no-result">没有找到内容！</div>
+  </div>
+</dialog>
+</div><div class="site-scripts">
+<script data-stellar-script="core" src="/js/stellar-icons.js?v=39c6ac17e854ffe2"></script>
+
+<script data-stellar-script="defines">
+  window.canonical = window.stellarClientData.canonical;
+  const ctx = window.stellarClientData.ctx;
+  window.canonical.param = {permalink: "https://chadoshamot.github.io/posts/paper-librarian-ai-paper-agent/", checklink: ctx.services.video.js};
+  ctx.date_suffix = {"just":"刚刚","min":"分钟前","hour":"小时前","day":"天前"};
+  if (ctx.search) Object.assign(ctx.search, {"more":"更多","no_more":"没有更多了"});
+  const def = window.stellarClientData.def;
+  window.ctx = ctx;
+  window.def = def;
+</script>
+
+
+<!-- core: 迁移期 DOM/资源兼容工具；Extension 注册与生命周期由 ESM runtime 所有 -->
+<script data-stellar-script="core" src="/js/utils.js?v=2.0.0"></script>
+<script data-stellar-script="core" src="/js/main.js?v=2.0.0" defer=""></script>
+<script data-stellar-script="core" defer="" src="/js/profile.js?v=2.0.0"></script>
+
+
+
+
+
+<script data-stellar-script="core" type="application/json" id="stellar-runtime-config">{"version":1,"root":"/","policy":{"cache":{"enabled":true,"defaultTtl":3600,"ttl":{"giscus":600,"waline":600,"artalk":600,"memos":600,"memos-user":86400,"sites":86400,"friends":86400,"friends_and_posts":86400,"siteinfo":86400},"maxEntries":200},"request":{"retries":2,"timeoutMs":5000,"idleTimeoutMs":3000,"maxCacheEntryBytes":204800},"features":{"codeCopyToastMs":2500},"providers":{"linkPrefetch":"flying_pages","lightbox":"fancybox","diagrams":"mermaid"}},"extensions":[{"id":"pin-slider","module":"/js/runtime/extensions/pin-slider.js","scope":"region","when":{"selector":".pin-slider"},"config":{}},{"id":"page-controls","module":"/js/runtime/extensions/page-controls.js","scope":"region","when":{"always":true},"config":{"highlight":"/js/search/highlight.js","tagtree":"/js/tagtree.js"}},{"id":"partial-navigation","module":"/js/runtime/extensions/partial-navigation.js","scope":"document","when":{"always":true},"config":{}},{"id":"search","module":"/js/runtime/extensions/search.js","scope":"document","when":{"selector":".search-input"},"config":{"provider":"local","options":{"scope":"all","includeContent":true,"cacheTtlSeconds":86400},"assets":{"client":null,"provider":"/js/search/local-search.js","shortcut":"/js/search/shortcut.js"}}},{"id":"hero-parallax","module":"/js/runtime/extensions/hero-parallax.js","scope":"region","when":{"selector":".wiki-hero"},"config":{}},{"id":"hero-effect","module":"/js/runtime/extensions/hero-effect.js","scope":"region","when":{"selector":"canvas[data-hero-effect]"},"config":{}},{"id":"lazy-loading","module":"/js/runtime/extensions/lazy-loading.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"}},{"id":"deferred-icons","module":"/js/runtime/extensions/deferred-icons.js","scope":"region","when":{"selector":"svg.icon[data-icon]"},"config":{}},{"id":"dropdown","module":"/js/runtime/extensions/dropdown.js","scope":"region","when":{"selector":"details.dropdown"},"config":{}},{"id":"services","module":"/js/runtime/extensions/services.js","scope":"region","when":{"selector":"#artalk_container, #twikoo_container, #waline_container, .data-service, [class*='ds-'], a[cardlink], a[data-md-link][data-siteinfo-api], .site-card [data-siteinfo-api], .voice\u003eaudio, .video\u003evideo, .chat-file"},"config":{"marked":"https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js"}},{"id":"settings","module":"/js/runtime/extensions/settings.js","scope":"region","when":{"selector":".settings-page"},"config":{}},{"id":"link-prefetch","module":"/js/runtime/extensions/link-prefetch.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"}},{"id":"lightbox","module":"/js/runtime/extensions/lightbox.js","scope":"region","when":{"selector":"[data-fancybox]:not(.error), .with-fancybox, .ds-memos, .timenode p\u003eimg"},"config":{"enabled":true,"selector":".timenode p\u003eimg","assets":{"localCss":"/css/plugins/fancybox.css","js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"}}},{"id":"reveal","module":"/js/runtime/extensions/reveal.js","scope":"region","when":{"selector":".slide-up"},"config":{"enabled":true,"duration":300,"interval":50,"distance":5,"blur":0}},{"id":"code-copy","module":"/js/runtime/extensions/code-copy.js","scope":"region","when":{"selector":".code"},"config":{"assets":{"js":"/js/plugins/copycode.js"},"messages":{"label":"复制","copied":"复制成功","denied":"未获得剪贴板权限","unsupported":"当前浏览器不支持剪贴板或页面不是 HTTPS"}}},{"id":"adaptive-text","module":"/js/runtime/extensions/adaptive-text.js","scope":"region","when":{"selector":"[data-text-adaptive]"},"config":{"assets":{"colorJs":"/js/color.js","js":"/js/plugins/adaptive-text.js"}}},{"id":"swiper","module":"/js/runtime/extensions/swiper.js","scope":"region","when":{"selector":"#swiper-api"},"config":{"assets":{"localCss":"/css/plugins/swiper.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js","css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css"}}}]}</script>
+<script data-stellar-script="core" type="module" src="/js/runtime/index.js?v=2.0.0&amp;runtime=1"></script>
+
+
+<!-- inject -->
+<link rel="stylesheet" href="/assets/shamot-terminal.css?v=3"><script data-stellar-script="asset" src="/assets/shamot-terminal.js?v=6" defer=""></script>
+
+<script data-stellar-script="core" defer="" src="/js/navigation-init.js?v=2.0.0"></script>
+</div>
+
+<script type="application/json" id="stellar-navigation-config">{"collection":"[\"post\",\"post\"]","url":"https://chadoshamot.github.io/posts/paper-librarian-ai-paper-agent/","signature":"c7c53f7697696a1c51fff894171c3e8fc3fb0737337ef0a5b6faebbadb2f2ee6"}</script></body></html>
