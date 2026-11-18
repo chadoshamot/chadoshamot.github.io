@@ -10,3 +10,14 @@ db.json
 .credentials*
 *.shamot-*.tmp
 source/_data/caches/
+.ssh/
+.aws/
+.npmrc
+.netrc
+.git-credentials
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
